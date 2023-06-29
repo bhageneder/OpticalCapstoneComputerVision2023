@@ -1,5 +1,5 @@
-import jetson.inference
-import jetson.utils
+import jetson_inference
+import jetson_utils
 import time
 import cv2
 from threading import Thread
@@ -26,10 +26,10 @@ height = 360		# Change for production code. Only set to 360 such that the images
 width = 1280		# Change for production code. Only set to 1280 such that the images will fit on screen
 
 # Set up detect net for the custom model
-net = jetson.inference.detectNet(model="/home/sa/jetson-inference/python/training/detection/ssd/models/RobotModel2/ssd-mobilenet.onnx", labels="/home/sa/jetson-inference/python/training/detection/ssd/models/RobotModel2/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+net = jetson_inference.detectNet(model="/home/sa/jetson-inference/python/training/detection/ssd/models/RobotModel2/ssd-mobilenet.onnx", labels="/home/sa/jetson-inference/python/training/detection/ssd/models/RobotModel2/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
 # Initialize the display window
-display = jetson.utils.glDisplay()
+display = jetson_utils.glDisplay()
 
 # Define Stream objects for video0 and video1
 cap0 = Stream(0)
@@ -48,15 +48,20 @@ while (display.IsOpen()):
 
 	# Prep for object detection
 	frame_rgba = cv2.cvtColor(im_resized, cv2.COLOR_BGR2RGBA)
-	img = jetson.utils.cudaFromNumpy(frame_rgba)
+	img = jetson_utils.cudaFromNumpy(frame_rgba)
 
 	# Object Detection
 	detections = net.Detect(img, width, height)
 	display.RenderOnce(img, width, height)
 	display.SetTitle("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
+
+	# Print out the locations of detected robots
+	# Using the location we can approximate a transceiver to use
+	# Using size, we can approximate distance
+	for detection in detections:
+	    print(f"class {detection.ClassID} found at ({detection.Left}, {detection.Top}, {detection.Right}, {detection.Bottom}")
 	
-	# Check for quit key, release camera captures, exit
-	if cv2.waitKey(1) & 0xFF == ord('q'):
-		cam0.capture.release()
-		cam1.capture.release()
-		exit(1)
+# Release when window is closed
+cap0.capture.release()
+cap1.capture.release()
+exit(1)
