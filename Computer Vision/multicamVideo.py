@@ -1,28 +1,37 @@
+from threading import Thread
 import cv2
-cap0 = cv2.VideoCapture(0)
 
-cap1 = cv2.VideoCapture(1)
+class vStream:
+	def __init__(self, src):
+		self.capture = cv2.VideoCapture(src)
+		self.thread = Thread(target = self.__update, args = ())
+		self.thread.daemon = True
+		self.thread.start()
 
-while(cap0.isOpened()):
-	ret0, frame0 = cap0.read()
-	ret1, frame1 = cap1.read()
+	def __update(self):
+		while True:
+			_,self.frame = self.capture.read()
 
-	if ret0:
+	def getFrame(self):
+		return self.frame
+
+cam0 = vStream(0)
+cam1 = vStream(1)
+
+while True:
+	try:
+		frame0 = cam0.getFrame()
+		frame1 = cam1.getFrame()
+
 		im_concat = cv2.hconcat([frame0, frame1])
-
 		im_resized = cv2.resize(im_concat, (1280, 360))   
-
 		cv2.imshow('Combined Video', im_resized)
 
-		if cv2.waitKey(1) & 0xFF == ord('q'):
-            		break
-
-	else: 
-		break
-
-cap0.release()
-cap1.release()
-
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+	except:
+		print("Frame not available")
+	
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		cam0.capture.release()
+		cam1.capture.release()
+		cv2.destroyAllWindows()
+		exit(1)
