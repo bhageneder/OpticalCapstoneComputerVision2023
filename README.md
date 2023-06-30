@@ -8,7 +8,7 @@ Close the object detection window to quit.
 
 ## Multicam Video
 Shows live video concatenated horizontally in a new window from two USB cameras on video0 and video1.
-Press q to quite.
+Press q to quit.
 
 ## 360 Image
 With 3 USB Cameras on video0...2, the script will capture a frame on each camera and then display the 360-degree image in a new window. 
