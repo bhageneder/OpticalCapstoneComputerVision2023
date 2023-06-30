@@ -1,9 +1,14 @@
 from threading import Thread
 import cv2
 
+#gst-launch-1.0 v4l2src device=/dev/video0 ! image/jpeg, width=640, height=480, framerate=30/1, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! xvimagesink
+
 class vStream:
 	def __init__(self, src):
-		self.capture = cv2.VideoCapture(src)
+		self.capture = cv2.VideoCapture(src, cv2.CAP_GSTREAMER)
+		self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+		self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+		self.capture.set(cv2.CAP_PROP_FPS, 30)
 		self.thread = Thread(target = self.__update, args = ())
 		self.thread.daemon = True
 		self.thread.start()
