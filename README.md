@@ -3,9 +3,12 @@ Summer 2023 Optical Communications Capstone Computer Vision Repository
 
 ## Multicam Object Detection
 Runs object detection model on USB cameras at video0 and video1. The model is a custom Robot model for detecting the TurtleBots with the green balls on top of them. 
+Also outputs the locations of objects in the frame.
+Close the object detection window to quit.
 
 ## Multicam Video
 Shows live video concatenated horizontally in a new window from two USB cameras on video0 and video1.
+Press q to quite.
 
 ## 360 Image
 With 3 USB Cameras on video0...2, the script will capture a frame on each camera and then display the 360-degree image in a new window. 
