@@ -48,20 +48,37 @@ while (display.IsOpen()):
 
 	# Prep for object detection
 	frame_rgba = cv2.cvtColor(im_resized, cv2.COLOR_BGR2RGBA)
+	#frame_rgba_2 = cv2.cvtColor(im_finalized, cv2.COLOR_BGR2RGBA)
 	img = jetson_utils.cudaFromNumpy(frame_rgba)
 
 	# Object Detection
 	detections = net.Detect(img, width, height)
-	display.RenderOnce(img, width, height)
-	display.SetTitle("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
 
+	img_2 = jetson_utils.cudaToNumpy(img)
+
+	#Draw the necessary figures on a separate image
+	im_line_1 = cv2.line(img_2, (int(width/4), 0), (int(width/4), height), (0,0,0), 5)
+	im_line_2 = cv2.line(im_line_1, (int(width/2), 0), (int(width/2), height), (0,0,0), 5)
+	im_finalized = cv2.line(im_line_2, ((3*int(width/4)), 0), ((3*int(width/4)), height), (0,0,0), 5)
+
+	img_3 = jetson_utils.cudaFromNumpy(im_finalized)
+
+	#Render the image to be displayed on the monitor
+	display.RenderOnce(img_3, width, height)
+	display.SetTitle("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
 	# Print out the locations of detected robots
 	# Using the location we can approximate a transceiver to use
 	# Using size, we can approximate distance
 	try:
+		for _ in range(500):
+			pass
 		for detection in detections:
 			#print("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
-			print("X Location is {}, Y Location is {}".format(detection.Center[0], detection.Center[1]))
+			#print("X Location is {}, Y Location is {}".format(detection.Center[0], detection.Center[1]))
+			
+			#Use integer division to obtain a section that the object is detected in.
+			normalized_x = (int(detection.Center[0]) / int(width/4))
+			print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
 	except SyntaxError as se:
 		print("Error reading detection: {}".format(se))
 		pass
