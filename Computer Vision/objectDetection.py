@@ -1,6 +1,5 @@
 import jetson_inference
 import jetson_utils
-import time
 
 modelName = "RobotModel2"	# Choose Model Name
 
