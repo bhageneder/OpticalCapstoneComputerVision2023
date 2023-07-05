@@ -41,7 +41,8 @@ while (display.IsOpen()):
 	# Print out the locations of detected robots
 	# Using the location we can approximate a transceiver to use
 	for detection in detections:
-	    print ("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
+		if (detection.ClassID == 1):	    
+			print ("TurtleBot found at ({})".format(detection.Center))
 	
 # Release when window is closed
 cap0.capture.release()

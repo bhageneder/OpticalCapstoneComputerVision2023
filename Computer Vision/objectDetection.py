@@ -1,13 +1,14 @@
-import jetson.inference
-import jetson.utils
+import jetson_inference
+import jetson_utils
 import time
 
-#net = jetson.inference.detectNet("ssd-mobilenet", threshold=0.5)
+modelName = "RobotModel2"	# Choose Model Name
 
-net = jetson.inference.detectNet(model="/home/sa/jetson-inference/python/training/detection/ssd/models/RobotModel2/ssd-mobilenet.onnx", labels="/home/sa/jetson-inference/python/training/detection/ssd/models/RobotModel2/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+# Set up detect net for the custom model
+net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
-camera = jetson.utils.gstCamera(1280, 720, "/dev/video0")
-display = jetson.utils.glDisplay()
+camera = jetson_utils.gstCamera(1280, 720, "/dev/video0")
+display = jetson_utils.glDisplay()
 
 
 while display.IsOpen():
