@@ -1,8 +1,6 @@
 import jetson_inference
 import jetson_utils
-import time
 import cv2
-from threading import Thread
 from Stream import Stream
 
 # Define variables
@@ -42,9 +40,8 @@ while (display.IsOpen()):
 
 	# Print out the locations of detected robots
 	# Using the location we can approximate a transceiver to use
-	# Using size, we can approximate distance
 	for detection in detections:
-	    print(f"class {detection.ClassID} found at ({detection.Left}, {detection.Top}, {detection.Right}, {detection.Bottom}")
+	    print ("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
 	
 # Release when window is closed
 cap0.capture.release()
