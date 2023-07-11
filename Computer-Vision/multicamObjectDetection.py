@@ -42,7 +42,7 @@ while (display.IsOpen()):
 	# Using the location we can approximate a transceiver to use
 	for detection in detections:
 		if (detection.ClassID == 1):	    
-			print ("TurtleBot found at ({})".format(detection.Center))
+			print("TurtleBot found at ({})".format(detection.Center))
 	
 # Release when window is closed
 cap0.capture.release()
