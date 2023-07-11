@@ -21,6 +21,8 @@ import time
 import board
 import neopixel
 import led_manager as lc
+sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/Computer-Vision")
+from Detection import Detection
 sys.path.append("/home/pi/repos/OpticalCommunications-2023/control_robot")
 from play_sound import play_button_sound, play_sad_sound, play_connected_sound
 from move_circle import move_circle

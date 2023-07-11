@@ -115,3 +115,4 @@ class Detection:
                                 transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
                                 return transceiver_number
                 return -1
+                        
