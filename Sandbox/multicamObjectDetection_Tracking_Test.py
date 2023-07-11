@@ -35,6 +35,9 @@ display = jetson_utils.glDisplay()
 cap0 = Stream(0)
 cap1 = Stream(1)
 
+#abtract counter
+i = 0
+
 while (display.IsOpen()):
 	# Read frames
 	frame0 = cap0.getFrame()
@@ -70,15 +73,16 @@ while (display.IsOpen()):
 	# Using the location we can approximate a transceiver to use
 	# Using size, we can approximate distance
 	try:
-		for _ in range(500):
-			pass
 		for detection in detections:
-			#print("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
-			#print("X Location is {}, Y Location is {}".format(detection.Center[0], detection.Center[1]))
+			#obtain trasnciever data every 10 iterations, Abstract and can be modified depending on efficiency
 			
-			#Use integer division to obtain a section that the object is detected in.
-			normalized_x = (int(detection.Center[0]) / int(width/4))
-			print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
+			if (i % 10) == 0:
+				#print("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
+				#print("X Location is {}, Y Location is {}".format(detection.Center[0], detection.Center[1]))
+				
+				#Use integer division to obtain a section that the object is detected in.
+				normalized_x = (int(detection.Center[0]) / int(width/4))
+				print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
 	except SyntaxError as se:
 		print("Error reading detection: {}".format(se))
 		pass
