@@ -22,7 +22,7 @@ class Detection:
         # Private list to hold captures
         self.__captures = list(map(lambda x: Stream(x), cameras))
 
-        # Runs a detection thread
+        # Runs the detection method
         self.__detect()
 
     # Deconstructor releases camera captures
