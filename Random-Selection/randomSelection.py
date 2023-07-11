@@ -4,7 +4,7 @@ print("Select a random element from a list:")
 elements = set(line.strip() for line in open('./imageNames.txt'))
 
 print("\nTrain:")
-for x in range(int(len(elements) * 0.6)):
+for x in range(int(len(elements) * 0.8)):
 	y = random.choice(tuple(elements))
 	print(y)
 	elements.remove(y)
