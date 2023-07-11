@@ -4,6 +4,7 @@ import time
 import cv2
 from threading import Thread
 
+
 # Define stream class
 class Stream:
 	def __init__(self, src):
@@ -21,6 +22,47 @@ class Stream:
 	def getFrame(self):
 		return self.frame
 
+"""
+Method_Name: indirect 
+params_type: int j
+param_desc: j is the integer division from the center location of the object and the frame division
+return_type: int j
+return_desc: j is the modified integer that represents the transceiver number to use for each section
+"""
+def indirect(j):
+	#edge cases
+	if (j == 0):
+		j = 5
+	elif (j == 1):
+		j = 1
+	#if the number is odd, divide by 2 and add 1 to represent the transceiver used. 
+	#The mathematics for this can be found in the README.
+	else:
+		if (j%2 ==  1):
+			j = j/2 + 1
+		else:
+			j = j/2  
+	return j
+
+"""
+Method_Name: object_transceiver_number
+params_type: int Center_Of_Object, width_of_frame 
+param_desc (Center_Of_Object): value of the center pixel location of the detected object
+param_desc (width_of_frame): value of the frame width determined from frame concat
+return_type: int normalized_x
+return_desc: normalized_x is the modified integer that represents the transceiver number to use for each section
+"""
+def obtain_transceiver_number(Center_Of_Object, width_of_frame):
+	#print("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
+	#print("X Location is {}, Y Location is {}".format(detection.Center[0], detection.Center[1]))
+	
+	#Use integer division to obtain a section that the object is detected in.
+	normalized_x = ((int(Center_Of_Object) / int(width_of_frame/10)))
+	normalized_x = indirect(normalized_x)
+	print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
+	return normalized_x
+
+
 # Define variables
 height = 360		# Change for production code. Only set to 360 such that the images will fit on screen
 width = 1280		# Change for production code. Only set to 1280 such that the images will fit on screen
@@ -35,8 +77,8 @@ display = jetson_utils.glDisplay()
 cap0 = Stream(0)
 cap1 = Stream(1)
 
-#abtract counter
-i = 0
+
+i = 0			#abtract counter
 
 while (display.IsOpen()):
 	# Read frames
@@ -59,10 +101,20 @@ while (display.IsOpen()):
 
 	img_2 = jetson_utils.cudaToNumpy(img)
 
-	#Draw the necessary figures on a separate image
-	im_line_1 = cv2.line(img_2, (int(width/4), 0), (int(width/4), height), (0,0,0), 5)
-	im_line_2 = cv2.line(im_line_1, (int(width/2), 0), (int(width/2), height), (0,0,0), 5)
-	im_finalized = cv2.line(im_line_2, ((3*int(width/4)), 0), ((3*int(width/4)), height), (0,0,0), 5)
+	starting_section = 3	#starting_section is the first section that will be modified after the initial frame is drawn on.
+	incrementer = 2		#incrementer is used to increment to control the incrementation at which the sections are chosen (i.e. 1/10 -> 3/10 -> 5/10) 
+	sections = 5		#number of sections to divide the frame into
+	division = 2 * sections #math to create the width of the divisions (width/(2*section)) or half the width of a section
+
+	#Create the initial line segment to use in the iterative loop
+	previous_line = cv2.line(img_2, (int(width/division), 0), (int(width/division), height), (0,0,0), 5)
+
+	#Loop that iteratively appends the previous frame with a new segment line until the entire frame has been covered
+	while(starting_section < division): 
+		im_line = cv2.line(previous_line, ((starting_section*int(width/division)), 0), ((starting_section*int(width/division)), height), (0,0,0), 5)
+		previous_line = im_line
+		starting_section = starting_section+incrementer
+	im_finalized = previous_line	
 
 	img_3 = jetson_utils.cudaFromNumpy(im_finalized)
 
@@ -74,15 +126,10 @@ while (display.IsOpen()):
 	# Using size, we can approximate distance
 	try:
 		for detection in detections:
-			#obtain trasnciever data every 10 iterations, Abstract and can be modified depending on efficiency
-			
-			if (i % 10) == 0:
-				#print("class {} found at ({}, {}, {}, {})".format(detection.ClassID, detection.Left, detection.Top, detection.Right, detection.Bottom))
-				#print("X Location is {}, Y Location is {}".format(detection.Center[0], detection.Center[1]))
-				
-				#Use integer division to obtain a section that the object is detected in.
-				normalized_x = (int(detection.Center[0]) / int(width/4))
-				print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
+			#obtain trasnciever data every 100 iterations, an abstract value and can be modified depending on efficiency
+			if (i % 100) == 0:
+				obtain_transceiver_number(detection.Center[0], width)
+
 	except SyntaxError as se:
 		print("Error reading detection: {}".format(se))
 		pass
@@ -91,3 +138,7 @@ while (display.IsOpen()):
 cap0.capture.release()
 cap1.capture.release()
 exit(1)
+
+
+
+
