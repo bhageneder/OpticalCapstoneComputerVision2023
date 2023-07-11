@@ -5,7 +5,7 @@ from Stream import Stream
 from threading import Thread
 
 class Detection:
-    # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names (e.g., video0, etc.)
+    # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names (e.g., [0, 1,...])
     def __init__(self, width, height, modelName, cameras):
         # Define private variables
         self.__width = width
@@ -21,7 +21,7 @@ class Detection:
         self.__captures = list(map(lambda x: Stream(x), cameras))
 
         # Runs a detection thread
-        self.thread = Thread(target = self.__detect, args = (), daemon=True)
+        self.thread = Thread(target = self.__detect, args = (), daemon=True, name="Detect")
         self.thread.start() 
 
     # Deconstructor releases camera captures
