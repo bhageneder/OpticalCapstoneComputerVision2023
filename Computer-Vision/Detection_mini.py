@@ -22,7 +22,7 @@ class Detection:
                 self.__captures = list(map(lambda x: Stream(x), cameras))
 
                 # Runs the detection method
-                self.__detect()
+                #self.__detect()
 
         # Deconstructor releases camera captures and destroys windows
         def __del__(self):
@@ -31,7 +31,7 @@ class Detection:
                         capture.capture.release()
 
         # Detection code runs in thread created on init
-        def __detect(self):
+        def detect(self):
                 while True:
                         # List of current frames
                         frames = list(map(lambda x: x.getFrame(), self.__captures))
@@ -79,8 +79,8 @@ class Detection:
                             if cv2.waitKey(1) & 0xFF == ord('q'):
                                 cv2.destroyAllWindows()
                                 break
-                        
-                        self.getTransceiver()
+
+                        #self.getTransceiver()
 
         # Choose the transceiver number
         def getTransceiver(self):
