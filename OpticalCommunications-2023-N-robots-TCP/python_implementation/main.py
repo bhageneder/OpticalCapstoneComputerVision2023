@@ -23,13 +23,13 @@ import neopixel
 import led_manager as lc
 sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/Computer-Vision")
 from Detection import Detection
-sys.path.append("/home/pi/repos/OpticalCommunications-2023/control_robot")
+sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/control_robot")
 from play_sound import play_button_sound, play_sad_sound, play_connected_sound
 from move_circle import move_circle
 
 def main():
     # Clear robot_link_data directory
-    link_files = glob.glob('/home/pi/repos/OpticalCommunications-2023/python_implementation/robot_link_packets/*')
+    link_files = glob.glob('/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/python_implementation/robot_link_packets/*')
     for f in link_files:
         os.remove(f)
 
