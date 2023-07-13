@@ -6,10 +6,12 @@ from Stream import Stream
 # Must be called in its own thread
 class Detection:
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
-        def __init__(self, width, height, modelName, cameras, render):
+        def __init__(self, width, height, modelName, cameras, render = False, debug = False):
                 self.__width = width
                 self.__height = height
                 self.__render = render
+                self.__current_transceiver = -1
+                self.__debug = debug
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
@@ -117,15 +119,19 @@ class Detection:
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
                         normalized_x = int(((int(Center_Of_Object) / int(width_of_frame/10))))
-                        print("normalized_x before indirect is {}".format(normalized_x))
+                        #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
                         normalized_x = indirect(normalized_x)
-                        print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
                         return normalized_x                
                
                 # Placeholder code
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
                                 transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
-                                return transceiver_number
-                return -1
+                                self.__current_transceiver = transceiver_number
+                                if (self.__debug):        
+                                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
+                                return transceiver_number                            
+                if (self.__debug):
+                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
+                return self.__current_transceiver
                         
