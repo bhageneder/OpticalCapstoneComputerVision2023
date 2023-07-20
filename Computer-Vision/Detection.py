@@ -6,10 +6,12 @@ from Stream import Stream
 # Must be called in its own thread
 class Detection:
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
-        def __init__(self, width, height, modelName, cameras, render):
+        def __init__(self, width, height, modelName, cameras, render = False, debug = False):
                 self.__width = width
                 self.__height = height
                 self.__render = render
+                self.__current_transceiver = -1
+                self.__debug = debug
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
@@ -22,15 +24,16 @@ class Detection:
                 self.__captures = list(map(lambda x: Stream(x), cameras))
 
                 # Runs the detection method
-                self.__detect()
+                #self.__detect()
 
-        # Deconstructor releases camera captures
+        # Deconstructor releases camera captures and destroys windows
         def __del__(self):
+                cv2.destroyAllWindows()
                 for capture in self.__captures:
                         capture.capture.release()
 
         # Detection code runs in thread created on init
-        def __detect(self):
+        def detect(self):
                 while True:
                         # List of current frames
                         frames = list(map(lambda x: x.getFrame(), self.__captures))
@@ -45,29 +48,41 @@ class Detection:
                         #Object Detection
                         self.__detections = self.__net.Detect(img, self.__width, self.__height)
 
-                        img_2 = jetson_utils.cudaToNumpy(img)
+                        # Only do this if we want a rendered output for debugging                        
+                        if self.__render:                       
+                            # Convert the image to Numpy format
+                            img_2 = jetson_utils.cudaToNumpy(img)
                         
-                        starting_section = 3 # Section modified after first line is drawn
-                        incrementer = 2 # Increment to control the increase at which sections are chosen (i.e. 1/10 -> 3/10 -> 5/10)
-                        sections = 5
-                        division = 2 * sections # Create the width of the divison (width/2*section)) or half the width of a section
-                        
-                        # Create the initial line segment ot use in the iterative loop
-                        previous_line = cv2.line(img_2, (int(self.__width/division), 0), (int(self.__width/division), self.__height), (0,0,0), 5)
+                            starting_section = 3 # Section modified after first line is drawn
+                            incrementer = 2 # Increment to control the increase at which sections are chosen (i.e. 1/10 -> 3/10 -> 5/10)
+                            sections = 5
+                            division = 2 * sections # Create the width of the divison (width/2*section)) or half the width of a section
+                            
+                            # Create the initial line segment ot use in the iterative loop
+                            previous_line = cv2.line(img_2, (int(self.__width/division), 0), (int(self.__width/division), self.__height), (0,0,0), 5)
 
-                        # Loop to append previous frame with new segment line until entire frame is covered
-                        while(starting_section < division):
-                                im_line = cv2.line(previous_line, ((starting_section*int(self.__width/division)), 0), ((starting_section*int(self.__width/division)), self.__height), (0,0,0), 5)
-                                previous_line = im_line
-                                starting_section = starting_section + incrementer
-                        im_finalized = previous_line
-                        
-                        img_3 = jetson_utils.cudaFromNumpy(im_finalized)
+                            # Loop to append previous frame with new segment line until entire frame is covered
+                            while(starting_section < division):
 
-                        if self.__render:
-                                self.__display.RenderOnce(img, width = self.__width, height = self.__height, normalize=0, format='rgb8')
-                                self.__display.SetTitle("Object Detection | Network {:.0f} FPS".format(self.__net.GetNetworkFPS()))
-                        self.getTransceiver()
+                                    im_line = cv2.line(previous_line, ((starting_section*int(self.__width/division)), 0), ((starting_section*int(self.__width/division)), self.__height), (0,0,0), 5)
+                                    previous_line = im_line
+                                    starting_section = starting_section + incrementer
+
+                            # Convert the image to correct color format
+                            im_finalized = cv2.cvtColor(previous_line, cv2.COLOR_RGBA2BGR)
+
+                            # Output image to the display
+                            cv2.imshow('Detection', im_finalized)
+
+                            # Set the title of the window (Cannot do it above, it will render many windows)
+                            cv2.setWindowTitle("Detection", "Object Detection | Network {:.0f} FPS".format(self.__net.GetNetworkFPS()))
+
+                            # Close the display and break out of the loop if 'q' is pressed
+                            if cv2.waitKey(1) & 0xFF == ord('q'):
+                                cv2.destroyAllWindows()
+                                break
+
+                        #self.getTransceiver()
 
         # Choose the transceiver number
         def getTransceiver(self):
@@ -104,14 +119,19 @@ class Detection:
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
                         normalized_x = int(((int(Center_Of_Object) / int(width_of_frame/10))))
-                        print("normalized_x before indirect is {}".format(normalized_x))
+                        #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
                         normalized_x = indirect(normalized_x)
-                        print("The Ball is in Section {}, Using transceiver {}".format(normalized_x, normalized_x))
                         return normalized_x                
                
                 # Placeholder code
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
                                 transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
-                                return transceiver_number
-                return -1
+                                self.__current_transceiver = transceiver_number
+                                if (self.__debug):        
+                                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
+                                return transceiver_number                            
+                if (self.__debug):
+                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
+                return self.__current_transceiver
+                        

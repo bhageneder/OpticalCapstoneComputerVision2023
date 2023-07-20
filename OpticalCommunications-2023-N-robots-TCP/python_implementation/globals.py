@@ -114,7 +114,7 @@ def init():
     
     # The name of the robot running the program
     global robot
-    with open("/home/pi/robotName.txt", "r") as f:
+    with open("/home/sa/robotName.txt", "r") as f:
         robot = (f.read()).strip()
 
     global PING_COUNT
@@ -156,7 +156,7 @@ def init():
     # Set the expected number of robots 
     # (determines how many threads will be run, modifies discovery behavior greatly)
     global EXPECTED_NUMBER_OF_ROBOTS
-    EXPECTED_NUMBER_OF_ROBOTS = 2
+    EXPECTED_NUMBER_OF_ROBOTS = 3
     
     global POSSIBLE_ROBOT_IP_ADDRESSES
     POSSIBLE_ROBOT_IP_ADDRESSES = []
@@ -187,7 +187,7 @@ def init():
         POSSIBLE_SENDING_ROBOT_PORTS.append(str(i))
     
     # Setup Serial Line Interface Protocol (SLIP), and create virtual serial ports
-    subprocess.run(['/home/pi/repos/OpticalCommunications-2023/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
+    subprocess.run(['/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     
     global serial_ports

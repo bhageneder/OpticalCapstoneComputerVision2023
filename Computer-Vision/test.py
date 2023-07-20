@@ -1,7 +1,30 @@
 from Detection import Detection
 from threading import Thread
+import time
+from datetime import datetime
+import matplotlib.pyplot as plt
 
-self.thread = Thread(target = Detection(1280, 360, "Balls_2", [0,1], True), args = (), daemon=True, name="Detect")
-self.thread.start() 
-while(True):
-	continue
+detection = Detection(1280, 360, "Balls_2", [1,0], True, True)
+
+
+thread = Thread(target = detection.detect, args = (), daemon=True, name="Detect")
+
+thread.start()
+
+time.sleep(5)
+time_difference = []
+iterations = []
+counter = 0
+try:
+    while(True):
+        try:        
+            start_time = datetime.now().timestamp()        
+            transceiver = detection.getTransceiver()
+            time_difference.append(float(datetime.now().timestamp() - start_time))
+            iterations.append(counter) 
+            counter = counter + 1
+        except AttributeError as ae:
+            time.sleep(0.5)
+except KeyboardInterrupt:
+    plt.plot(iterations, time_difference)
+    plt.show()
