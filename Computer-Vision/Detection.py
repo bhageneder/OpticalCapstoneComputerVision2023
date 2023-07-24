@@ -28,10 +28,11 @@ class Detection:
 
         # Deconstructor releases camera captures and destroys windows
         def __del__(self):
+                for cap in self.__captures:
+                        cap.capture.release()
+                        print("Released")
                 cv2.destroyAllWindows()
-                for capture in self.__captures:
-                        capture.capture.release()
-
+               
         # Detection code runs in thread created on init
         def detect(self):
                 while True:
