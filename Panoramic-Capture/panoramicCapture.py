@@ -40,7 +40,7 @@ def main():
             print("Taking picture...")
 
             # Write the image
-            name = str(datetime.datetime.now()).replace(" ", "_") + ".jpg"
+            name = str(datetime.datetime.now()).replace(" ", "_").replace(".", ":") + ".jpg"
             cv2.imwrite(name, img)
 
             print("Success!")
