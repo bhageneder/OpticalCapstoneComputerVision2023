@@ -10,13 +10,16 @@ def main():
     # Open Camera Captures
     streams = []
     for i in range(3):
-        streams.append(Stream(i))
+        if(i >= 1):
+            streams.append(Stream(i))
 
     time.sleep(5)
 
     # Set Directory
     dir = os.getcwd() + "/images"
     os.chdir(dir)
+    
+    i = 0
 
     while(True):
         # Get frames from each camera
@@ -27,10 +30,26 @@ def main():
         # Concatenate into one frame
         img = cv2.hconcat(frames)
 
-        # Write the image
-        cv2.imwrite(datetime.datetime.now().replace(" ", "_"), img)
+        # Output image to the display
+        cv2.imshow('Panorama', img)
 
-        time.sleep(5)
+        # Close the display and break out of the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+        elif cv2.waitKey(1) & 0xFF == ord('y'):
+            print("Taking picture...")
+
+            # Write the image
+            name = str(datetime.datetime.now()).replace(" ", "_") + ".jpg"
+            cv2.imwrite(name, img)
+
+            print("Success!")
+
+    for stream in streams:
+        stream.capture.release()
+        print("released")
+
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
