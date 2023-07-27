@@ -1,6 +1,7 @@
 from Detection import Detection
 from threading import Thread
 from UART import UART 
+import time
 
 ##### Sends the Transceiver Assignment over UART to the Pi #####
 def main():
@@ -21,16 +22,22 @@ def main():
 
     # Initialize UART
     connection = UART()
-
-    # Infinite Loop to Send Data
-    while(True):       
-        try:	
+    
+    try:
+        # Infinite Loop to Send Data
+        while(True):       
+            	
             transceiver = detection.getTransceiver()
-            connection.send(transceiver)
-        except KeyboardInterrupt:
-            break
-        except:
-            print("Detection Error") 
+            if(connection.send(transceiver) != 0):
+                print("UART Send Failed")
+            
+            # Sleep
+            time.sleep(0.01)            
+
+    except KeyboardInterrupt:
+        pass
+    except:
+        print("Get Transceiver or Send Error") 
 
     # Close Serial Connection
     connection.close()

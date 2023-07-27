@@ -85,7 +85,8 @@ class Detection:
                                 break
 
                         #self.getTransceiver()
-                self.initializing = False
+                        
+                        self.initializing = False
 
         # Choose the transceiver number
         def getTransceiver(self):

@@ -20,10 +20,10 @@ class UART:
     # Send Data to the Pi
     def send(self, num):
         try:
-            self.__serial_port.write(str(num).encode("ascii", "ignore"))
+            self.__serial_port.write((str(num)+ "\r\n").encode("ascii", "ignore"))
             return 0
         except:
-            return 1
+            return -1
         
     # Close Connection
     def close(self):
