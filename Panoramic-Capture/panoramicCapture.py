@@ -8,9 +8,9 @@ from Stream import Stream
 
 def main():
     # Open Camera Captures
-    streams = []
-    for i in range(1, 3):
-        streams.append(Stream(i))
+    streams = [Stream(1), Stream(0)]
+    #for i in range(1, 3):
+    #    streams.append(Stream(i))
 
     time.sleep(5)
 
@@ -61,7 +61,7 @@ def main():
         img = cv2.hconcat(frames)
 
         # Output image to the display
-        cv2.imshow('Panorama', img)
+        cv2.imshow('Panorama', cv2.resize(img, (1280, 360)))
 
         # Close the display and break out of the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
