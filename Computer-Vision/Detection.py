@@ -7,6 +7,7 @@ from Stream import Stream
 class Detection:
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
         def __init__(self, width, height, modelName, cameras, render = False, debug = False):
+                self.initializing = True
                 self.__width = width
                 self.__height = height
                 self.__render = render
@@ -84,6 +85,7 @@ class Detection:
                                 break
 
                         #self.getTransceiver()
+                self.initializing = False
 
         # Choose the transceiver number
         def getTransceiver(self):
