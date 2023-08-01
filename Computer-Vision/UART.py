@@ -13,14 +13,13 @@ class UART:
         )
 
         # Wait for Serial Port to Initialize
-        while(True):
-            if(self.__serial_port.is_open):
-                break
+        while(not self.__serial_port.is_open):
+            continue
     
     # Send Data to the Pi
     def send(self, num):
         try:
-            self.__serial_port.write((str(num)+ "\r\n").encode("ascii", "ignore"))
+            self.__serial_port.write((str(num)).encode("ascii", "ignore"))
             return 0
         except:
             return -1
