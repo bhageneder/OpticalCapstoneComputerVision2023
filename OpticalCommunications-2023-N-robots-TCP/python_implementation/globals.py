@@ -86,6 +86,12 @@ def init():
     global discovery_thread
     discovery_thread = None
     
+    global uart_thread
+    uart_thread = None
+
+    global uart_connection
+    uart_connection = None
+    
     # Queue for data that is received by all transceivers
     global data_received
     data_received = queue.Queue()
@@ -114,7 +120,7 @@ def init():
     
     # The name of the robot running the program
     global robot
-    with open("/home/sa/robotName.txt", "r") as f:
+    with open("/home/pi/robotName.txt", "r") as f:
         robot = (f.read()).strip()
 
     global PING_COUNT
@@ -187,7 +193,7 @@ def init():
         POSSIBLE_SENDING_ROBOT_PORTS.append(str(i))
     
     # Setup Serial Line Interface Protocol (SLIP), and create virtual serial ports
-    subprocess.run(['/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
+    subprocess.run(['/home/pi/repos/OpticalCommunications-2023/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     
     global serial_ports

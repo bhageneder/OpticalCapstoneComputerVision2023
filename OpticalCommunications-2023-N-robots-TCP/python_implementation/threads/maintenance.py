@@ -9,12 +9,16 @@ def maintenance(robot_link):
     thread_name = threading.current_thread().name
     transceiver_set = False
     while True:
+        """
         best_transceiver_number = multi_ping(
             robot_link.ip_address, 
             globals.PING_COUNT, 
             globals.PING_INTERVAL,
             globals.PING_TIMEOUT,
         )
+        """
+        
+        best_transceiver_number = globals.uart_connection.getTransceiver()
 
         # If the socket failed to open, multi_ping will return -1. 
         # In that case, try again.
@@ -22,6 +26,7 @@ def maintenance(robot_link):
             continue
 
         current_transceiver_number = globals.serial_ports.index(robot_link.serial_port)
+              
         
         if current_transceiver_number != best_transceiver_number or not transceiver_set:
             transceiver_set = True
