@@ -122,9 +122,10 @@ class Detection:
                 """
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
-                        normalized_x = int(((int(Center_Of_Object) / int(width_of_frame/10))))
+                        normalized_x = int(int(Center_Of_Object) / int(width_of_frame/10))
                         #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
                         normalized_x = indirect(normalized_x)
+                        normalized_x -= 1
                         return normalized_x                
                
                 for detection in self.__detections:
