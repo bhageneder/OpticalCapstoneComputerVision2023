@@ -38,14 +38,28 @@ def send_manager():
         # then it is a mini_discovery or listen_for_connection packet.
         # Send it through all transceivers to find the other robots.
         if packet_summary.tcp_flags == 'S':
-            if globals.debug_send_manager: print(f'{thread_name}: Sending SYN Through All Transceivers')
-            for i in range(len(globals.serial_ports)):
-                globals.transceiver_send_queues[i].put(packet)
+            #if globals.debug_send_manager: print(f'{thread_name}: Sending SYN Through All Transceivers')
+            #for i in range(len(globals.serial_ports)):
+            #    globals.transceiver_send_queues[i].put(packet)
+            
+            # Send SYN Through Specific Transceiver
+            transceiver = globals.uart_connection.getTransceiver()
+            if (transceiver != -1):
+                if globals.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Specific Transceiver {transceiver}"')
+                globals.transceiver_send_queues[transceiver].put(packet)
+
             continue
         elif packet_summary.tcp_flags == 'SA':
-            if globals.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through All Transceivers')
-            for i in range(len(globals.serial_ports)):
-                globals.transceiver_send_queues[i].put(packet)
+            #if globals.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through All Transceivers')
+            #for i in range(len(globals.serial_ports)):
+            #    globals.transceiver_send_queues[i].put(packet)
+
+            # Send SYN-ACK Through Specific Transceiver
+            transceiver = globals.uart_connection.getTransceiver()
+            if (transceiver != -1):
+                if globals.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Specific Transceiver {transceiver}"')
+                globals.transceiver_send_queues[transceiver].put(packet)
+
             continue
         
         # If the Packet is not an ICMP Ping Packet, send payload through specific transceiver 

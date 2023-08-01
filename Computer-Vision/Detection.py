@@ -113,7 +113,7 @@ class Detection:
                         return int(j)
 
                 """
-                Method_Name: object_transceiver_number
+                Method_Name: obtain_transceiver_number
                 params_type: int Center_Of_Object, width_of_frame
                 param_desc (Center_Of_Object): value of the center pixel location of the detect object
                 param_desc (width_of_frame): value of the frame width determined from frame concat
@@ -127,7 +127,6 @@ class Detection:
                         normalized_x = indirect(normalized_x)
                         return normalized_x                
                
-                # Placeholder code
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
                                 transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
