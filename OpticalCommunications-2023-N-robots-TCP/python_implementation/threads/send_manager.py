@@ -44,6 +44,7 @@ def send_manager():
             
             # Send SYN Through Specific Transceiver
             transceiver = globals.uart_connection.getTransceiver()
+            print("Trying to Discover on Transciever: " + str(transceiver))
             if (transceiver != -1):
                 if globals.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Specific Transceiver {transceiver}"')
                 globals.transceiver_send_queues[transceiver].put(packet)
