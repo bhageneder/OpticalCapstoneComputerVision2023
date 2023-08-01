@@ -4,7 +4,7 @@ import threading
 from threads.mini_discovery import mini_discovery
 
 # There are (8 * (n - 1)) total threads to be run, but we are only running 7 at a time
-# (n - 1) possible IP addresses (not including our own), and 8 possible ports. (n - 1) * 8 = 56
+# (n - 1) possible IP addresses (not including our own), and 8 possible ports. (n - 1) * 8
 # Where n is the number of expected robots
 def discovery():
     thread_name = threading.current_thread().name

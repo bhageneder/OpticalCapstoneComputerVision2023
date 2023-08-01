@@ -5,8 +5,8 @@ import sys
 sys.path.append('./')
 from robot_link import RobotLink
 
-# For 8 Robots:
-# 7 possible IP addresses (not including our own), and 8 possible ports. 7 * 8 = 56 threads need to be ran
+# For n Robots:
+# n - 1 possible IP addresses (not including our own), and 8 possible ports. (n - 1) * 8 threads need to be ran
 def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
     thread_name = threading.current_thread().name
     # Open a TCP socket
