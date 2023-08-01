@@ -86,6 +86,12 @@ def init():
     global discovery_thread
     discovery_thread = None
     
+    global uart_thread
+    uart_thread = None
+
+    global uart_connection
+    uart_connection = None
+    
     # Queue for data that is received by all transceivers
     global data_received
     data_received = queue.Queue()
@@ -156,7 +162,7 @@ def init():
     # Set the expected number of robots 
     # (determines how many threads will be run, modifies discovery behavior greatly)
     global EXPECTED_NUMBER_OF_ROBOTS
-    EXPECTED_NUMBER_OF_ROBOTS = 2
+    EXPECTED_NUMBER_OF_ROBOTS = 3
     
     global POSSIBLE_ROBOT_IP_ADDRESSES
     POSSIBLE_ROBOT_IP_ADDRESSES = []

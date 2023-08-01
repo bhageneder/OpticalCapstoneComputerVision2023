@@ -9,6 +9,7 @@ from threads.receive_manager import receive_manager
 from threads.send_manager import send_manager
 from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
+from threads.ReceiveUART import ReceiveUART
 from robot_link import RobotLink
 import globals
 import time
@@ -80,6 +81,10 @@ def main():
     
     # Creating Receive Manager Thread
     globals.receive_manager_thread = threading.Thread(target=receive_manager, daemon=True, name=f"Receive_Manager")
+    
+    # Creating Uart thread from Nano to Pi
+    globals.uart_connection = ReceiveUART("/dev/ttyUSB9")  # hard coded USB port  
+    globals.uart_thread = threading.Thread(target=globals.uart_connection.readSerial, daemon=True, name=f"uart")
 
     start_threads()
     
@@ -94,7 +99,7 @@ def start_threads():
         
     # Running Listen For Connection Threads
     for listen_for_connection_thread in globals.listen_for_connection_threads:
-        listen_for_connection_thread.start()
+        listen_for_connection_thread.start()   
     
 
     # TODO: Fix Current Bug: For Sending a Payload, If both Robots Run the Discovery Thread, then
@@ -108,6 +113,8 @@ def start_threads():
     
     # Running Send Manager Thread
     globals.send_manager_thread.start()
+    
+    globals.uart_thread.start()
     
     # Running New Threads based on new Robot Links
     while True:

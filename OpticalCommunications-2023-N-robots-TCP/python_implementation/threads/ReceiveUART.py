@@ -9,7 +9,7 @@ class ReceiveUART():
     def readSerial(self):
         output = " "
         while output != "":
-            self.__connection.readline().decode("ascii", "ignore")
+            self.__transceiver = int(self.__connection.readline().decode("ascii", "ignore").replace("\r\n",""))
 
     def getTransceiver(self):
-        return self.__data
+        return self.__transceiver
