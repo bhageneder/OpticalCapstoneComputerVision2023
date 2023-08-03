@@ -124,7 +124,6 @@ class Detection:
                         normalized_x = int(int(Center_Of_Object) / int(width_of_frame/self.__division))
                         #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
                         normalized_x = indirect(normalized_x)
-                        normalized_x -= 1
                         return normalized_x                
                
                 for detection in self.__detections:
