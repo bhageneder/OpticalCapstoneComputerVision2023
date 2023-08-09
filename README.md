@@ -24,6 +24,6 @@ Press q to quit.
 - For each camera, the FOV is 120 degrees
 - For each transceiver, the FOV is 45 degrees
 - Sectioning the frame into x sections where x is the cieled integer value of 2.5 * # of cameras. This allowed the proper amount of trasnceviers to fit into the frame based on the number of cameras utilized.
-- Further dividing each section into 2 divisions allows for higher accuracy. Since 2 divisions exist for each section, when dividing by 2, the integer result (if odd) exists in the previous section rather than current. Therefore it is necessary to add one to the divsion such that both divisions now exist in the same section.
+- Implmenting each section into frame width w and further dividing each section into 2 divisions allows for higher accuracy. Since 2 divisions exist for each section, when dividing by 2, the integer result (if odd) exists in the previous section rather than current. Therefore it is necessary to add one to the divsion such that both divisions now exist in the same section.
 - The value returned minus 1 is the best trasnceiver value.
 - Update the current_transceiver variable for memory retention and return value to main function. 
