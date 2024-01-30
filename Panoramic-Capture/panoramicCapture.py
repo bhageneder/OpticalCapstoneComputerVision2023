@@ -42,14 +42,14 @@ def main():
     if not os.path.isdir(imgPath):
         os.mkdir(imgPath)
 
-    if not os.path.isdir(annPath):
-        os.mkdir(annPath)
+    #if not os.path.isdir(annPath):
+      #  os.mkdir(annPath)
 
-    if not os.path.isdir(setsPath):
-        os.mkdir(setsPath)
+    #if not os.path.isdir(setsPath):
+     #   os.mkdir(setsPath)
 
-    if not os.path.isdir(setsPathMain):
-        os.mkdir(setsPathMain)
+    #if not os.path.isdir(setsPathMain):
+     #   os.mkdir(setsPathMain)
     
     
     # Keep going until the user quits
@@ -63,7 +63,7 @@ def main():
         img = cv2.hconcat(frames)
 
         # Output image to the display
-        cv2.imshow('Panorama', cv2.resize(img, (1280, 180y)))
+        cv2.imshow('Panorama', cv2.resize(img, (1280, 240)))
 
         # Close the display and break out of the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
