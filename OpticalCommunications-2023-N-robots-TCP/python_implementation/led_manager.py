@@ -38,10 +38,10 @@ def illuminate(transceiver, color1, color2=None, color3=None):
         globals.pixels[transceiver*3+1] = color2
         globals.pixels[transceiver*3+2] = color3
 
-def illuminate_for_receiving(transceiver_number):
+def illuminate_for_finding(transceiver_number):
         globals.pixels[transceiver_number * 3] = red
 
-def turn_off_for_receiving(transceiver_number):
+def turn_off_for_finding(transceiver_number):
         globals.pixels[transceiver_number * 3] = off
 
 def illuminate_for_robot_link(transceiver_number):
@@ -50,10 +50,10 @@ def illuminate_for_robot_link(transceiver_number):
 def turn_off_for_robot_link(transceiver_number):
         globals.pixels[transceiver_number * 3 + 1] = off
 
-def illuminate_for_sending(transceiver_number):
+def illuminate_for_connecting(transceiver_number):
         globals.pixels[transceiver_number * 3 + 2] = blue
 
-def turn_off_for_sending(transceiver_number):
+def turn_off_for_connecting(transceiver_number):
         globals.pixels[transceiver_number * 3 + 2] = off
 
 def transmitting(transceiver):

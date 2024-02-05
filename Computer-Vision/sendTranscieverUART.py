@@ -16,9 +16,8 @@ def main():
     thread.start()
 
     # Wait Until Detection is Initialized
-    while True:
-        if(not detection.initializing):
-            break
+    while detection.initializing:
+        continue
 
     # Initialize UART
     connection = UART()

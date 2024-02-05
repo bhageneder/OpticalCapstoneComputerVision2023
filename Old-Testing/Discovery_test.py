@@ -14,10 +14,12 @@ class Detection:
                 self.__render = render
                 self.__current_transceiver = -1
                 self.__debug = debug
-                self.__cameras = cameras
-                self.__sections = math.ceil(2.5*len(cameras))
+
+                self.__starting_section = 3 # Section modified after first line is drawn
+                self.__incrementer = 2 # Increment to control the increase at which sections are chosen (i.e. 1/10 -> 3/10 -> 5/10)
+                self.__sections = math.ceil(2.5*len(cameras)) # Rounding up the sections to match the frames provided (2.5->3, 5->5, 7.5->8)
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
-                
+
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
                 
@@ -58,21 +60,18 @@ class Detection:
                         if self.__render:                       
                             # Convert the image to Numpy format
                             img_2 = jetson_utils.cudaToNumpy(img)
-                        
-                            starting_section = 3 # Section modified after first line is drawn
-                            incrementer = 2 # Increment to control the increase at which sections are chosen (i.e. 1/10 -> 3/10 -> 5/10)
                             
                             # Create the initial line segment ot use in the iterative loop
-                            previous_line = cv2.line(img_2, (int(self.__width/self.__division), 0), (int(self.__width/self.__division), self.__height), (0,0,0), 5)
+                            cv2.line(img_2, (int(self.__width/self.__division), 0), (int(self.__width/self.__division), self.__height), (0,0,0), 5)
 
                             # Loop to append previous frame with new segment line until entire frame is covered
-                            while(starting_section < self.__division):
+                            while(self.__starting_section < self.__division):
 
-                                    cv2.line(previous_line, ((starting_section*int(self.__width/self.__division)), 0), ((starting_section*int(self.__width/self.__division)), self.__height), (0,0,0), 5)
-                                    starting_section = starting_section + incrementer
+                                    cv2.line(img_2, ((self.__starting_section*int(self.__width/self.__division)), 0), ((self.__starting_section*int(self.__width/self.__division)), self.__height), (0,0,0), 5)
+                                    self.__starting_section = self.__starting_section + self.__incrementer
 
                             # Convert the image to correct color format
-                            im_finalized = cv2.cvtColor(previous_line, cv2.COLOR_RGBA2BGR)
+                            im_finalized = cv2.cvtColor(img_2, cv2.COLOR_RGBA2BGR)
 
                             # Output image to the display
                             cv2.imshow('Detection', im_finalized)
@@ -97,10 +96,10 @@ class Detection:
                 params_type: int j
                 param_desc: j is the integer division from the center location of the object and the frame division
                 return_type: int j
-                return_desc: j is the modified integer that represents the transceiver number to use for each section in range [0:7]
+                return_desc: j is the modified integer that represents the transceiver number to use for each section from the range [0:7]
                 """
                 def indirect(j):
-                        # Edge Cases
+                        # Edge Cases when object enters 0~22.5 degrees of panoramic which would be the final half of the last transceivers 45 degree FOV
                         if (j == 0):
                                 j = self.__sections
                         # Mathematics found in the ReadME for logic
@@ -124,6 +123,7 @@ class Detection:
                         normalized_x = int(int(Center_Of_Object) / int(width_of_frame/self.__division))
                         #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
                         normalized_x = indirect(normalized_x)
+                        normalized_x -= 1
                         return normalized_x                
                
                 for detection in self.__detections:
@@ -136,4 +136,3 @@ class Detection:
                 if (self.__debug):
                     print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
                 return self.__current_transceiver
-                        
