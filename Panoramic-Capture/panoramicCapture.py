@@ -8,7 +8,9 @@ from Stream import Stream
 
 def main():
     # Open Camera Captures
-    streams = [Stream(1), Stream(0)]
+    camSet1 = 'nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=30/1 ! nvvidconv flip-method="2" ! video/x-raw, width=1280, height=720, format=(string)BGRx ! videoconvert ! appsink'
+    
+    streams = [Stream(camSet1), Stream(2), Stream(1)]
     #for i in range(1, 3):
     #    streams.append(Stream(i))
 
@@ -40,14 +42,14 @@ def main():
     if not os.path.isdir(imgPath):
         os.mkdir(imgPath)
 
-    if not os.path.isdir(annPath):
-        os.mkdir(annPath)
+    #if not os.path.isdir(annPath):
+      #  os.mkdir(annPath)
 
-    if not os.path.isdir(setsPath):
-        os.mkdir(setsPath)
+    #if not os.path.isdir(setsPath):
+     #   os.mkdir(setsPath)
 
-    if not os.path.isdir(setsPathMain):
-        os.mkdir(setsPathMain)
+    #if not os.path.isdir(setsPathMain):
+     #   os.mkdir(setsPathMain)
     
     
     # Keep going until the user quits
@@ -61,7 +63,7 @@ def main():
         img = cv2.hconcat(frames)
 
         # Output image to the display
-        cv2.imshow('Panorama', cv2.resize(img, (1280, 360)))
+        cv2.imshow('Panorama', cv2.resize(img, (1280, 240)))
 
         # Close the display and break out of the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -84,24 +86,24 @@ def main():
             
             ### Draw Bounding Box ###
             # Select Region of Interest
-            roi = cv2.selectROI(img)            
-            print(roi)
+            #roi = cv2.selectROI(img)            
+            #print(roi)
 
             # Destroy the ROI window
-            cv2.destroyAllWindows()
+            #cv2.destroyAllWindows()
 
             ### Save Data into XML File (Make Annotations) ###
             # Change Directory
-            os.chdir(annPath)
+            #os.chdir(annPath)
 
             # Need to remove .jpg from the name of the image first
-            nameNoJPG = name.replace(".jpg", "")
+            #nameNoJPG = name.replace(".jpg", "")
 
             # Make the File
-            xmlFile = open(nameNoJPG + ".xml", "x")   # Makes an XML file with name = name, permissions = x [create]
+            #xmlFile = open(nameNoJPG + ".xml", "x")   # Makes an XML file with name = name, permissions = x [create]
             
             # Write output to file
-            xmlFile.write(f'''
+            """xmlFile.write(f'''
 <annotation>
     <filename>{name}</filename>
     <folder>{folder}</folder>
@@ -128,20 +130,20 @@ def main():
             <ymax>{roi[3]}</ymax>
         </bndbox>
     </object>
-</annotation>''')            
+</annotation>''')"""            
             
             # Close file
-            xmlFile.close()
+            #xmlFile.close()
 
             ### Add the Image to the Train.txt Image Set
             # Change Directory
-            os.chdir(setsPathMain)
+            #os.chdir(setsPathMain)
 
             # Append Train.txt, Create it if it Doesn't Exist
             trainFile = open("Train.txt", "a")
             
             # Write to Train.txt
-            trainFile.write(nameNoJPG + "\n")
+            trainFile.write(name + "\n")
             
             # Close Train.txt
             trainFile.close()

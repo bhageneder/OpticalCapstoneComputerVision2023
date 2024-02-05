@@ -12,7 +12,7 @@ class Detection:
                 self.__width = width
                 self.__height = height
                 self.__render = render
-                self.__current_transceiver = -1
+                self.__current_transceiver = 8
                 self.__debug = debug
                 self.__cameras = cameras
                 self.__sections = math.ceil(2.5*len(cameras))
@@ -129,6 +129,11 @@ class Detection:
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
                                 transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
+                                if (transceiver_number < 4):
+                                    transceiver_number += 4
+                                else:
+                                    transceiver_number -= 4
+
                                 self.__current_transceiver = transceiver_number
                                 if (self.__debug):        
                                     print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
