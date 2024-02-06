@@ -4,8 +4,7 @@ import cv2
 import math
 from Stream import Stream
 
-# Must be called in its own thread
-class Detection:
+class Detector:
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
         def __init__(self, width, height, modelName, cameras, render = False, debug = False):
                 self.initializing = True
@@ -38,7 +37,7 @@ class Detection:
                         print("Released")
                 cv2.destroyAllWindows()
                
-        # Detection code runs in thread created on init
+        # Detect Method: Call this method in its own thread
         def detect(self):
                 while True:
                         # List of current frames
