@@ -5,6 +5,7 @@ import math
 from Stream import Stream
 
 class Detector:
+        # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
         def __init__(self, width, height, modelName, cameras, render = False, debug = False):
                 self.initializing = True
@@ -27,15 +28,15 @@ class Detector:
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
 
-                # Runs the detection method
-                #self.__detect()
-
-        # Deconstructor releases camera captures and destroys windows
+        # Destructor
+        # Releases camera captures and destroys windows
         def __del__(self):
                 for cap in self.__captures:
                         cap.capture.release()
                         print("Released")
                 cv2.destroyAllWindows()
+
+        #### Public Methods ####
 
         # Transceiver Getter
         def getTransceiver(self):
@@ -70,7 +71,6 @@ class Detector:
 
                             # Loop to append previous frame with new segment line until entire frame is covered
                             while(starting_section < self.__division):
-
                                     cv2.line(previous_line, ((starting_section*int(self.__width/self.__division)), 0), ((starting_section*int(self.__width/self.__division)), self.__height), (0,0,0), 5)
                                     starting_section = starting_section + incrementer
 
@@ -88,12 +88,14 @@ class Detector:
                                 cv2.destroyAllWindows()
                                 break
 
-                        self.updateTransceiver()
+                        self.__updateTransceiver()
                         
                         self.initializing = False
 
-        # Update the transceiver number
-        def updateTransceiver(self):
+        #### Private Helper Methods ####
+
+        # Helper method to update the transceiver number
+        def __updateTransceiver(self):
                 """
                 Function_Name: obtain_transceiver_number
                 params_type: int Center_Of_Object, width_of_frame
@@ -127,6 +129,8 @@ class Detector:
                         return section                
                 
                 # Loop through the detections, update the transceiver number when there is a robot detected
+                # Note that this is a temporary implementation, we should, in the future attempt to communicate with all robots...
+                # ...using all sections that a robot is found in, not just the last one in the list
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
                                 self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
