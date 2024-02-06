@@ -36,6 +36,10 @@ class Detector:
                         cap.capture.release()
                         print("Released")
                 cv2.destroyAllWindows()
+
+        # Transceiver Getter
+        def getTransceiver(self):
+               return self.__current_transceiver
                
         # Detect Method: Call this method in its own thread
         def detect(self):
@@ -84,15 +88,15 @@ class Detector:
                                 cv2.destroyAllWindows()
                                 break
 
-                        #self.getTransceiver()
+                        self.updateTransceiver()
                         
                         self.initializing = False
 
-        # Choose the transceiver number
-        def getTransceiver(self):
+        # Update the transceiver number
+        def updateTransceiver(self):
 
                 """
-                Method_Name: indirect
+                Function_Name: indirect
                 params_type: int j
                 param_desc: j is the integer division from the center location of the object and the frame division
                 return_type: int j
@@ -111,7 +115,7 @@ class Detector:
                         return (int(j)-1)
 
                 """
-                Method_Name: obtain_transceiver_number
+                Function_Name: obtain_transceiver_number
                 params_type: int Center_Of_Object, width_of_frame
                 param_desc (Center_Of_Object): value of the center pixel location of the detect object
                 param_desc (width_of_frame): value of the frame width determined from frame concat
@@ -121,23 +125,18 @@ class Detector:
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
                         normalized_x = int(int(Center_Of_Object) / int(width_of_frame/self.__division))
-                        #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
                         normalized_x = indirect(normalized_x)
+                        
+                        if (normalized_x < 4):
+                                normalized_x += 4
+                        else:
+                                normalized_x -= 4
+
                         return normalized_x                
                
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
-                                transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
-                                if (transceiver_number < 4):
-                                    transceiver_number += 4
-                                else:
-                                    transceiver_number -= 4
-
-                                self.__current_transceiver = transceiver_number
-                                if (self.__debug):        
-                                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
-                                return transceiver_number                            
-                if (self.__debug):
-                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
-                return self.__current_transceiver
-                        
+                                self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
+                
+                if (self.__debug):        
+                        print("The best transceiver is number {}".format(self.__current_transceiver))
