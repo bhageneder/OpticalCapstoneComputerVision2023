@@ -94,26 +94,6 @@ class Detector:
 
         # Update the transceiver number
         def updateTransceiver(self):
-
-                """
-                Function_Name: indirect
-                params_type: int j
-                param_desc: j is the integer division from the center location of the object and the frame division
-                return_type: int j
-                return_desc: j is the modified integer that represents the transceiver number to use for each section in range [0:7]
-                """
-                def indirect(j):
-                        # Edge Cases
-                        if (j == 0):
-                                j = self.__sections
-                        # Mathematics found in the ReadME for logic
-                        else:
-                                if (j%2 == 1):
-                                        j = j/2 + 1
-                                else:
-                                        j = j/2
-                        return (int(j)-1)
-
                 """
                 Function_Name: obtain_transceiver_number
                 params_type: int Center_Of_Object, width_of_frame
@@ -124,16 +104,29 @@ class Detector:
                 """
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
-                        normalized_x = int(int(Center_Of_Object) / int(width_of_frame/self.__division))
-                        normalized_x = indirect(normalized_x)
+                        normalized_x = int(int(Center_Of_Object) / int(width_of_frame / self.__division))
                         
-                        if (normalized_x < 4):
-                                normalized_x += 4
+                        # Edge Cases
+                        if (normalized_x == 0):
+                                normalized_x = self.__sections
+                        # Mathematics found in the ReadME for logic
                         else:
-                                normalized_x -= 4
+                                if (normalized_x % 2 == 1):
+                                        normalized_x = normalized_x / 2 + 1
+                                else:
+                                        normalized_x = normalized_x / 2
 
-                        return normalized_x                
-               
+                        section = int(normalized_x) - 1
+                        
+                        # Offset the value to line up with numbers on physical transceivers
+                        if (section < 4):
+                                section += 4
+                        else:
+                                section -= 4
+
+                        return section                
+                
+                # Loop through the detections, update the transceiver number when there is a robot detected
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
                                 self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
