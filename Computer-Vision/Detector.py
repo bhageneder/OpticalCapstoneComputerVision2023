@@ -6,7 +6,7 @@ from Stream import Stream
 
 class Detector:
         # Constructor
-        # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
+        # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, cameras, render = False, debug = False):
                 self.initializing = True
                 self.__width = width
@@ -14,16 +14,11 @@ class Detector:
                 self.__render = render
                 self.__current_transceiver = 8
                 self.__debug = debug
-                self.__cameras = cameras
                 self.__sections = math.ceil(2.5*len(cameras))
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
-                
-                # Intialize the display window
-                if self.__render:
-                        self.__display = jetson_utils.glDisplay()
 
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
