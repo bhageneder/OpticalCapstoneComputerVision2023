@@ -4,9 +4,9 @@ import cv2
 import math
 from Stream import Stream
 
-# Must be called in its own thread
-class Detection:
-        # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (Boolean)
+class Detector:
+        # Constructor
+        # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, cameras, render = False, debug = False):
                 self.initializing = True
                 self.__width = width
@@ -14,31 +14,30 @@ class Detection:
                 self.__render = render
                 self.__current_transceiver = 8
                 self.__debug = debug
-                self.__cameras = cameras
                 self.__sections = math.ceil(2.5*len(cameras))
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
-                
-                # Intialize the display window
-                if self.__render:
-                        self.__display = jetson_utils.glDisplay()
 
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
 
-                # Runs the detection method
-                #self.__detect()
-
-        # Deconstructor releases camera captures and destroys windows
+        # Destructor
+        # Releases camera captures and destroys windows
         def __del__(self):
                 for cap in self.__captures:
                         cap.capture.release()
                         print("Released")
                 cv2.destroyAllWindows()
+
+        #### Public Methods ####
+
+        # Transceiver Getter
+        def getTransceiver(self):
+               return self.__current_transceiver
                
-        # Detection code runs in thread created on init
+        # Detect Method: Call this method in its own thread
         def detect(self):
                 while True:
                         # List of current frames
@@ -67,7 +66,6 @@ class Detection:
 
                             # Loop to append previous frame with new segment line until entire frame is covered
                             while(starting_section < self.__division):
-
                                     cv2.line(previous_line, ((starting_section*int(self.__width/self.__division)), 0), ((starting_section*int(self.__width/self.__division)), self.__height), (0,0,0), 5)
                                     starting_section = starting_section + incrementer
 
@@ -85,34 +83,16 @@ class Detection:
                                 cv2.destroyAllWindows()
                                 break
 
-                        #self.getTransceiver()
+                        self.__updateTransceiver()
                         
                         self.initializing = False
 
-        # Choose the transceiver number
-        def getTransceiver(self):
+        #### Private Helper Methods ####
 
+        # Helper method to update the transceiver number
+        def __updateTransceiver(self):
                 """
-                Method_Name: indirect
-                params_type: int j
-                param_desc: j is the integer division from the center location of the object and the frame division
-                return_type: int j
-                return_desc: j is the modified integer that represents the transceiver number to use for each section in range [0:7]
-                """
-                def indirect(j):
-                        # Edge Cases
-                        if (j == 0):
-                                j = self.__sections
-                        # Mathematics found in the ReadME for logic
-                        else:
-                                if (j%2 == 1):
-                                        j = j/2 + 1
-                                else:
-                                        j = j/2
-                        return (int(j)-1)
-
-                """
-                Method_Name: obtain_transceiver_number
+                Function_Name: obtain_transceiver_number
                 params_type: int Center_Of_Object, width_of_frame
                 param_desc (Center_Of_Object): value of the center pixel location of the detect object
                 param_desc (width_of_frame): value of the frame width determined from frame concat
@@ -121,24 +101,31 @@ class Detection:
                 """
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
-                        normalized_x = int(int(Center_Of_Object) / int(width_of_frame/self.__division))
-                        #print("normalized_x before indirect is {}".format(normalized_x)) # Helpful print statement
-                        normalized_x = indirect(normalized_x)
-                        return normalized_x                
-               
+                        #normalized_x = int(int(Center_Of_Object) / int(width_of_frame / self.__division))
+                        normalized_x = int(Center_Of_Object / (width_of_frame / self.__division))
+
+                        
+                        # Edge Cases
+                        if (normalized_x == 0):
+                                normalized_x = self.__sections
+                        # Mathematics found in the ReadME for logic
+                        else:
+                                normalized_x = (normalized_x / 2 + 1) if normalized_x % 2 == 1 else (normalized_x / 2)                               
+
+                        section = int(normalized_x) - 1
+                        
+                        
+                        # Offset the value to line up with numbers on physical transceivers
+                        section = (section + 4) if section < 4 else (section - 4)
+
+                        return section                
+                
+                # Loop through the detections, update the transceiver number when there is a robot detected
+                # Note that this is a temporary implementation, we should, in the future attempt to communicate with all robots...
+                # ...using all sections that a robot is found in, not just the last one in the list
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
-                                transceiver_number = obtain_transceiver_number(detection.Center[0], self.__width)
-                                if (transceiver_number < 4):
-                                    transceiver_number += 4
-                                else:
-                                    transceiver_number -= 4
-
-                                self.__current_transceiver = transceiver_number
-                                if (self.__debug):        
-                                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
-                                return transceiver_number                            
-                if (self.__debug):
-                    print("The Ball is in Section {}, Using transceiver {}".format(self.__current_transceiver, self.__current_transceiver))
-                return self.__current_transceiver
-                        
+                                self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
+                
+                if (self.__debug):        
+                        print("The best transceiver is number {}".format(self.__current_transceiver))

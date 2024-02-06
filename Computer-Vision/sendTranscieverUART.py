@@ -1,4 +1,4 @@
-from Detection import Detection
+from Detector import Detector
 from threading import Thread
 from UART import UART 
 import time
@@ -11,14 +11,14 @@ def main():
     cameras = [camSet1, 2, 1]
 
     # Initialize Detection
-    detection = Detection(1280, 240, "Robot_Model_Pan2", cameras, True, False)
+    detector = Detector(1280, 240, "Robot_Model_Pan2", cameras, True, True)
 
     # Run Detection in a Thread
-    thread = Thread(target = detection.detect, args = (), daemon=True, name="Detect")
+    thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
     thread.start()
 
     # Wait Until Detection is Initialized
-    while detection.initializing:
+    while detector.initializing:
         continue
 
     # Initialize UART
@@ -28,7 +28,7 @@ def main():
         # Infinite Loop to Send Data
         while(True):       
             	
-            transceiver = detection.getTransceiver()
+            transceiver = detector.getTransceiver()
             if(connection.send(transceiver) != 0):
                 print("UART Send Failed")
             #print(transceiver)
