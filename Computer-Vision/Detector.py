@@ -106,25 +106,22 @@ class Detector:
                 """
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
-                        normalized_x = int(int(Center_Of_Object) / int(width_of_frame / self.__division))
+                        #normalized_x = int(int(Center_Of_Object) / int(width_of_frame / self.__division))
+                        normalized_x = int(Center_Of_Object / (width_of_frame / self.__division))
+
                         
                         # Edge Cases
                         if (normalized_x == 0):
                                 normalized_x = self.__sections
                         # Mathematics found in the ReadME for logic
                         else:
-                                if (normalized_x % 2 == 1):
-                                        normalized_x = normalized_x / 2 + 1
-                                else:
-                                        normalized_x = normalized_x / 2
+                                normalized_x = (normalized_x / 2 + 1) if normalized_x % 2 == 1 else (normalized_x / 2)                               
 
                         section = int(normalized_x) - 1
                         
+                        
                         # Offset the value to line up with numbers on physical transceivers
-                        if (section < 4):
-                                section += 4
-                        else:
-                                section -= 4
+                        section = (section + 4) if section < 4 else (section - 4)
 
                         return section                
                 
