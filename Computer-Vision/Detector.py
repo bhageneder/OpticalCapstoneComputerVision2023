@@ -107,10 +107,8 @@ class Detector:
                 """
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
-                        normalized_x = (Center_Of_Object // (width_of_frame // self.__division))
-                        print("Old Normalized_x is: {}".format(normalized_x))               
+                        #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
                         normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
-                        print("New Normalized_x is: {}".format(normalized_x))
                         
                         # Edge Cases
                         if (normalized_x == 0):
@@ -132,7 +130,8 @@ class Detector:
                 # ...using all sections that a robot is found in, not just the last one in the list
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
-                                print("Current Tracking Status for ID {} is: {}".format(detection.TrackID, detection.TrackStatus))
+                                if (self.__debug):
+                                    print("Current Tracking Status for ID {} is: {}".format(detection.TrackID, detection.TrackStatus))
                                 self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
                 
                 if (self.__debug):        
