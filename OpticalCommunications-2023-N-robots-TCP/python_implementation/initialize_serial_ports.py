@@ -39,7 +39,7 @@ def initialize_serial_ports():
 
     # The correct order to match the transceiver numbers
     serial_numbers = []
-    with open("/home/pi/converterSerialNumbers.txt", "r") as f:
+    with open("/home/sa/converterSerialNumbers.txt", "r") as f:
         for line in f:
             serial_numbers.append(line.strip())
     # remove the first line which was just a comment
