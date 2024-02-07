@@ -7,18 +7,24 @@ from Stream import Stream
 class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
-        def __init__(self, width, height, modelName, cameras, render = False, debug = False):
+        def __init__(self, width, height, modelName, cameras, render = False, tracking=False, debug = False):
                 self.initializing = True
                 self.__width = width
                 self.__height = height
                 self.__render = render
                 self.__current_transceiver = 8
                 self.__debug = debug
+                self.__trackingMinFrames = 10
+                self.__DropFramesFrames = 20
+                self.__trackingOverlapThreshold = 0.5
                 self.__sections = math.ceil(2.5*len(cameras))
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+
+                self.__net.SetTrackingEnabled(tracking)
+                self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
 
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
@@ -101,9 +107,10 @@ class Detector:
                 """
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
-                        #normalized_x = int(int(Center_Of_Object) / int(width_of_frame / self.__division))
-                        normalized_x = int(Center_Of_Object / (width_of_frame / self.__division))
-
+                        normalized_x = (Center_Of_Object // (width_of_frame // self.__division))
+                        print("Old Normalized_x is: {}".format(normalized_x))               
+                        normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
+                        print("New Normalized_x is: {}".format(normalized_x))
                         
                         # Edge Cases
                         if (normalized_x == 0):
@@ -125,6 +132,7 @@ class Detector:
                 # ...using all sections that a robot is found in, not just the last one in the list
                 for detection in self.__detections:
                         if (detection.ClassID == 1):
+                                print("Current Tracking Status for ID {} is: {}".format(detection.TrackID, detection.TrackStatus))
                                 self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
                 
                 if (self.__debug):        
