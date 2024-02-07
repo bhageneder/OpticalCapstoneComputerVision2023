@@ -28,7 +28,7 @@ from move_circle import move_circle
 
 def main():
     # Clear robot_link_data directory
-    link_files = glob.glob('/home/pi/repos/OpticalCommunications-2023/python_implementation/robot_link_packets/*')
+    link_files = glob.glob('/home/sa/OpticalCapstoneComputerVision2023/OpticalCommunications-2023/python_implementation/robot_link_packets/*')
     for f in link_files:
         os.remove(f)
 
