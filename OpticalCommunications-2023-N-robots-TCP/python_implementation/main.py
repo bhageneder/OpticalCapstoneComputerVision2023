@@ -22,7 +22,7 @@ import time
 import board
 import neopixel
 import led_manager as lc
-sys.path.append("/home/pi/repos/OpticalCommunications-2023/control_robot")
+sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/control_robot")
 from play_sound import play_button_sound, play_sad_sound, play_connected_sound
 from move_circle import move_circle
 
@@ -40,9 +40,10 @@ def main():
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
     if globals.robot_serial_port != None and globals.ROBOT_IP_ADDRESS == globals.POSSIBLE_ROBOT_IP_ADDRESSES[0]:
         moving_thread = threading.Thread(target=move_circle, args=(globals.robot_serial_port, 0xC8,), daemon=True, name=f"Moving")
-        moving_thread.start()
+        moving_thread.start() 
     
     # Creating Transceiver Receive and Transceiver Send Threads
+    # print("Num Serial Ports: " + str(len(globals.serial_ports))) FOR TESTING PURPOSES
     for i in range(8):
         globals.transceiver_receive_threads.append(threading.Thread(
             target=transceiver_receive, 
