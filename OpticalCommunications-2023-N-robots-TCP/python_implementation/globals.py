@@ -85,12 +85,15 @@ def init():
     
     global discovery_thread
     discovery_thread = None
-    
-    global uart_thread
-    uart_thread = None
 
-    global uart_connection
-    uart_connection = None
+    global detector_thread
+    discovery_thread = None
+
+    global detector_manager_thread
+    detector_manager_thread = None
+
+    global best_transceiver
+    best_transceiver = -1
     
     # Queue for data that is received by all transceivers
     global data_received
@@ -120,7 +123,7 @@ def init():
     
     # The name of the robot running the program
     global robot
-    with open("/home/pi/robotName.txt", "r") as f:
+    with open("/home/sa/robotName.txt", "r") as f:
         robot = (f.read()).strip()
 
     global PING_COUNT
@@ -193,7 +196,7 @@ def init():
         POSSIBLE_SENDING_ROBOT_PORTS.append(str(i))
     
     # Setup Serial Line Interface Protocol (SLIP), and create virtual serial ports
-    subprocess.run(['/home/pi/repos/OpticalCommunications-2023/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
+    subprocess.run(['/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     
     global serial_ports
@@ -201,14 +204,15 @@ def init():
     global robot_serial_port
     serial_ports, robot_serial_port, virtual_serial_port = initialize_serial_ports()
 
-    global pixels
+    #global pixels ### Not supported on Nano
     # Board Setup
-    pixels = neopixel.NeoPixel(
-        board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
+    #pixels = neopixel.NeoPixel(
+    '''    board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
         24,                             # Number of LEDs (Num of Pixels)
         brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
         pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
     )
+    '''
     
     
     

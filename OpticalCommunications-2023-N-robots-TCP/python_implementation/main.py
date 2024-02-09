@@ -9,7 +9,7 @@ from threads.receive_manager import receive_manager
 from threads.send_manager import send_manager
 from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
-from threads.ReceiveUART import ReceiveUART
+from threads.detector_manager import detector_manager
 from robot_link import RobotLink
 import globals
 import time
@@ -22,13 +22,13 @@ import time
 import board
 import neopixel
 import led_manager as lc
-sys.path.append("/home/pi/repos/OpticalCommunications-2023/control_robot")
+sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/control_robot")
 from play_sound import play_button_sound, play_sad_sound, play_connected_sound
 from move_circle import move_circle
 
 def main():
     # Clear robot_link_data directory
-    link_files = glob.glob('/home/pi/repos/OpticalCommunications-2023/python_implementation/robot_link_packets/*')
+    link_files = glob.glob('/home/sa/OpticalCapstoneComputerVision2023/OpticalCommunications-2023/python_implementation/robot_link_packets/*')
     for f in link_files:
         os.remove(f)
 
@@ -40,9 +40,10 @@ def main():
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
     if globals.robot_serial_port != None and globals.ROBOT_IP_ADDRESS == globals.POSSIBLE_ROBOT_IP_ADDRESSES[0]:
         moving_thread = threading.Thread(target=move_circle, args=(globals.robot_serial_port, 0xC8,), daemon=True, name=f"Moving")
-        moving_thread.start()
+        moving_thread.start() 
     
     # Creating Transceiver Receive and Transceiver Send Threads
+    # print("Num Serial Ports: " + str(len(globals.serial_ports))) FOR TESTING PURPOSES
     for i in range(8):
         globals.transceiver_receive_threads.append(threading.Thread(
             target=transceiver_receive, 
@@ -81,10 +82,8 @@ def main():
     
     # Creating Receive Manager Thread
     globals.receive_manager_thread = threading.Thread(target=receive_manager, daemon=True, name=f"Receive_Manager")
-    
-    # Creating Uart thread from Nano to Pi
-    globals.uart_connection = ReceiveUART("/dev/ttyUSB9")  # hard coded USB port  
-    globals.uart_thread = threading.Thread(target=globals.uart_connection.readSerial, daemon=True, name=f"uart")
+
+    globals.detector_manager_thread = threading.Thread(target=detector_manager, daemon=True, name=f"Detector_Manager")
 
     start_threads()
     
@@ -114,8 +113,8 @@ def start_threads():
     # Running Send Manager Thread
     globals.send_manager_thread.start()
     
-    globals.uart_thread.start()
-    
+    globals.detector_manager_thread.start()
+
     # Running New Threads based on new Robot Links
     while True:
         robot_link = globals.robot_links_new.get()
