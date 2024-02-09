@@ -2,7 +2,8 @@ import jetson_inference
 import jetson_utils
 import cv2
 import math
-from Stream import Stream
+import Stream
+import Robot
 
 class Detector:
         # Constructor
@@ -28,6 +29,9 @@ class Detector:
 
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
+
+                # List of all robots currently being tracked
+                self.__robotList = list()
 
         # Destructor
         # Releases camera captures and destroys windows
@@ -123,16 +127,46 @@ class Detector:
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
 
-                        return section                
-                
-                # Loop through the detections, update the transceiver number when there is a robot detected
-                # Note that this is a temporary implementation, we should, in the future attempt to communicate with all robots...
-                # ...using all sections that a robot is found in, not just the last one in the list
+                        return section
+
+                # Create a copy of the robotList
+                robotListCopy = self.__robotList[:]
+
                 for detection in self.__detections:
+                        # If the detection is a robot
                         if (detection.ClassID == 1):
+                                # Get the best transceiver for the robot and tracking information
+                                transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
+                                trackingID = detection.trackID
+                                trackingStatus = detection.TrackStatus
+
+                                # Store the initial length of the copied array
+                                robotListCopyLen = len(robotListCopy)
+
+                                # Find tracking ID in robot list
+                                for i in range(0, robotListCopyLen - 1):
+                                        # If we are on the correct robot, update the tracking information
+                                        if (self.__robotList[i].trackingID == trackingID):
+                                                # In theory, this is always true if the detection is in the list
+                                                self.__robotList[i].losActive = False if trackingStatus == -1 else True
+
+                                                # Only update the transceiver if the LOS is active. It could be in a blind spot or missed detection
+                                                if (self.__robotList[i].losActive):
+                                                        self.__robotList[i].transceiver = transceiver
+
+                                                # Remove the robot from the robotListCopy to reduce iterations
+                                                robotListCopy.pop(i)
+
+                                                # Exit inner loop
+                                                break
+                                
+                                # Check if the code in the loop executed, if not create a new robot object and store in the robotList
+                                if (robotListCopyLen == len(robotListCopy)):
+                                       newRobot = Robot(trackingID, transceiver, True)
+                                       self.__robotList.append(newRobot)
+                                       
+                                # Debug statement
                                 if (self.__debug):
-                                    print("Current Tracking Status for ID {} is: {}".format(detection.TrackID, detection.TrackStatus))
-                                self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
-                
-                if (self.__debug):        
-                        print("The best transceiver is number {}".format(self.__current_transceiver))
+                                        print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
+
+                # Cleanup missing robots
