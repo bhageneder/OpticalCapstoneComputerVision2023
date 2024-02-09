@@ -85,12 +85,15 @@ def init():
     
     global discovery_thread
     discovery_thread = None
-    
-    global uart_thread
-    uart_thread = None
 
-    global uart_connection
-    uart_connection = None
+    global detector_thread
+    discovery_thread = None
+
+    global detector_manager_thread
+    detector_manager_thread = None
+
+    global best_transceiver
+    best_transceiver = -1
     
     # Queue for data that is received by all transceivers
     global data_received
