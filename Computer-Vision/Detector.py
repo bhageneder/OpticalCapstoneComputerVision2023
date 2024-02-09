@@ -146,13 +146,15 @@ class Detector:
                                 trackingID = detection.trackID
                                 trackingStatus = detection.TrackStatus
 
-                                # Store the initial length of the copied array
-                                robotListCopyLen = len(robotListCopy)
+                                # Flag for when the loop identifies the robot
+                                foundRobotFlag = False
 
                                 # Find tracking ID in robot list
-                                for i in range(0, robotListCopyLen - 1):
+                                for i in range(0, len(robotListCopy) - 1):
                                         # If we are on the correct robot, update the tracking information
                                         if (self.__robotList[i].trackingID == trackingID):
+                                                foundRobotFlag = True
+
                                                 # In theory, this is always true if the detection is in the list
                                                 self.__robotList[i].losActive = False if trackingStatus == -1 else True
 
@@ -160,14 +162,15 @@ class Detector:
                                                 if (self.__robotList[i].losActive):
                                                         self.__robotList[i].transceiver = transceiver
 
-                                                # Remove the robot from the robotListCopy to reduce iterations
-                                                robotListCopy.pop(i)
-
                                                 # Exit inner loop
                                                 break
-                                
-                                # Check if the code in the loop executed, if not create a new robot object and store in the robotList
-                                if (robotListCopyLen == len(robotListCopy)):
+
+                                # Check if the code in the loop executed
+                                # If so, remove from robotListCopy 
+                                # If not, create a new robot object and store in the robotList
+                                if foundRobotFlag:
+                                        robotListCopy.pop(i)
+                                else:
                                        newRobot = Robot(trackingID, transceiver, True)
                                        self.__robotList.append(newRobot)
                                        
