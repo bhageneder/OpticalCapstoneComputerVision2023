@@ -99,16 +99,8 @@ class Detector:
 
         #### Private Helper Methods ####
 
-        # Helper method to update the transceiver number
-        def __updateTransceiver(self):
-                """
-                Function_Name: obtain_transceiver_number
-                params_type: int Center_Of_Object, width_of_frame
-                param_desc (Center_Of_Object): value of the center pixel location of the detect object
-                param_desc (width_of_frame): value of the frame width determined from frame concat
-                return_type: int normalized_x
-                return_desc: normalized_x is the modified integer that represents the transceiver number to use for each section
-                """
+        # Helper method to update the robot list
+        def __updateRobotList(self):
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
                         # Use integer division to obtain a section the object is detected in
                         #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
@@ -150,7 +142,7 @@ class Detector:
                                                 # In theory, this is always true if the detection is in the list
                                                 self.__robotList[i].losActive = False if trackingStatus == -1 else True
 
-                                                # Only update the transceiver if the LOS is active. It could be in a blind spot or missed detection
+                                                # Only update the transceiver if the LOS is active. In theory this should always be true (see above)
                                                 if (self.__robotList[i].losActive):
                                                         self.__robotList[i].transceiver = transceiver
 
@@ -170,3 +162,47 @@ class Detector:
                                         print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
 
                 # Cleanup missing robots
+
+        #### Remove __updateTransceiver when __updateRobotList is officially working ####
+
+        # Helper method to update the transceiver number
+        def __updateTransceiver(self):
+                """
+                Function_Name: obtain_transceiver_number
+                params_type: int Center_Of_Object, width_of_frame
+                param_desc (Center_Of_Object): value of the center pixel location of the detect object
+                param_desc (width_of_frame): value of the frame width determined from frame concat
+                return_type: int normalized_x
+                return_desc: normalized_x is the modified integer that represents the transceiver number to use for each section
+                """
+                def obtain_transceiver_number(Center_Of_Object, width_of_frame):
+                        # Use integer division to obtain a section the object is detected in
+                        #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
+                        normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
+                        
+                        # Edge Cases
+                        if (normalized_x == 0):
+                                normalized_x = self.__sections
+                        # Mathematics found in the ReadME for logic
+                        else:
+                                normalized_x = (normalized_x / 2 + 1) if normalized_x % 2 == 1 else (normalized_x / 2)                               
+
+                        section = int(normalized_x) - 1
+                        
+                        
+                        # Offset the value to line up with numbers on physical transceivers
+                        section = (section + 4) if section < 4 else (section - 4)
+
+                        return section                
+                
+                # Loop through the detections, update the transceiver number when there is a robot detected
+                # Note that this is a temporary implementation, we should, in the future attempt to communicate with all robots...
+                # ...using all sections that a robot is found in, not just the last one in the list
+                for detection in self.__detections:
+                        if (detection.ClassID == 1):
+                                if (self.__debug):
+                                    print("Current Tracking Status for ID {} is: {}".format(detection.TrackID, detection.TrackStatus))
+                                self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
+                
+                if (self.__debug):        
+                        print("The best transceiver is number {}".format(self.__current_transceiver))
