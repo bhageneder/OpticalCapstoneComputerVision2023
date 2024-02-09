@@ -33,6 +33,9 @@ class Detector:
                 # List of all robots currently being tracked
                 self.__robotList = list()
 
+                # List of all robots that we have lost tracking for
+                self.__lostRobotList = list()
+
         # Destructor
         # Releases camera captures and destroys windows
         def __del__(self):
@@ -93,7 +96,9 @@ class Detector:
                                 cv2.destroyAllWindows()
                                 break
 
+                        # Update the transceiver/robotList
                         self.__updateTransceiver()
+                        self.__updateRobotList()
                         
                         self.initializing = False
 
@@ -124,6 +129,7 @@ class Detector:
                 # Create a copy of the robotList
                 robotListCopy = self.__robotList[:]
 
+                # Loop through all detections, create robots
                 for detection in self.__detections:
                         # If the detection is a robot
                         if (detection.ClassID == 1):
@@ -162,6 +168,12 @@ class Detector:
                                         print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
 
                 # Cleanup missing robots
+                for robot in robotListCopy:
+                        for i in range(0, len(self.__robotList) - 1):
+                                if (robot == self.__robotList[i]):
+                                        # Identified one of the missing robots in the robots list
+                                        # Remove it and put it in the lost robots list
+                                        self.__lostRobotList.append(self.__robotList.pop(i))
 
         #### Remove __updateTransceiver when __updateRobotList is officially working ####
 
