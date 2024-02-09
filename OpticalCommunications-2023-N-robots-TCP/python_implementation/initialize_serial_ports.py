@@ -39,23 +39,30 @@ def initialize_serial_ports():
 
     # The correct order to match the transceiver numbers
     serial_numbers = []
-    with open("/home/pi/converterSerialNumbers.txt", "r") as f:
+    with open("/home/sa/converterSerialNumbers.txt", "r") as f:
         for line in f:
             serial_numbers.append(line.strip())
     # remove the first line which was just a comment
-    serial_numbers.pop(0)
+    #serial_numbers.pop(0) ### disabled to get it to run
 
     serial_ports_in_correct_order = []
+    count = 0
     for i in range(8):
         for j in range(8):
-            if (serial_numbers[i] == static_serial_numbers[j]):
+            if (serial_numbers[i] == static_serial_numbers[j]):                
                 serial_ports_in_correct_order.append(serial_ports[j])
                 break
-
-    #print(static_serial_numbers)
-    #print(serial_numbers)
-    #print(serial_ports_in_correct_order)
-    #print(len(serial_ports_in_correct_order))
+    
+    # for testing purposes:   
+    """
+    for _ in static_serial_numbers:
+        print("Static serial: {}".format(_))
+    for _ in serial_numbers:    
+        print("Serial Numbers: {}".format(_))
+    for _ in serial_ports_in_correct_order:
+        print("Serial Ports: {}".format(_))
+    print("Length of serial ports: {}".format(len(serial_ports_in_correct_order)))
+    """
     
     # We only want the /dev/ttySoftwareEnd of the connection (this is where we will write and receive data from SLIP)
     try:

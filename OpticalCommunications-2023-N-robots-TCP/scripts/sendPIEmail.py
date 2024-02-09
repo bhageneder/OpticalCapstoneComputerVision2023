@@ -13,7 +13,7 @@ SMTP_PORT = 587
 SMTP_USERNAME = "opticalcomms23@yahoo.com"
 SMTP_PASSWORD = "uqtjdtfqxtenmgtw"
 EMAIL_FROM = "opticalcomms23@yahoo.com"
-robotFile = open("/home/pi/robotName.txt", "r")
+robotFile = open("/home/sa/robotName.txt", "r")
 ROBOT = robotFile.read()
 robotFile.close()
 
@@ -40,13 +40,14 @@ if __name__=='__main__':
     print('Sleeping for 45')
     time.sleep(45)
     # Capstone Group 2023
-    send_email("rgartrell@ycp.edu")
-    send_email("rblack5@ycp.edu")
-    send_email("kbeelitz1@ycp.edu")
-    send_email("jgilbert2@ycp.edu")
+    #send_email("rgartrell@ycp.edu")
+    #send_email("rblack5@ycp.edu")
+    #send_email("kbeelitz1@ycp.edu")
+    #send_email("jgilbert2@ycp.edu")
     # Capstone Group 2024
     send_email("mconrad4@ycp.edu")
     send_email("bhageneder@ycp.edu")
     send_email("mgeyer@ycp.edu")
+    send_email("damao@ycp.edu")
     time.sleep(5)
     exit()
