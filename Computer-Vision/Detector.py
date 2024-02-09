@@ -49,6 +49,14 @@ class Detector:
         # Transceiver Getter
         def getTransceiver(self):
                return self.__current_transceiver
+        
+        # robotList Getter
+        def getRobotLlist(self):
+                return self.__robotList
+        
+        # lostRobotList Getter
+        def getLostRobotLlist(self):
+                return self.__lostRobotList
                
         # Detect Method: Call this method in its own thread
         def detect(self):
@@ -168,12 +176,19 @@ class Detector:
                                         print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
 
                 # Cleanup missing robots
+                popList = list()
                 for robot in robotListCopy:
                         for i in range(0, len(self.__robotList) - 1):
                                 if (robot == self.__robotList[i]):
                                         # Identified one of the missing robots in the robots list
                                         # Remove it and put it in the lost robots list
-                                        self.__lostRobotList.append(self.__robotList.pop(i))
+                                        self.__lostRobotList.append(self.__robotList[i])
+                                        popList.append(i)
+
+                # Pop all lost robots out of robotList
+                for i in popList:
+                        self.__robotList.pop(i)
+
 
         #### Remove __updateTransceiver when __updateRobotList is officially working ####
 
