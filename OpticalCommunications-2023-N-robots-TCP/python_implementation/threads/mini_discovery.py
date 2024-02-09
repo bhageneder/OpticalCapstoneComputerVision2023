@@ -30,7 +30,7 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
             # If there is no Robot Link that the robot_receiving_ip_address: 
             # Send SYN packets using send manager
             client_socket.connect((robot_receiving_ip_address, int(dst_port)))
-            best_transceiver_number = globals.uart_connection.getTransceiver()
+            best_transceiver_number = globals.best_transceiver
             # if no robot found, make all transceivers red
             if best_transceiver_number == -1:
                 for transceiver in globals.transceiver_number:

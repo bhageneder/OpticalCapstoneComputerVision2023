@@ -9,7 +9,7 @@ def maintenance(robot_link):
     transceiver_set = False
     while True:
         # Get the best transceiver number from the Jetson Nano        
-        best_transceiver_number = globals.uart_connection.getTransceiver()
+        best_transceiver_number = globals.best_transceiver
 
         # Might want to ping for maintenance for backup
 
