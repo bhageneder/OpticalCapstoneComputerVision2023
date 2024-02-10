@@ -2,7 +2,8 @@ import jetson_inference
 import jetson_utils
 import cv2
 import math
-from Stream import Stream
+import Stream
+import Robot
 
 class Detector:
         # Constructor
@@ -29,6 +30,12 @@ class Detector:
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
 
+                # List of all robots currently being tracked
+                self.__robotList = list()
+
+                # List of all robots that we have lost tracking for
+                self.__lostRobotList = list()
+
         # Destructor
         # Releases camera captures and destroys windows
         def __del__(self):
@@ -42,6 +49,14 @@ class Detector:
         # Transceiver Getter
         def getTransceiver(self):
                return self.__current_transceiver
+        
+        # robotList Getter
+        def getRobotLlist(self):
+                return self.__robotList
+        
+        # lostRobotList Getter
+        def getLostRobotLlist(self):
+                return self.__lostRobotList
                
         # Detect Method: Call this method in its own thread
         def detect(self):
@@ -89,11 +104,96 @@ class Detector:
                                 cv2.destroyAllWindows()
                                 break
 
+                        # Update the transceiver/robotList
                         self.__updateTransceiver()
+                        self.__updateRobotList()
                         
                         self.initializing = False
 
         #### Private Helper Methods ####
+
+        # Helper method to update the robot list
+        def __updateRobotList(self):
+                def obtain_transceiver_number(Center_Of_Object, width_of_frame):
+                        # Use integer division to obtain a section the object is detected in
+                        #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
+                        normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
+                        
+                        # Edge Cases
+                        if (normalized_x == 0):
+                                normalized_x = self.__sections
+                        # Mathematics found in the ReadME for logic
+                        else:
+                                normalized_x = (normalized_x / 2 + 1) if normalized_x % 2 == 1 else (normalized_x / 2)                               
+
+                        section = int(normalized_x) - 1
+                        
+                        
+                        # Offset the value to line up with numbers on physical transceivers
+                        section = (section + 4) if section < 4 else (section - 4)
+
+                        return section
+
+                # Create a copy of the robotList
+                robotListCopy = self.__robotList[:]
+
+                # Loop through all detections, create robots
+                for detection in self.__detections:
+                        # If the detection is a robot
+                        if (detection.ClassID == 1):
+                                # Get the best transceiver for the robot and tracking information
+                                transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
+                                trackingID = detection.TrackID
+                                trackingStatus = detection.TrackStatus
+
+                                # Flag for when the loop identifies the robot
+                                foundRobotFlag = False
+
+                                # Find tracking ID in robot list
+                                for i in range(0, len(robotListCopy) - 1):
+                                        # If we are on the correct robot, update the tracking information
+                                        if (self.__robotList[i].trackingID == trackingID):
+                                                foundRobotFlag = True
+
+                                                # In theory, this is always true if the detection is in the list
+                                                self.__robotList[i].losActive = False if trackingStatus == -1 else True
+
+                                                # Only update the transceiver if the LOS is active. In theory this should always be true (see above)
+                                                if (self.__robotList[i].losActive):
+                                                        self.__robotList[i].transceiver = transceiver
+
+                                                # Exit inner loop
+                                                break
+
+                                # Check if the code in the loop executed
+                                # If so, remove from robotListCopy 
+                                # If not, create a new robot object and store in the robotList
+                                if foundRobotFlag:
+                                        robotListCopy.pop(i)
+                                else:
+                                       newRobot = Robot(trackingID, transceiver, True)
+                                       self.__robotList.append(newRobot)
+                                       
+                                # Debug statement
+                                if (self.__debug):
+                                        print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
+
+                # Cleanup missing robots
+                popList = list()
+                for robot in robotListCopy:
+                        for i in range(0, len(self.__robotList) - 1):
+                                if (robot == self.__robotList[i]):
+                                        # Identified one of the missing robots in the robots list
+                                        # Remove it and put it in the lost robots list
+                                        self.__lostRobotList.append(self.__robotList[i])
+                                        popList.append(i)
+
+                # Pop all lost robots out of robotList
+                for i in popList:
+                        self.__robotList.pop(i)
+
+
+        #### Remove __updateTransceiver when __updateRobotList is officially working ####
 
         # Helper method to update the transceiver number
         def __updateTransceiver(self):
