@@ -153,7 +153,7 @@ class Detector:
                                 foundRobotFlag = False
 
                                 # Find tracking ID in robot list
-                                for i in range(0, len(self.__robotList) - 1):
+                                for i in range(0, len(self.__robotList)):
                                         # If we are on the correct robot, update the tracking information
                                         if (self.__robotList[i].trackingID == trackingID):
                                                 foundRobotFlag = True
@@ -186,8 +186,8 @@ class Detector:
 
                 # Cleanup missing robots
                 popList = list()
-                for robot in robotListCopy: #note that if i reversed robotListCopy, i could probably pop them in the loop
-                        for i in range(0, len(self.__robotList) - 1):
+                for robot in robotListCopy:
+                        for i in range(0, len(self.__robotList)):
                                 if (robot == self.__robotList[i]):
                                         # Identified one of the missing robots in the robots list
                                         # Remove it and put it in the lost robots list
@@ -198,6 +198,7 @@ class Detector:
                 for i in reversed(popList):
                         self.__robotList.pop(i)
 
+                # Debug Statements
                 if self.__debug:
                     print("Robot List: " + str(self.__robotList) + "\n")
                     print("Lost Robot List: " + str(self.__lostRobotList) + "\n")

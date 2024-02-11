@@ -28,7 +28,7 @@ def main():
     
     try:
         # Infinite Loop to Send Data
-        while(True):       
+        while(True): 
             transceiver = detector.getTransceiver()
             if(connection.send(transceiver) != 0):
                 print("UART Send Failed")
@@ -42,7 +42,7 @@ def main():
                 time.sleep(1.5) # If deconstructed too quickly, deconstructor tries to release camera before its done destroying window                
                 del detector                
                 break                
-            
+         
             # Sleep
             time.sleep(0.05)            
 
