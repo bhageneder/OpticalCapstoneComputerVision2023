@@ -2,8 +2,8 @@ import jetson_inference
 import jetson_utils
 import cv2
 import math
-import Stream
-import Robot
+from Stream import Stream
+from Robot import Robot
 
 class Detector:
         # Constructor
@@ -105,7 +105,7 @@ class Detector:
                                 break
 
                         # Update the transceiver/robotList
-                        self.__updateTransceiver()
+                        #self.__updateTransceiver()
                         self.__updateRobotList()
                         
                         self.initializing = False
@@ -140,7 +140,7 @@ class Detector:
                 # Loop through all detections, create robots
                 for detection in self.__detections:
                         # If the detection is a robot
-                        if (detection.ClassID == 1):
+                        if (detection.ClassID == 1 and detection.TrackID > -1):
                                 # Get the best transceiver for the robot and tracking information
                                 transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
                                 trackingID = detection.TrackID
@@ -150,7 +150,7 @@ class Detector:
                                 foundRobotFlag = False
 
                                 # Find tracking ID in robot list
-                                for i in range(0, len(robotListCopy) - 1):
+                                for i in range(0, len(self.__robotList)):
                                         # If we are on the correct robot, update the tracking information
                                         if (self.__robotList[i].trackingID == trackingID):
                                                 foundRobotFlag = True
@@ -169,7 +169,7 @@ class Detector:
                                 # If so, remove from robotListCopy 
                                 # If not, create a new robot object and store in the robotList
                                 if foundRobotFlag:
-                                        robotListCopy.pop(i)
+                                        robotListCopy.pop(i-1)
                                 else:
                                        newRobot = Robot(trackingID, transceiver, True)
                                        self.__robotList.append(newRobot)
@@ -181,7 +181,7 @@ class Detector:
                 # Cleanup missing robots
                 popList = list()
                 for robot in robotListCopy:
-                        for i in range(0, len(self.__robotList) - 1):
+                        for i in range(0, len(self.__robotList)):
                                 if (robot == self.__robotList[i]):
                                         # Identified one of the missing robots in the robots list
                                         # Remove it and put it in the lost robots list
@@ -190,7 +190,11 @@ class Detector:
 
                 # Pop all lost robots out of robotList
                 for i in popList:
-                        self.__robotList.pop(i)
+                        self.__robotList.pop(i-1)
+
+                if self.__debug:
+                    print("Robot List: " + str(self.__robotList) + "\n")
+                    print("Lost Robot List: " + str(self.__lostRobotList) + "\n")
 
 
         #### Remove __updateTransceiver when __updateRobotList is officially working ####
