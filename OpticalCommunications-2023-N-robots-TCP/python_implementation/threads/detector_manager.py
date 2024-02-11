@@ -1,7 +1,8 @@
 import string
 import globals
 import threading
-from Detector import Detector
+import sys
+sys.path.append('/home/sa/Documents/OpticalCapstoneComputerVision2023/Computer-Vision')
 
 def detector_manager():
     thread_name = threading.current_thread().name
