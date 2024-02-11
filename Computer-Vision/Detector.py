@@ -105,7 +105,7 @@ class Detector:
                                 break
 
                         # Update the transceiver/robotList
-                        #self.__updateTransceiver()
+                        self.__updateTransceiver()
                         self.__updateRobotList()
                         
                         self.initializing = False
