@@ -33,16 +33,16 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
             best_transceiver_number = globals.best_transceiver
             # if no robot found, make all transceivers red
             if best_transceiver_number == -1:
-                for transceiver in globals.best_transceiver:
-                    lc.illuminate_for_finding(transceiver)
+                #for transceiver in globals.best_transceiver:
+                lc.illuminate_for_finding(best_transceiver_number)
             # if robot found, make that transceiver blue
             else:
                 lc.illuminate_for_connecting(best_transceiver_number)
     except socket.timeout:
         #if globals.debug_mini_discovery: print(f'{thread_name} Socket Timeout')
-        for transceiver in globals.best_transceiver:
-            lc.turn_off_for_finding(transceiver)
-            lc.turn_off_for_connecting(transceiver)
+        #for transceiver in globals.best_transceiver:
+        lc.turn_off_for_finding(globals.best_transceiver)
+        lc.turn_off_for_connecting(globals.best_transceiver)
         client_socket.close() # Close the socket to unbind it
         return
     
@@ -54,9 +54,9 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
         # To make the socket never timed out now when sending or receiving data
         client_socket.settimeout(None) 
 
-        for transceiver in globals.best_transceiver:
-            lc.turn_off_for_finding(transceiver)
-            lc.turn_off_for_connecting(transceiver)
+        #for transceiver in globals.best_transceiver:
+        lc.turn_off_for_finding(globals.best_transceiver)
+        lc.turn_off_for_connecting(globals.best_transceiver)
         # Default the serial port to transceiver 0, Maintenance will set the best one.
         link = RobotLink(None, globals.serial_ports[0], client_socket, robot_receiving_ip_address, dst_port)
         if globals.debug_mini_discovery: print(f'{thread_name} New Robot Link Found On: ', (robot_receiving_ip_address, int(dst_port)))

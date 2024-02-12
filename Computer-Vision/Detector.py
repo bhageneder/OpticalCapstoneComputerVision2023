@@ -1,6 +1,6 @@
+import cv2
 import jetson_inference
 import jetson_utils
-import cv2
 import math
 from Stream import Stream
 from Robot import Robot
@@ -13,7 +13,7 @@ class Detector:
                 self.__width = width
                 self.__height = height
                 self.__render = render
-                self.__current_transceiver = 8
+                self.__current_transceiver = -1
                 self.__debug = debug
                 #self.__stopFlag = False """ For Auto Deconstruct Purposes """
                 self.__trackingMinFrames = 10
