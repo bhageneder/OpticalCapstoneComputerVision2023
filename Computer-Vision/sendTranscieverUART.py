@@ -33,6 +33,8 @@ def main():
             if(connection.send(transceiver) != 0):
                 print("UART Send Failed")
             #print(transceiver)
+            """
+            # For Auto Deconstructor Purposes
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("Killing Detection Thread")
                 detector.setStopFlag()
@@ -41,7 +43,8 @@ def main():
                 cv2.destroyAllWindows()
                 time.sleep(1.5) # If deconstructed too quickly, deconstructor tries to release camera before its done destroying window                
                 del detector                
-                break                
+                break
+            """                
          
             # Sleep
             time.sleep(0.05)            

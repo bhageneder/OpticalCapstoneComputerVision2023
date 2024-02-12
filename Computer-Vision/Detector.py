@@ -15,6 +15,7 @@ class Detector:
                 self.__render = render
                 self.__current_transceiver = 8
                 self.__debug = debug
+                #self.__stopFlag = False """ For Auto Deconstruct Purposes """
                 self.__trackingMinFrames = 10
                 self.__DropFramesFrames = 20
                 self.__trackingOverlapThreshold = 0.5
@@ -57,9 +58,16 @@ class Detector:
         # lostRobotList Getter
         def getLostRobotLlist(self):
                 return self.__lostRobotList
-               
+
+        """        
+        # For Auto Deconstruct Purposes        
+        def setStopFlag(self):
+                self.__stopFlag = True
+        """           
+    
         # Detect Method: Call this method in its own thread
         def detect(self):
+                # while not stopFlag
                 while True:
                         # List of current frames
                         frames = list(map(lambda x: x.getFrame(), self.__captures))
