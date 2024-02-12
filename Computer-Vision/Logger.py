@@ -1,4 +1,3 @@
-from unittest.mock import DEFAULT
 from loguru import logger
 import sqlite3
 from datetime import datetime
