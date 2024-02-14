@@ -198,8 +198,11 @@ class Detector:
                         for i in range(0, len(self.__robotList)):
                                 if (robot == self.__robotList[i]):
                                         # Identified one of the missing robots in the robots list
-                                        # Remove it and put it in the lost robots list
-                                        self.__lostRobotList.append(self.__robotList[i])
+                                        # Remove it and append to the Lost Robot List only if the robot has a link already
+                                        if robot.RobotLink != None:
+                                                self.__lostRobotList.append(self.__robotList[i])
+
+                                        # Add the robot to the 'needs to be removed' from Robot List list
                                         popList.append(i)
 
                 # Pop all lost robots out of robotList
