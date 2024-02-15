@@ -165,7 +165,7 @@ def init():
     # Set the expected number of robots 
     # (determines how many threads will be run, modifies discovery behavior greatly)
     global EXPECTED_NUMBER_OF_ROBOTS
-    EXPECTED_NUMBER_OF_ROBOTS = 2
+    EXPECTED_NUMBER_OF_ROBOTS = 3
     
     global POSSIBLE_ROBOT_IP_ADDRESSES
     POSSIBLE_ROBOT_IP_ADDRESSES = []
@@ -179,9 +179,9 @@ def init():
     global ROBOT_IP_ADDRESS
     if (robot == "source"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[0]
-    elif (robot == "jeff"):
-        ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
     elif (robot == "c"):
+        ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
+    elif (robot == "jeff"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[2]
 
     global POSSIBLE_RECEIVING_ROBOT_PORTS
