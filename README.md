@@ -1,29 +1,23 @@
-# OpticalCapstoneComputerVision2023
-Summer 2023 Optical Communications Capstone Computer Vision Repository
+Optical wireless communication (OWC) can enable much higher data rates (tens of Gbps) compared to traditional
+radio frequency or RF-based wirelesstechnologies. A highly useful feature of OWC is its inherentsignalsecurity and
+it can also provide connectivity in unfavorable conditions, e.g., presence of RF jamming or interception. Hence,
+equipping military robots like PackBots [1] with OWC-enabled transceivers is a potential application area for OWC.
+Despite the advantages, the high directionality ofsuch transceivers makesOWC vulnerable to mobility and requires
+discovery and maintenance of line-of-sight (LOS) alignment between the transceivers.
+In this project, the students will design and develop a multi-transceiver OWC communication module. Mobile robot
+cars will be equipped with these OWC modules. The students will also develop protocols for LOS maintenance
+between these cars to establish communication links and transfer data. The multi-transceiver OWC module will
+not only help in maintaining LOS alignment but can also enable simultaneous communication with multiple robot
+cars.
 
-## Multicam Object Detection
-Runs object detection model on USB cameras at video0 and video1. The model is a custom Robot model for detecting the TurtleBots with the green balls on top of them. 
-Also outputs the locations of objects in the frame.
-Close the object detection window to quit.
 
-## Multicam Video
-Shows live video concatenated horizontally in a new window from two USB cameras on video0 and video1.
-Press q to quit.
 
-## 360 Image
-With 3 USB Cameras on video0...2, the script will capture a frame on each camera and then display the 360-degree image in a new window. 
-Press q to quit.
 
-## Random Selection
-1. Fill the text file in the random selection script with newline-separated values of the file names for all images in the dataset.
-2. Run the Random Selection script
-3. Copy and paste the script outputs into their respective text files within the dataset.
+Github Branch Policies (main):
+------------------------------
 
-## Transceiver Selection Algorithm
-- Let the width of the frame be an arbitrary number represented by w.
-- For each camera, the FOV is 120 degrees
-- For each transceiver, the FOV is 45 degrees
-- Sectioning the frame into x sections where x is the cieled integer value of 2.5 * # of cameras. This allowed the proper amount of trasnceviers to fit into the frame based on the number of cameras utilized.
-- Implmenting each section into frame width w and further dividing each section into 2 divisions allows for higher accuracy. Since 2 divisions exist for each section, when dividing by 2, the integer result (if odd) exists in the previous section rather than current. Therefore it is necessary to add one to the divsion such that both divisions now exist in the same section.
-- The value returned minus 1 is the best trasnceiver value.
-- Update the current_transceiver variable for memory retention and return value to main function. 
+1.) All commits/merges made to the main branch must go through a pull request, and the pull request must be approved by at least one other person. 
+
+2.) If new changes are made to a pull request, all previous approvals will be reset. This is done so that new changes are forced to go through the approval process.
+
+3.) Any conversations on a pull request must be resolved before the pull request will be merged into main.
