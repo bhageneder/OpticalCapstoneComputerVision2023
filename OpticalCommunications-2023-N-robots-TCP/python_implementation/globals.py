@@ -87,7 +87,7 @@ def init():
     discovery_thread = None
 
     global detector_thread
-    discovery_thread = None
+    detector_thread = None
 
     global detector_manager_thread
     detector_manager_thread = None
