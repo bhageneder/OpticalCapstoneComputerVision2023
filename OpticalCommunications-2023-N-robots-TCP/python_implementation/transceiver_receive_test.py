@@ -8,7 +8,7 @@ import serial
 #subprocess.run(['/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/scripts/create_serial_interface.sh', 10.10.10.12])
 #time.sleep(1.5) # Wait for virtual serial ports to be fully created
 
-portNum = 0
+portNum = 1
 
 serial_port = serial.Serial(
     port= f'/dev/ttyUSB{portNum}',
@@ -22,8 +22,7 @@ serial_port = serial.Serial(
 print("Connected to: " + serial_port.portstr)
 
 output = subprocess.check_output(f"udevadm info /dev/ttyUSB{portNum} | grep ID_SERIAL", shell=True).decode('utf-8')
-
 print(output)
 
 while True:
-    serial_port.write(b'\x7E')
+    print("Read: " + str(serial_port.read()))
