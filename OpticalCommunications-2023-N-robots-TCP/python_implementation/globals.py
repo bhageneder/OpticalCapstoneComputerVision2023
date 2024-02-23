@@ -14,40 +14,40 @@ def init():
     lights_enabled = True
     
     global debug_discovery
-    debug_discovery = False
+    debug_discovery = True
     
     global debug_link_send
-    debug_link_send = False
+    debug_link_send = True
 
     global debug_link_receive
     debug_link_receive = True
 
     global debug_listen_for_connection
-    debug_listen_for_connection = False
+    debug_listen_for_connection = True
 
     global debug_maintenance
     debug_maintenance = True
 
     global debug_mini_discovery
-    debug_mini_discovery = False
+    debug_mini_discovery = True
 
     global debug_mini_maintenance
-    debug_mini_maintenance = False
+    debug_mini_maintenance = True
 
     global debug_receive_manager
-    debug_receive_manager = False
+    debug_receive_manager = True
 
     global debug_send_manager
-    debug_send_manager = False
+    debug_send_manager = True
 
     global debug_transceiver_receive
-    debug_transceiver_receive = False
+    debug_transceiver_receive = True
 
     global debug_transceiver_send
-    debug_transceiver_send = False
+    debug_transceiver_send = True
 
     global debug_packet_manager
-    debug_packet_manager = False
+    debug_packet_manager = True
 
     global debug_log_packets
     debug_log_packets = False

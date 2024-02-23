@@ -31,4 +31,4 @@ def transceiver_receive(serial_port):
         
         if globals.debug_transceiver_receive: print(f'{thread_name} Received Packet: {packet}')
         globals.data_received.put(packet) # Blocks until Queue is available
-        
+        print("Put packet in data received queue. Queue size: " + str(globals.data_received.qsize()) + " Queue Empty? " + str(globals.data_received.empty()))

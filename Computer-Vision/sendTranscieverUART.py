@@ -13,7 +13,7 @@ def main():
     cameras = [2,1]
 
     # Initialize Detection    240
-    detector = Detector(1280, 360, "Robot_Model_Pan2", cameras, True, True, True)
+    detector = Detector(1280, 360, "TestModel", cameras, True, True, True)
 
     # Run Detection in a Thread
     detectionThread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
