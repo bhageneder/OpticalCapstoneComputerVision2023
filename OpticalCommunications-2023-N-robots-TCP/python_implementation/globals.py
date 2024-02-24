@@ -49,6 +49,8 @@ def init():
     global debug_packet_manager
     debug_packet_manager = True
 
+    # This debug option is breaking on Jetson Nano
+    # See issue 41
     global debug_log_packets
     debug_log_packets = False
 
