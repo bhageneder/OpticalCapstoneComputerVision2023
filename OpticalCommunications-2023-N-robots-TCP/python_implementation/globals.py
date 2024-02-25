@@ -11,28 +11,28 @@ Contains global variables that will be used across all files
 '''
 def init():
     global lights_enabled
-    lights_enabled = True
+    lights_enabled = False
     
     global debug_discovery
-    debug_discovery = False
+    debug_discovery = True
     
     global debug_link_send
-    debug_link_send = False
+    debug_link_send = True
 
     global debug_link_receive
     debug_link_receive = True
 
     global debug_listen_for_connection
-    debug_listen_for_connection = False
+    debug_listen_for_connection = True
 
     global debug_maintenance
     debug_maintenance = True
 
     global debug_mini_discovery
-    debug_mini_discovery = False
+    debug_mini_discovery = True
 
     global debug_mini_maintenance
-    debug_mini_maintenance = False
+    debug_mini_maintenance = True
 
     global debug_receive_manager
     debug_receive_manager = False
@@ -49,6 +49,8 @@ def init():
     global debug_packet_manager
     debug_packet_manager = False
 
+    # This debug option is breaking on Jetson Nano
+    # See issue 41
     global debug_log_packets
     debug_log_packets = False
 

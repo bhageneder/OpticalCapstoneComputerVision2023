@@ -18,4 +18,4 @@ def receive_manager():
 
         globals.virtual_serial_port.write(packet)
         
-       
+        if globals.debug_receive_manager: print("Writing packet to virtual serial port: " + globals.virtual_serial_port.portstr)
