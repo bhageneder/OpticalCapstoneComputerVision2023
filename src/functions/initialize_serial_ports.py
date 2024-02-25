@@ -1,5 +1,5 @@
-import serial
 import subprocess
+import serial
 
 """
 Initializes all of the serial ports and stores them in a list

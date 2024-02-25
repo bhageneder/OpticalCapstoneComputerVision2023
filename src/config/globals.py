@@ -1,15 +1,15 @@
-import time
-from initialize_serial_ports import initialize_serial_ports
 import queue
 import threading
-import subprocess
-import board
-import neopixel
+import board    # needed for neopixel
+import neopixel # needed for neopixel
 
 '''
 Contains global variables that will be used across all files
 '''
 def init():
+    global working_dir
+    working_dir = None
+
     global lights_enabled
     lights_enabled = True
     
@@ -177,11 +177,11 @@ def init():
         
     # The ROBOT_IP_ADDRESS is what is used for the SL0 interface
     global ROBOT_IP_ADDRESS
-    if (robot == "source"):
+    if (robot == "pi"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[0]
-    elif (robot == "c"):
+    elif (robot == "nano"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
-    elif (robot == "jeff"):
+    elif (robot == "orin"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[2]
 
     global POSSIBLE_RECEIVING_ROBOT_PORTS
@@ -195,14 +195,9 @@ def init():
     for i in range(7000, 7000 + EXPECTED_NUMBER_OF_ROBOTS):
         POSSIBLE_SENDING_ROBOT_PORTS.append(str(i))
     
-    # Setup Serial Line Interface Protocol (SLIP), and create virtual serial ports
-    subprocess.run(['/home/sa/Documents/OpticalCapstoneComputerVision2023/OpticalCommunications-2023-N-robots-TCP/scripts/create_serial_interface.sh', ROBOT_IP_ADDRESS])
-    time.sleep(1.5) # Wait for virtual serial ports to be fully created
-    
     global serial_ports
     global virtual_serial_port
     global robot_serial_port
-    serial_ports, robot_serial_port, virtual_serial_port = initialize_serial_ports()
 
     #global pixels ### Not supported on Nano
     # Board Setup
