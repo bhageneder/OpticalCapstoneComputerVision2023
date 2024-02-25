@@ -1,7 +1,7 @@
 import time
 import threading
 import queue
-from config.global_vars import global_vars
+from config.global_vars as globals
 from src.functions import led_manager as lc
 from src.functions.ping import ping
 
@@ -20,7 +20,7 @@ def old_maintenance(robot_link):
                 args=(
                     f'{robot_link.ip_address}',
                     i,
-                    f'{global_vars.ROBOT_IP_ADDRESS}_Ping_Through_Transceiver{i}',
+                    f'{globals.ROBOT_IP_ADDRESS}_Ping_Through_Transceiver{i}',
                     loss_percentages
                 ),
                 daemon=True,
@@ -36,7 +36,7 @@ def old_maintenance(robot_link):
         # Initializing These Values
         lowest_loss_percentage = 100
         current_loss_percentage = 100
-        current_serial_port_number = global_vars.serial_ports.index(robot_link.serial_port)
+        current_serial_port_number = globals.serial_ports.index(robot_link.serial_port)
         
         while not loss_percentages.empty():
             loss_percentage, transceiver_number = loss_percentages.get()
@@ -54,17 +54,17 @@ def old_maintenance(robot_link):
         # # If we have dropped one packet or more, and something has dropped less than one packet, then we switch.
         # if current_loss_percentage > one_packet_dropped_loss_percentage and lowest_loss_percentage < one_packet_dropped_loss_percentage:
 
-        if global_vars.debug_maintenance: print(f'{thread_name}: Current Loss Percentage: {current_loss_percentage}  Lowest Loss Percentage: {lowest_loss_percentage}')
+        if globals.debug_maintenance: print(f'{thread_name}: Current Loss Percentage: {current_loss_percentage}  Lowest Loss Percentage: {lowest_loss_percentage}')
         if current_loss_percentage > lowest_loss_percentage: 
-            if global_vars.debug_maintenance: print(f'{thread_name}: Switching Robot Link Serial Port to {best_transceiver_number}')
-            robot_link.serial_port = global_vars.serial_ports[best_transceiver_number]
+            if globals.debug_maintenance: print(f'{thread_name}: Switching Robot Link Serial Port to {best_transceiver_number}')
+            robot_link.serial_port = globals.serial_ports[best_transceiver_number]
     
-            if global_vars.lights_enabled:
-                    if global_vars.debug_maintenance: print(f'{thread_name}: Switching LED from {current_serial_port_number} to {best_transceiver_number}')
+            if globals.lights_enabled:
+                    if globals.debug_maintenance: print(f'{thread_name}: Switching LED from {current_serial_port_number} to {best_transceiver_number}')
                     
                     # Do not turn off LED if the Transceiver is being used by other Robot Links
-                    for i in range(len(global_vars.robot_links)):
-                        if (global_vars.robot_links[i].serial_port == global_vars.serial_ports[current_serial_port_number]):
+                    for i in range(len(globals.robot_links)):
+                        if (globals.robot_links[i].serial_port == globals.serial_ports[current_serial_port_number]):
                             break
                     else:
                         lc.turn_off_for_robot_link(current_serial_port_number)
@@ -72,10 +72,10 @@ def old_maintenance(robot_link):
                     # Turn on LED for the new Transceiver being used
                     lc.illuminate_for_robot_link(int(best_transceiver_number))
 
-        time.sleep(global_vars.MAINTENANCE_INTERVAL_SLEEP)
+        time.sleep(globals.MAINTENANCE_INTERVAL_SLEEP)
 
         # Terminate if robot_link no longer exists
-        if robot_link not in global_vars.robot_links:
+        if robot_link not in globals.robot_links:
             return
 
 
@@ -83,9 +83,9 @@ def mini_maintenance(dest_addr, identifier, payload, loss_percentages):
     loss_percentage = ping(
         dest_addr, 
         identifier, 
-        global_vars.PING_COUNT, 
-        global_vars.PING_INTERVAL,
-        global_vars.PING_TIMEOUT,
+        globals.PING_COUNT, 
+        globals.PING_INTERVAL,
+        globals.PING_TIMEOUT,
         payload
         )
     

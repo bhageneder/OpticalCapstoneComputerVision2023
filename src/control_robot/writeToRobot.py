@@ -1,8 +1,8 @@
 import random
 import time
 import serial
-from calculate_checksum import calculate_checksum
-from calculate_checksum import calculate_checksum_simple
+from control_robot.calculate_checksum import calculate_checksum
+from control_robot.calculate_checksum import calculate_checksum_simple
 
 """
 Documentation for serial communication format - http://yujinrobot.github.io/kobuki/enAppendixProtocolSpecification.html

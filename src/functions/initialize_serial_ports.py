@@ -41,7 +41,7 @@ def initialize_serial_ports():
     # The correct order to match the transceiver numbers
     serial_numbers = []
     config = configparser.ConfigParser()
-    config.read("config.cfg")
+    config.read("./config/config.cfg")
     for i in range(8):
         serial_numbers.append(config['SerialNumbers'][f'converterSerialNumber{i}'])
     # remove the first line which was just a comment

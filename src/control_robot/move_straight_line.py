@@ -3,9 +3,9 @@ import os
 import math
 import random
 import serial
-from calculate_checksum import calculate_checksum
-from calculate_checksum import calculate_checksum_simple
-from writeToRobot import writeToRobot
+from control_robot.calculate_checksum import calculate_checksum
+from control_robot.calculate_checksum import calculate_checksum_simple
+from control_robot.writeToRobot import writeToRobot
 
 # Distance should be in meters
 # Speed should be a byte (E.X. 0xFA speed = 250 mm/s) 

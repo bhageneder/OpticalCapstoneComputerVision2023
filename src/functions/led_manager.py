@@ -3,7 +3,7 @@
 # Author: Kyle Bush
 
 import time
-from config.global_vars import global_vars
+import config.global_vars as globals
 
 # Colors
 off = (0,0,0)
@@ -23,46 +23,46 @@ white = (255, 255, 255)
 # Functions
 def colorAll(color, delay):
     for i in range(0,24):
-        #global_vars.pixels[i] = color
+        #globals.pixels[i] = color
         #time.sleep(delay)
         pass
 
 def illuminate(transceiver, color1, color2=None, color3=None):
     if(color2 is None or color3 is None):
         # If 3 colors are not specified, only use the first color
-        #global_vars.pixels[transceiver*3] = color1
-        #global_vars.pixels[transceiver*3+1] = color1
-        #global_vars.pixels[transceiver*3+2] = color1
+        #globals.pixels[transceiver*3] = color1
+        #globals.pixels[transceiver*3+1] = color1
+        #globals.pixels[transceiver*3+2] = color1
         pass
     else:
         # All 3 colors were entered
-        #global_vars.pixels[transceiver*3] = color1
-        #global_vars.pixels[transceiver*3+1] = color2
-        #global_vars.pixels[transceiver*3+2] = color3
+        #globals.pixels[transceiver*3] = color1
+        #globals.pixels[transceiver*3+1] = color2
+        #globals.pixels[transceiver*3+2] = color3
         pass
 
 def illuminate_for_finding(transceiver_number):
-        #global_vars.pixels[transceiver_number * 3] = red
+        #globals.pixels[transceiver_number * 3] = red
         pass
 
 def turn_off_for_finding(transceiver_number):
-        #global_vars.pixels[transceiver_number * 3] = off
+        #globals.pixels[transceiver_number * 3] = off
         pass
 
 def illuminate_for_robot_link(transceiver_number):
-        #global_vars.pixels[transceiver_number * 3 + 1] = green
+        #globals.pixels[transceiver_number * 3 + 1] = green
         pass
 
 def turn_off_for_robot_link(transceiver_number):
-        #global_vars.pixels[transceiver_number * 3 + 1] = off
+        #globals.pixels[transceiver_number * 3 + 1] = off
         pass
 
 def illuminate_for_connecting(transceiver_number):
-        #global_vars.pixels[transceiver_number * 3 + 2] = blue
+        #globals.pixels[transceiver_number * 3 + 2] = blue
         pass
 
 def turn_off_for_connecting(transceiver_number):
-        #global_vars.pixels[transceiver_number * 3 + 2] = off
+        #globals.pixels[transceiver_number * 3 + 2] = off
         pass
 
 def transmitting(transceiver):

@@ -2,10 +2,10 @@ import time
 import os
 import random
 import serial
-from calculate_checksum import calculate_checksum
-from calculate_checksum import calculate_checksum_simple
-from writeToRobot import writeToRobot
-from move_straight_line import move_straight_line_for_distance_at_speed
+from control_robot.calculate_checksum import calculate_checksum
+from control_robot.calculate_checksum import calculate_checksum_simple
+from control_robot.writeToRobot import writeToRobot
+from control_robot.move_straight_line import move_straight_line_for_distance_at_speed
 
 
 def move_circle(robot_serial_port, speed):

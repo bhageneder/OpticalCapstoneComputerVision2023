@@ -2,9 +2,10 @@ import math
 import cv2
 import jetson_inference
 import jetson_utils
-import StreamClass
-from RobotClass import Robot
-from config.global_vars import global_vars
+from classes.StreamClass import Stream
+from classes.RobotClass import Robot
+import config.global_vars as globals
+import os
 
 class Detector:
         # Constructor
@@ -22,15 +23,15 @@ class Detector:
                 self.__trackingOverlapThreshold = 0.5
                 self.__sections = math.ceil(2.5*len(cameras))
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
-                
+
                 # Set up detect net for the custom model
-                self.__net = jetson_inference.detectNet(model=f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                self.__net = jetson_inference.detectNet(model=os.path.expanduser(f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx"), labels=os.path.expanduser(f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
                 self.__net.SetTrackingEnabled(tracking)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
 
                 # Private list to hold captures
-                self.__captures = list(map(lambda x: StreamClass.Stream(x), cameras))
+                self.__captures = list(map(lambda x: Stream(x), cameras))
 
                 # List of all robots currently being tracked
                 self.__robotList = list()

@@ -15,7 +15,7 @@ def init():
     lights_enabled = True
 
     global debug_discovery
-    debug_discovery = False
+    debug_discovery = True
 
     global debug_link_send
     debug_link_send = False
@@ -24,7 +24,7 @@ def init():
     debug_link_receive = True
 
     global debug_listen_for_connection
-    debug_listen_for_connection = False
+    debug_listen_for_connection = True
 
     global debug_maintenance
     debug_maintenance = True
@@ -36,7 +36,7 @@ def init():
     debug_mini_maintenance = False
 
     global debug_receive_manager
-    debug_receive_manager = False
+    debug_receive_manager = True
 
     global debug_send_manager
     debug_send_manager = False
@@ -125,7 +125,7 @@ def init():
     # The name of the robot running the program
     global robot
     config = configparser.ConfigParser()
-    config.read("config.cfg")
+    config.read("./config/config.cfg")
     robot = config['Name']['robotName']
 
     global PING_COUNT
@@ -181,9 +181,9 @@ def init():
     global ROBOT_IP_ADDRESS
     if (robot == "pi"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[0]
-    elif (robot == "nano"):
-        ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
     elif (robot == "orin"):
+        ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
+    elif (robot == "nano"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[2]
 
     global POSSIBLE_RECEIVING_ROBOT_PORTS
