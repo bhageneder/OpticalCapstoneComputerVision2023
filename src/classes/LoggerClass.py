@@ -3,13 +3,11 @@ from datetime import datetime
 import os
 from loguru import logger
 
-
 class Logger:
     DEFAULT_LOG_FILE_PATH = 'logger.db'
     def __init__(self, log_file_path = None):
         self.log_file_path = self.DEFAULT_LOG_FILE_PATH
 
-        
         # Check if the database file exists, if not, create it
         if not os.path.exists(self.log_file_path):
             if self.create_database():
@@ -24,12 +22,12 @@ class Logger:
                         "<Module: {record[module_name]}> | <Category: {record[category]}> | " 
                         "<Message: {record[message]}>", 
                     level='INFO', enqueue=True, serialize=True)
-        
+
         # Create / open database existing on disk
         self.sqliteConnection = sqlite3.connect(self.log_file_path)
         # Add cursor to retrieve data from database using queries
         self.cursor = self.sqliteConnection.cursor()
-        
+
         # Define the table
         log_table = ''' Create Table event_Log(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,19 +39,19 @@ class Logger:
             category TEXT,
             message TEXT
         )'''
-        
+
         # Get the process ID and module name
         pid = os.getpid()
         # Used to store the full path of the script file in the log_table as a way to identify which script or module inserted a particular log entry
-        modname = __file__ 
+        modname = __file__
 
-        # Execute the table 
+        # Execute the table
         # Use cursor execute to populate all desired data into table
         print("Collected Data: ") # --> not really necessary
         # To select specific column replace * with the column name(s) ('''SELECT * FROM log_table''')
         events = self.cursor.execute(log_table)
-       
-    
+
+
     def create_database(self):
         try:
             # Create an empty database file if it doesn't exist

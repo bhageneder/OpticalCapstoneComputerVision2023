@@ -1,10 +1,10 @@
-import config.globals as globals
+import global_vars as global_vars
 import time
 
-globals.init()
+global_vars.init()
 print('Sending...')
 
-print((globals.serial_ports.index(globals.serial_ports[7])).to_bytes(1, 'big'))
+print((global_vars.serial_ports.index(global_vars.serial_ports[7])).to_bytes(1, 'big'))
 
 
 #globals.serial_ports[1].write(b"hello\n")

@@ -12,10 +12,10 @@ def init():
 
     global lights_enabled
     lights_enabled = True
-    
+
     global debug_discovery
     debug_discovery = False
-    
+
     global debug_link_send
     debug_link_send = False
 

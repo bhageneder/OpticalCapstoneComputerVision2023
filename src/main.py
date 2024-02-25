@@ -15,7 +15,7 @@ from threads.send_manager import send_manager
 from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
 from threads.detector_manager import detector_manager
-import config.globals as global_vars
+import global_vars as global_vars
 import functions.led_manager as lc
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports

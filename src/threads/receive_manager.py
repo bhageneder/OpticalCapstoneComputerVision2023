@@ -1,4 +1,4 @@
-import config.globals as globals
+import global_vars as global_vars
 import utilities
 import threading
 import binascii
@@ -10,12 +10,12 @@ from packet_manager import analyze_packet
 def receive_manager():
     thread_name = threading.current_thread().name
     while True:
-        packet = globals.data_received.get()
+        packet = global_vars.data_received.get()
         # Remove any starting bytes before 0xc0 (this should not happen) (bandaid-fix)
         packet = packet[(packet.find(b'\xc0')):]
-        if globals.debug_log_packets:
+        if global_vars.debug_log_packets:
             utilities.add_data_to_log_file(binascii.hexlify(packet).decode('utf-8'), "Raw")
 
-        globals.virtual_serial_port.write(packet)
+        global_vars.virtual_serial_port.write(packet)
         
        

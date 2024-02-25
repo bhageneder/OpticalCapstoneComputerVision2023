@@ -1,4 +1,3 @@
-
 def calculate_checksum_simple(message):
     return sum(message)
 

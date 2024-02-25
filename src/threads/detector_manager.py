@@ -1,8 +1,6 @@
-import string
 import time
 from threading import Thread
-from config import globals
-from . import Detector
+import DetectorClass
 
 def detector_manager():
     # Only use the cameras in this set
@@ -14,8 +12,8 @@ def detector_manager():
     detector = Detector(1280, 360, "Robot_Model_Pan2", cameras, render = True, tracking = True)
 
     # Run Detector in a Thread
-    globals.detector_thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
-    globals.detector_thread.start()
+    global_vars.detector_thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
+    global_vars.detector_thread.start()
 
     # Wait Until Detection is Initialized
     #while detector.initializing:
@@ -24,13 +22,13 @@ def detector_manager():
     try:
         while True:
             print("transceiver " + str(detector.getTransceiver()))
-            globals.best_transceiver = 1
+            global_vars.best_transceiver = 1
             #print(transceiver)
-            
+
             # Sleep
             time.sleep(0.01)  
 
     except KeyboardInterrupt:
         pass
     except:
-        print("Get Transceiver or Send Error") 
+        print("Get Transceiver or Send Error")

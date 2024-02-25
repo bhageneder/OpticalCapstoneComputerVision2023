@@ -2,8 +2,8 @@ import math
 import cv2
 import jetson_inference
 import jetson_utils
-from Stream import Stream
-from Robot import Robot
+import StreamClass
+import RobotClass
 
 class Detector:
         # Constructor
@@ -29,7 +29,7 @@ class Detector:
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
 
                 # Private list to hold captures
-                self.__captures = list(map(lambda x: Stream(x), cameras))
+                self.__captures = list(map(lambda x: StreamClass.Stream(x), cameras))
 
                 # List of all robots currently being tracked
                 self.__robotList = list()
@@ -181,7 +181,7 @@ class Detector:
                                 # If so, remove from robotListCopy 
                                 # If not, create a new robot object and store in the robotList
                                 if not foundRobotFlag:
-                                       newRobot = Robot(trackingID, transceiver, True)
+                                       newRobot = RobotClass(trackingID, transceiver, True)
                                        self.__robotList.append(newRobot)
                                        
                                 # Debug statement

@@ -3,7 +3,7 @@
 # Author: Kyle Bush
 
 import time
-import config.globals as globals
+import global_vars as global_vars
 
 # Colors
 off = (0,0,0)
