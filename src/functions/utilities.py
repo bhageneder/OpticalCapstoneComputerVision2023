@@ -1,10 +1,10 @@
 import config.globals as globals
-from robot_link import RobotLink
+from classes import RobotLink
 
 def add_data_to_log_file(data, robot_link_name):
     if data == "":
         return
-    file_path = f"/home/pi/repos/OpticalCommunications-2023/python_implementation/robot_link_packets/{robot_link_name}.txt"
+    file_path = globals.working_dir + f"robot_link_packets/{robot_link_name}.txt"
     with open(file_path, "a") as f:
         f.write(data)
         f.write('\n')
