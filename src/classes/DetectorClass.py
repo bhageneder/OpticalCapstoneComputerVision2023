@@ -3,7 +3,8 @@ import cv2
 import jetson_inference
 import jetson_utils
 import StreamClass
-import RobotClass
+from RobotClass import Robot
+from config.global_vars import global_vars
 
 class Detector:
         # Constructor
@@ -23,7 +24,7 @@ class Detector:
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
                 
                 # Set up detect net for the custom model
-                self.__net = jetson_inference.detectNet(model=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"/home/sa/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                self.__net = jetson_inference.detectNet(model=f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx", labels=f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt", input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
                 self.__net.SetTrackingEnabled(tracking)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
@@ -181,7 +182,7 @@ class Detector:
                                 # If so, remove from robotListCopy 
                                 # If not, create a new robot object and store in the robotList
                                 if not foundRobotFlag:
-                                       newRobot = RobotClass(trackingID, transceiver, True)
+                                       newRobot = Robot(trackingID, transceiver, True)
                                        self.__robotList.append(newRobot)
                                        
                                 # Debug statement

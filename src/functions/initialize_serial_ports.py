@@ -1,5 +1,6 @@
 import subprocess
 import serial
+import configparser
 
 """
 Initializes all of the serial ports and stores them in a list
@@ -39,14 +40,14 @@ def initialize_serial_ports():
 
     # The correct order to match the transceiver numbers
     serial_numbers = []
-    with open("/home/sa/converterSerialNumbers.txt", "r") as f:
-        for line in f:
-            serial_numbers.append(line.strip())
+    config = configparser.ConfigParser()
+    config.read("config.cfg")
+    for i in range(8):
+        serial_numbers.append(config['SerialNumbers'][f'converterSerialNumber{i}'])
     # remove the first line which was just a comment
     #serial_numbers.pop(0) ### disabled to get it to run
 
     serial_ports_in_correct_order = []
-    count = 0
     for i in range(8):
         for j in range(8):
             if (serial_numbers[i] == static_serial_numbers[j]):                

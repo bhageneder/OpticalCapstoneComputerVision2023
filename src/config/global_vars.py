@@ -2,6 +2,7 @@ import queue
 import threading
 import board    # needed for neopixel
 import neopixel # needed for neopixel
+import configparser
 
 '''
 Contains global variables that will be used across all files
@@ -123,8 +124,9 @@ def init():
     
     # The name of the robot running the program
     global robot
-    with open("/home/sa/robotName.txt", "r") as f:
-        robot = (f.read()).strip()
+    config = configparser.ConfigParser()
+    config.read("config.cfg")
+    robot = config['Name']['robotName']
 
     global PING_COUNT
     PING_COUNT = 2
