@@ -2,9 +2,7 @@ import cv2
 import datetime
 import os
 import time
-import sys
-sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/Computer-Vision")
-from Stream import Stream
+from src.classes.StreamClass import Stream
 
 def main():
     # Open Camera Captures
