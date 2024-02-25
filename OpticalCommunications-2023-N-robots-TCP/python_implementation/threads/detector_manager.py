@@ -25,9 +25,8 @@ def detector_manager():
     time.sleep(60)
     try:
         while True:
-            print("transceiver " + str(detector.getTransceiver()))
+            #print("transceiver " + str(detector.getTransceiver()))
             globals.best_transceiver = detector.getTransceiver()
-            #print(transceiver)
             
             # Sleep
             time.sleep(0.01)  
