@@ -1,7 +1,7 @@
 import binascii
 import sliplib
 from scapy.all import IP, ICMP, TCP
-from src import global_vars
+from config.global_vars import global_vars
 from src.functions.utilities import nested_getattr
 from src.classes.PacketClass import Packet
 

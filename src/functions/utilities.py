@@ -1,4 +1,4 @@
-from src import global_vars
+from config.global_vars import global_vars
 
 def add_data_to_log_file(data, robot_link_name):
     if data == "":

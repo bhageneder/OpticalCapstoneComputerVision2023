@@ -1,11 +1,9 @@
 import time
-import global_vars as global_vars
 import threading
-import led_manager as lc
 import queue
-import sys
-sys.path.append('./')
-from ping import ping
+from config.global_vars import global_vars
+from src.functions import led_manager as lc
+from src.functions.ping import ping
 
 # 8 Mini_Maintenance Threads and 1 Maintenance Thread per Robot Link
 def old_maintenance(robot_link):

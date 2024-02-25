@@ -1,6 +1,7 @@
 import time
 from threading import Thread
-import DetectorClass
+from config.global_vars import global_vars
+from src.classes.DetectorClass import Detector
 
 def detector_manager():
     # Only use the cameras in this set

@@ -1,7 +1,7 @@
 import jetson_inference
 import jetson_utils
 import cv2
-from Stream import Stream
+from src.classes.StreamClass import Stream
 
 # Define variables
 height = 360					# Change for production code. Only set to 360 such that the images will fit on screen

@@ -1,7 +1,7 @@
-import global_vars as global_vars
-import utilities
 import threading
-import led_manager as lc
+from config.global_vars import global_vars
+from src.functions import utilities
+from src.functions import led_manager as lc
 
 def transceiver_send(serial_port, send_queue):
     thread_name = threading.current_thread().name

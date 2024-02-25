@@ -1,6 +1,6 @@
 import time
 import threading
-import global_vars as global_vars
+from config.global_vars import global_vars
 
 def link_receive(robot_link):
     thread_name = threading.current_thread().name

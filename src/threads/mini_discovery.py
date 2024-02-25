@@ -1,10 +1,8 @@
 import threading
-import global_vars as global_vars
 import socket
-import sys
-sys.path.append('./')
-from robot_link import RobotLink
-import led_manager as lc
+from config.global_vars import global_vars
+from src.classes.RobotLink import RobotLink
+from src.functions import led_manager as lc
 
 # For n Robots:
 # n - 1 possible IP addresses (not including our own), and 8 possible ports. (n - 1) * 8 threads need to be ran

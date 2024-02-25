@@ -1,5 +1,5 @@
 import serial
-from robot_link import RobotLink
+from src.classes.RobotLink import RobotLink
 
 a = RobotLink('a', None, None, None, None)
 b = RobotLink('a', None, None, None, None)

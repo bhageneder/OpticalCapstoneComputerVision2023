@@ -15,7 +15,7 @@ from threads.send_manager import send_manager
 from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
 from threads.detector_manager import detector_manager
-import global_vars as global_vars
+from config.global_vars import global_vars
 import functions.led_manager as lc
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
@@ -87,7 +87,7 @@ def main():
     global_vars.detector_manager_thread = threading.Thread(target=detector_manager, daemon=True, name=f"Detector_Manager")
 
     start_threads()
-    
+
 def start_threads():
     # Running Transceiver Receive Threads
     for transceiver_receive_thread in global_vars.transceiver_receive_threads:
@@ -130,6 +130,6 @@ def start_threads():
         maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
         maintenance_thread.start()
 
-        
+
 if __name__ == "__main__":
     main()

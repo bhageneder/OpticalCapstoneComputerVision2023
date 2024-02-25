@@ -1,11 +1,10 @@
-import global_vars as global_vars
-import utilities
+
 import threading
 import binascii
-import led_manager as lc
-import sys
-sys.path.append('./')
-from packet_manager import analyze_packet
+from config.global_vars import global_vars
+from src.functions import utilities
+from functions import led_manager as lc
+from src.functions.analyze_packet import analyze_packet
 
 def receive_manager():
     thread_name = threading.current_thread().name
@@ -17,5 +16,3 @@ def receive_manager():
             utilities.add_data_to_log_file(binascii.hexlify(packet).decode('utf-8'), "Raw")
 
         global_vars.virtual_serial_port.write(packet)
-        
-       

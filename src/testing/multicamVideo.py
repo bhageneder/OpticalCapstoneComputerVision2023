@@ -1,6 +1,6 @@
 from threading import Thread
 import cv2
-from Stream import Stream
+from src.classes.StreamClass import Stream
 
 cam0 = Stream(0)
 cam1 = Stream(1)

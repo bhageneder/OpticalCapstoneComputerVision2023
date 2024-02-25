@@ -1,10 +1,10 @@
-from Detection import Detection
 from threading import Thread
 import time
 from datetime import datetime
 import matplotlib.pyplot as plt
+from src.classes.DetectorClass import Detector
 
-detection = Detection(1280, 360, "Balls_2", [1,0], True, True)
+detection = Detector(1280, 360, "Balls_2", [1,0], True, True)
 
 
 thread = Thread(target = detection.detect, args = (), daemon=True, name="Detect")

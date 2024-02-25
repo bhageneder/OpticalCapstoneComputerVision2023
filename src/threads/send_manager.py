@@ -1,6 +1,6 @@
-import global_vars as global_vars
 import threading
-from packet_manager import analyze_packet
+from config.global_vars import global_vars
+from src.functions.analyze_packet import analyze_packet
 
 def send_manager():
     thread_name = threading.current_thread().name

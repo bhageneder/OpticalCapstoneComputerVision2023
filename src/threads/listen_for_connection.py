@@ -1,8 +1,8 @@
 import threading
 import socket
 import psutil
-import src.config
-import src.classes
+from config.global_vars import global_vars
+from src.classes.RobotLink import RobotLink
 
 # Listen for connection on all 8 possible ports (1 port per thread)
 def listen_for_connection(port):

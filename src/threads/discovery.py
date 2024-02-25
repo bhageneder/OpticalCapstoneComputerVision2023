@@ -1,6 +1,6 @@
 import time
 import threading
-import global_vars as global_vars
+from config.global_vars import global_vars
 from src.threads.mini_discovery import mini_discovery
 
 # There are (8 * (n - 1)) total threads to be run, but we are only running 7 at a time
