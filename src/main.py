@@ -84,7 +84,8 @@ def main():
     # Creating Receive Manager Thread
     global_vars.receive_manager_thread = threading.Thread(target=receive_manager, daemon=True, name=f"Receive_Manager")
 
-    global_vars.detector_manager_thread = threading.Thread(target=detector_manager, daemon=True, name=f"Detector_Manager")
+    if (global_vars.robot == ("nano" or "orin")):
+        global_vars.detector_manager_thread = threading.Thread(target=detector_manager, daemon=True, name=f"Detector_Manager")
 
     start_threads()
 
@@ -114,7 +115,8 @@ def start_threads():
     # Running Send Manager Thread
     global_vars.send_manager_thread.start()
 
-    global_vars.detector_manager_thread.start()
+    if (global_vars.robot == ("nano" or "orin")):
+        global_vars.detector_manager_thread.start()
 
     # Running New Threads based on new Robot Links
     while True:
