@@ -2,7 +2,7 @@ import os
 import struct
 import time
 import socket
-import globals
+import config.globals as globals
 import errno
 import threading
 

@@ -1,5 +1,5 @@
-import cv2
 from threading import Thread
+import cv2
 
 # Define Stream class
 class Stream:

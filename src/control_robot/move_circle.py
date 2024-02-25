@@ -1,11 +1,10 @@
+import time
+import os
+import random
 import serial
 from calculate_checksum import calculate_checksum
 from calculate_checksum import calculate_checksum_simple
-import random
 from writeToRobot import writeToRobot
-import time
-import os
-
 from move_straight_line import move_straight_line_for_distance_at_speed
 
 

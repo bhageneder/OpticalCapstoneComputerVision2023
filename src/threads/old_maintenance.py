@@ -1,5 +1,5 @@
 import time
-import globals
+import config.globals as globals
 import threading
 import led_manager as lc
 import queue

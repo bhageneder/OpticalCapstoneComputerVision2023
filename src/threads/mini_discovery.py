@@ -1,5 +1,5 @@
 import threading
-import globals
+import config.globals as globals
 import socket
 import sys
 sys.path.append('./')

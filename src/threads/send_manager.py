@@ -1,4 +1,4 @@
-import globals
+import config.globals as globals
 import threading
 from packet_manager import analyze_packet
 

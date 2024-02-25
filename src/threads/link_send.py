@@ -1,4 +1,4 @@
-import globals
+import config.globals as globals
 import time
 import threading
 

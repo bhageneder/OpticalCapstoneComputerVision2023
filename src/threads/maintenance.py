@@ -1,4 +1,4 @@
-import globals
+import config.globals as globals
 import time
 import threading
 from ping import multi_ping

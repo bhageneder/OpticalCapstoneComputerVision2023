@@ -21,7 +21,7 @@ from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
 from threads.detector_manager import detector_manager
 from classes.RobotLink import RobotLink
-import config.globals
+import config.globals as globals
 import functions.led_manager as lc
 from control_robot.play_sound import play_button_sound, play_sad_sound, play_connected_sound
 from control_robot.move_circle import move_circle

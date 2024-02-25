@@ -1,4 +1,4 @@
-import globals
+import config.globals as globals
 import utilities
 import threading
 import led_manager as lc

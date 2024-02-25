@@ -1,4 +1,4 @@
-import globals
+import config.globals as globals
 import time
 import threading
 from threads.mini_discovery import mini_discovery

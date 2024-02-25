@@ -1,10 +1,8 @@
 import string
 import time
-import globals
 from threading import Thread
-import sys
-sys.path.append('/home/sa/Documents/OpticalCapstoneComputerVision2023/Computer-Vision')
-from Detector import Detector
+from config import globals
+from . import Detector
 
 def detector_manager():
     # Only use the cameras in this set

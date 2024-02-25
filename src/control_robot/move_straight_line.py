@@ -1,11 +1,11 @@
-import serial
-from calculate_checksum import calculate_checksum
-from calculate_checksum import calculate_checksum_simple
-import random
-from writeToRobot import writeToRobot
 import time
 import os
 import math
+import random
+import serial
+from calculate_checksum import calculate_checksum
+from calculate_checksum import calculate_checksum_simple
+from writeToRobot import writeToRobot
 
 # Distance should be in meters
 # Speed should be a byte (E.X. 0xFA speed = 250 mm/s) 

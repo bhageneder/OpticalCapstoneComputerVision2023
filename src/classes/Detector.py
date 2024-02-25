@@ -1,7 +1,7 @@
+import math
 import cv2
 import jetson_inference
 import jetson_utils
-import math
 from Stream import Stream
 from Robot import Robot
 

@@ -1,4 +1,4 @@
-import globals
+import config.globals as globals
 from robot_link import RobotLink
 
 def add_data_to_log_file(data, robot_link_name):

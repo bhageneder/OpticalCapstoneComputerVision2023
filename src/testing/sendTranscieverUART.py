@@ -1,4 +1,4 @@
-from Detector import Detector
+from classes.Detector import Detector
 from threading import Thread
 from UART import UART 
 import time

@@ -1,7 +1,7 @@
 import sliplib
 from scapy.all import IP, ICMP, TCP
-import globals
-from utilities import nested_getattr
+import config.globals as globals
+from functions.utilities import nested_getattr
 import binascii
 
 # Takes 'data' as an input. This is a single packet that is in byte format, an example is below...
