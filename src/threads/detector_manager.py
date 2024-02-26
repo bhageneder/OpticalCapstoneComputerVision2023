@@ -5,12 +5,12 @@ from classes.DetectorClass import Detector
 
 def detector_manager():
     # Only use the cameras in this set
-    camSet1 = 'nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=30/1 ! nvvidconv flip-method="2" ! video/x-raw, width=1280, height=720, format=(string)BGRx ! videoconvert ! appsink'
+    #camSet1 = 'nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=30/1 ! nvvidconv flip-method="2" ! video/x-raw, width=1280, height=720, format=(string)BGRx ! videoconvert ! appsink'
 
-    cameras = [1, 0]
+    #cameras = [1, 0]
 
     # Initialize Detector
-    detector = Detector(1280, 360, "Robot_Model_Pan2", cameras, render = True, tracking = True)
+    detector = Detector(1280, 360, "Robot_Model_Pan2", globals.cameras, render = True, tracking = True)
 
     # Run Detector in a Thread
     globals.detector_thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
