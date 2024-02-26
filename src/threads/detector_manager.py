@@ -17,14 +17,13 @@ def detector_manager():
     globals.detector_thread.start()
 
     # Wait Until Detection is Initialized
-    #while detector.initializing:
-    #    continue
-    time.sleep(60)
+    while detector.initializing:
+        continue
+
     try:
         while True:
-            print("transceiver " + str(detector.getTransceiver()))
-            globals.best_transceiver = 1
-            #print(transceiver)
+            globals.best_transceiver = detector.getTransceiver()
+            #print("Best Transceiver: " + str(globals.best_transceiver))
 
             # Sleep
             time.sleep(0.01)  
