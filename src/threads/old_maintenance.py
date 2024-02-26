@@ -1,7 +1,7 @@
 import time
 import threading
 import queue
-from config.global_vars as globals
+import config.global_vars as g
 from src.functions import led_manager as lc
 from src.functions.ping import ping
 
@@ -20,7 +20,7 @@ def old_maintenance(robot_link):
                 args=(
                     f'{robot_link.ip_address}',
                     i,
-                    f'{globals.ROBOT_IP_ADDRESS}_Ping_Through_Transceiver{i}',
+                    f'{g.ROBOT_IP_ADDRESS}_Ping_Through_Transceiver{i}',
                     loss_percentages
                 ),
                 daemon=True,
@@ -36,35 +36,35 @@ def old_maintenance(robot_link):
         # Initializing These Values
         lowest_loss_percentage = 100
         current_loss_percentage = 100
-        current_serial_port_number = globals.serial_ports.index(robot_link.serial_port)
+        current_serial_port_number = g.serial_ports.index(robot_link.serial_port)
         
         while not loss_percentages.empty():
             loss_percentage, transceiver_number = loss_percentages.get()
-            #if globals.debug_maintenance: print(f'{thread_name}: Returned Tuple {(loss_percentage, transceiver_number)}')
+            #if g.debug_maintenance: print(f'{thread_name}: Returned Tuple {(loss_percentage, transceiver_number)}')
             if int(transceiver_number) == current_serial_port_number:
                 current_loss_percentage = loss_percentage
             
             if loss_percentage < lowest_loss_percentage:
                 lowest_loss_percentage = loss_percentage
                 best_transceiver_number = transceiver_number
-                #if globals.debug_maintenance: print(f'{thread_name}: Best Transceiver # Set as {best_transceiver_number}')
+                #if g.debug_maintenance: print(f'{thread_name}: Best Transceiver # Set as {best_transceiver_number}')
         
-        # one_packet_dropped_loss_percentage = round((1 - ((globals.PING_COUNT - 1) / globals.PING_COUNT)) * 100, 2)
-        # if globals.debug_maintenance: print(f'{thread_name}: One Dropped Packet Loss Percentage: {one_packet_dropped_loss_percentage}')
+        # one_packet_dropped_loss_percentage = round((1 - ((g.PING_COUNT - 1) / g.PING_COUNT)) * 100, 2)
+        # if g.debug_maintenance: print(f'{thread_name}: One Dropped Packet Loss Percentage: {one_packet_dropped_loss_percentage}')
         # # If we have dropped one packet or more, and something has dropped less than one packet, then we switch.
         # if current_loss_percentage > one_packet_dropped_loss_percentage and lowest_loss_percentage < one_packet_dropped_loss_percentage:
 
-        if globals.debug_maintenance: print(f'{thread_name}: Current Loss Percentage: {current_loss_percentage}  Lowest Loss Percentage: {lowest_loss_percentage}')
+        if g.debug_maintenance: print(f'{thread_name}: Current Loss Percentage: {current_loss_percentage}  Lowest Loss Percentage: {lowest_loss_percentage}')
         if current_loss_percentage > lowest_loss_percentage: 
-            if globals.debug_maintenance: print(f'{thread_name}: Switching Robot Link Serial Port to {best_transceiver_number}')
-            robot_link.serial_port = globals.serial_ports[best_transceiver_number]
+            if g.debug_maintenance: print(f'{thread_name}: Switching Robot Link Serial Port to {best_transceiver_number}')
+            robot_link.serial_port = g.serial_ports[best_transceiver_number]
     
-            if globals.lights_enabled:
-                    if globals.debug_maintenance: print(f'{thread_name}: Switching LED from {current_serial_port_number} to {best_transceiver_number}')
+            if g.lights_enabled:
+                    if g.debug_maintenance: print(f'{thread_name}: Switching LED from {current_serial_port_number} to {best_transceiver_number}')
                     
                     # Do not turn off LED if the Transceiver is being used by other Robot Links
-                    for i in range(len(globals.robot_links)):
-                        if (globals.robot_links[i].serial_port == globals.serial_ports[current_serial_port_number]):
+                    for i in range(len(g.robot_links)):
+                        if (g.robot_links[i].serial_port == g.serial_ports[current_serial_port_number]):
                             break
                     else:
                         lc.turn_off_for_robot_link(current_serial_port_number)
@@ -72,10 +72,10 @@ def old_maintenance(robot_link):
                     # Turn on LED for the new Transceiver being used
                     lc.illuminate_for_robot_link(int(best_transceiver_number))
 
-        time.sleep(globals.MAINTENANCE_INTERVAL_SLEEP)
+        time.sleep(g.MAINTENANCE_INTERVAL_SLEEP)
 
         # Terminate if robot_link no longer exists
-        if robot_link not in globals.robot_links:
+        if robot_link not in g.robot_links:
             return
 
 
@@ -83,9 +83,9 @@ def mini_maintenance(dest_addr, identifier, payload, loss_percentages):
     loss_percentage = ping(
         dest_addr, 
         identifier, 
-        globals.PING_COUNT, 
-        globals.PING_INTERVAL,
-        globals.PING_TIMEOUT,
+        g.PING_COUNT, 
+        g.PING_INTERVAL,
+        g.PING_TIMEOUT,
         payload
         )
     
