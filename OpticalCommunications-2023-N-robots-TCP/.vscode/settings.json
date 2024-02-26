@@ -1,7 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "./control_robot",
-        "./scripts"
-    ],
-    "search.useParentIgnoreFiles": false
-}
