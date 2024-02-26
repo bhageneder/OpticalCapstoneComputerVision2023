@@ -128,6 +128,16 @@ def init():
     config.read("./config/config.cfg")
     robot = config['Name']['robotName']
 
+    # The cameras to use for vision
+    global cameras
+    cameras = list()
+    numCameras = config['Cameras']['numCameras']
+    try:
+        for i in range(0, numCameras):
+            cameras.append(config['Cameras'][f'camera{i}'])
+    except:
+        raise Exception("Incorrect camera configuration!")
+
     global PING_COUNT
     PING_COUNT = 2
 
