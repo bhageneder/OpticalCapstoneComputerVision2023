@@ -1,14 +1,14 @@
 import time
-from config.global_vars import global_vars
+import config.global_vars as g
 
-global_vars.init()
+g.init()
 print('Sending...')
 
-print((global_vars.serial_ports.index(global_vars.serial_ports[7])).to_bytes(1, 'big'))
+print((g.serial_ports.index(g.serial_ports[7])).to_bytes(1, 'big'))
 
 
-#globals.serial_ports[1].write(b"hello\n")
+#g.serial_ports[1].write(b"hello\n")
 # time.sleep(0.2)
-# print(globals.serial_ports[2].readline())
-# print(globals.serial_ports[0].readline())
+# print(g.serial_ports[2].readline())
+# print(g.serial_ports[0].readline())
 #

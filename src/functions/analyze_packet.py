@@ -1,7 +1,7 @@
 import binascii
 import sliplib
 from scapy.all import IP, ICMP, TCP
-import config.global_vars as globals
+import config.global_vars as g
 from functions.utilities import nested_getattr
 from classes.PacketClass import Packet
 
@@ -15,7 +15,7 @@ def analyze_packet(packet):
     try:
         decoded_bytes = sliplib.decode(packet)
 
-        if globals.debug_packet_manager == True:
+        if g.debug_packet_manager == True:
             hex_bytes = binascii.hexlify(decoded_bytes).decode('utf-8')
             print(f'Packet Hex Data: {hex_bytes}')
 
@@ -25,19 +25,19 @@ def analyze_packet(packet):
             #IP_packet.show()
             try:
                 ICMP_packet = IP_packet[ICMP]
-                if globals.debug_packet_manager == True: ICMP_packet.show()
+                if g.debug_packet_manager == True: ICMP_packet.show()
             except:
-                if globals.debug_packet_manager == True: print(f'Decoding ICMP Packet Error')
+                if g.debug_packet_manager == True: print(f'Decoding ICMP Packet Error')
             try:
                 TCP_packet = IP_packet[TCP]
-                if globals.debug_packet_manager == True: TCP_packet.show()
+                if g.debug_packet_manager == True: TCP_packet.show()
             except:
-                if globals.debug_packet_manager == True: print(f'Decoding TCP Packet Error')
+                if g.debug_packet_manager == True: print(f'Decoding TCP Packet Error')
         except:
-            if globals.debug_packet_manager == True: print(f'Decoding IP Packet Error')
+            if g.debug_packet_manager == True: print(f'Decoding IP Packet Error')
 
     except sliplib.ProtocolError:
-        if globals.debug_packet_manager == True: print(f'SLIP Could Not Process Corrupt Packet: {packet}')
+        if g.debug_packet_manager == True: print(f'SLIP Could Not Process Corrupt Packet: {packet}')
 
     # Create the packet object - if the field does not exist, it is set as None
     return Packet(

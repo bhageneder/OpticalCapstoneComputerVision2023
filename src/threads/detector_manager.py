@@ -1,6 +1,6 @@
 import time
 from threading import Thread
-import config.global_vars as globals
+import config.global_vars as g
 from classes.DetectorClass import Detector
 
 def detector_manager():
@@ -10,11 +10,11 @@ def detector_manager():
     #cameras = [1, 0]
 
     # Initialize Detector
-    detector = Detector(1280, 360, "Robot_Model_Pan2", globals.cameras, render = True, tracking = True)
+    detector = Detector(1280, 360, "Robot_Model_Pan2", g.cameras, render = True, tracking = True)
 
     # Run Detector in a Thread
-    globals.detector_thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
-    globals.detector_thread.start()
+    g.detector_thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
+    g.detector_thread.start()
 
     # Wait Until Detection is Initialized
     while detector.initializing:
@@ -22,8 +22,8 @@ def detector_manager():
 
     try:
         while True:
-            globals.best_transceiver = detector.getTransceiver()
-            #print("Best Transceiver: " + str(globals.best_transceiver))
+            g.best_transceiver = detector.getTransceiver()
+            #print("Best Transceiver: " + str(g.best_transceiver))
 
             # Sleep
             time.sleep(0.01)  
