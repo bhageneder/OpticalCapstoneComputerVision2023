@@ -1,4 +1,4 @@
-from asyncio.windows_events import NULL
+
 from loguru import logger
 import sqlite3
 from datetime import datetime
@@ -19,12 +19,13 @@ class Logger:
     DEFAULT_CSV_FOLDER = 'csvFolder.csv'
 
     def __init__(self, logFilePath = None):
-        self.logFilePath = self.DEFAULT_LOG_FILE
+        self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
         self.logger = logging.getLogger(__name__)
        
         
         # Obtain sql database connection
         self.sqliteConnection = self.createDatabaseConnection()
+        print(self.sqliteConnection)
 
         # Add cursor to retrieve data from database using queries
         self.cursor = self.sqliteConnection.cursor()
@@ -41,11 +42,14 @@ class Logger:
         )"""
 
         self.levelTable = """ CREATE TABLE levelTable(
-            Level# INTEGER
+            levelNum INTEGER
             Level  VARCHAR(10)
         )"""
+
+        self.logSetup()
+
         for level_enum in Level:
-            self.cursor.execute("INSERT INTO levelTable (Level#, Level) VALUES (?, ?)",
+            self.cursor.execute("INSERT INTO levelTable (levelNum, Level) VALUES (?, ?)",
                    (level_enum.value, level_enum.name))
 
     # Logger Class Deconstructor
@@ -57,6 +61,10 @@ class Logger:
 
     # Create / open database existing on disk and return database connection
     def createDatabaseConnection(self):
+        conn = sqlite3.connect(self.logFilePath)
+        #conn.row = sqlite3.Row #to access column by name
+        return conn
+        '''
         try:
             # Check if connection exists 
             conn = sqlite3.connect(self.logFilePath)
@@ -65,10 +73,11 @@ class Logger:
         except sqlite3.Error as sqliteError:
             print("Error connecting to SQLite database at path: {}".format(self.logFilePath))
             print(sqliteError)
-            return NULL
+            return None
         except Exception as e:
             print("FATAL ERROR connecting to database: {e}")
-            return NULL
+            return None
+        '''
       
     def logSetup(self):
         # Get the process ID and module name
