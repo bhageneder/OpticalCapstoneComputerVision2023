@@ -90,11 +90,8 @@ def init():
     global detector_thread
     discovery_thread = None
 
-    global detector_manager_thread
-    detector_manager_thread = None
-
-    global best_transceiver
-    best_transceiver = -1
+    global detector
+    detector = None
     
     # Queue for data that is received by all transceivers
     global data_received

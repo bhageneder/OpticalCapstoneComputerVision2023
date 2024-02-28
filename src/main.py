@@ -19,6 +19,7 @@ import config.global_vars as g
 import functions.led_manager as lc
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
+from classes.DetectorClass import Detector
 
 def main():
     # Clear robot_link_data directory
@@ -85,7 +86,11 @@ def main():
     g.receive_manager_thread = threading.Thread(target=receive_manager, daemon=True, name=f"Receive_Manager")
 
     if (g.robot == ("nano" or "orin")):
-        g.detector_manager_thread = threading.Thread(target=detector_manager, daemon=True, name=f"Detector_Manager")
+        # Initialize Detector
+        g.detector = Detector(1280, 360, "Robot_Model_Pan2", g.cameras, render = True, tracking = True)
+
+        # Initialize Detector Thread
+        g.detector_thread = threading.Thread(target = g.detector.detect, args = (), daemon=True, name="Detect")
 
     start_threads()
 
@@ -116,7 +121,7 @@ def start_threads():
     g.send_manager_thread.start()
 
     if (g.robot == ("nano" or "orin")):
-        g.detector_manager_thread.start()
+        g.detector_thread.start()
 
     # Running New Threads based on new Robot Links
     while True:
