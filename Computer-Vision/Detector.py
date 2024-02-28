@@ -5,7 +5,7 @@ import jetson_utils
 import math
 from Stream import Stream
 from Robot import Robot
-from Logger import logger
+from Logger import Logger
 
 class Detector:
         # Constructor
@@ -39,6 +39,8 @@ class Detector:
                 # List of all robots that we have lost tracking for
                 self.__lostRobotList = list()
 
+                self.logger = Logger()
+
         # Destructor
         # Releases camera captures and destroys windows
         def __del__(self):
@@ -52,7 +54,8 @@ class Detector:
         # Transceiver Getter
         def getTransceiver(self):
                return self.__current_transceiver
-        logger.getLogger.addEvent(id, Timestamp, 1, 'get transceiver', 'detector', 1, 'A test to see if it works')
+        def Logger(self):
+                self.logger.addEvent('get transceiver', 'detector', 1, 'A test to see if get transceiver reports')
         
         # robotList Getter
         def getRobotLlist(self):
