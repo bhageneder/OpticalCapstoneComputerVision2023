@@ -1,4 +1,3 @@
-from tkinter import NONE
 from loguru import logger
 import sqlite3
 from datetime import datetime
@@ -18,13 +17,13 @@ class Logger:
     DEFAULT_LOG_FILE = 'logger.db'
     DEFAULT_CSV_FOLDER = 'csvFolder.csv'
 
-    def __init__(self, logFilepath = None):
-        self.logFilepath = self.DEFAULT_LOG_FILE
+    def __init__(self, logFilePath = None):
+        self.logFilePath = self.DEFAULT_LOG_FILE
         self.logger = logging.getLogger(__name__)
        
         
         # Obtain sql database connection
-        self.sqliteConnection = self.createDatabaseConnection(self)
+        self.sqliteConnection = self.createDatabaseConnection()
 
         # Add cursor to retrieve data from database using queries
         self.cursor = self.sqliteConnection.cursor()
@@ -59,16 +58,16 @@ class Logger:
     def createDatabaseConnection(self):
         try:
             # Check if connection exists 
-            conn = sqlite3.connect(self.logFilepath)
+            conn = sqlite3.connect(self.logFilePath)
             conn.row = sqlite3.Row #to access column by name
             return conn
         except sqlite3.Error as sqliteError:
             print("Error connecting to SQLite database at path: {}".format(self.logFilePath))
             print(sqliteError)
-            return NONE
+            return None
         except Exception as e:
             print("FATAL ERROR connecting to database: {e}")
-            return NONE
+            return None
       
     def logSetup(self):
         # Get the process ID and module name
@@ -88,7 +87,7 @@ class Logger:
         level = self.cursor.execute(self.levelTable)
         
         # Set loguru to use SQLite sink
-        logger.add(self.logFilepath, table='eventTable', 
+        logger.add(self.logFilePath, table='eventTable', 
                    format=" <ID: {record[id]}> | <Timestamp: {record[timestamp]}> | <Process ID: {record[processID]}> | "
                         "<Tag:{record[tag]}> | <Module: {record[module]}> | <Level:{record[level]}>   |" 
                         " |<Message: {record[message]}> ", 
@@ -118,7 +117,7 @@ class Logger:
             rows = self.cursor.fetchall()
             
             # Create a folder for storing CSV files if it doesn't exist
-            csvFolder = os.path.join(os.path.dirname(self.logFilepath), self.DEFAULT_CSV_FOLDER)
+            csvFolder = os.path.join(os.path.dirname(self.logFilePath), self.DEFAULT_CSV_FOLDER)
             os.makedirs(csvFolder, exist_ok=True)
 
             # Write logs to a CSV file
