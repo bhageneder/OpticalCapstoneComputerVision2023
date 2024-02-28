@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from loguru import logger
 import sqlite3
 from datetime import datetime
@@ -64,10 +65,10 @@ class Logger:
         except sqlite3.Error as sqliteError:
             print("Error connecting to SQLite database at path: {}".format(self.logFilePath))
             print(sqliteError)
-            return None
+            return NULL
         except Exception as e:
             print("FATAL ERROR connecting to database: {e}")
-            return None
+            return NULL
       
     def logSetup(self):
         # Get the process ID and module name
