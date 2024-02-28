@@ -3,8 +3,8 @@ import datetime
 import os
 import time
 import sys
-sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/Computer-Vision")
-from Stream import Stream
+sys.path.append("/home/sa/Documents/OpticalCapstoneComputerVision2023/src/classes")
+from StreamClass import Stream
 
 
 def imageCapture(imgPath, streams):
