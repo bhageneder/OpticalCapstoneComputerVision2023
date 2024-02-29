@@ -14,7 +14,8 @@ from threads.receive_manager import receive_manager
 from threads.send_manager import send_manager
 from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
-from threads.detector_manager import detector_manager
+from threads.los_found import los_found
+from threads.los_lost import los_lost
 import config.global_vars as g
 import functions.led_manager as lc
 from control_robot.move_circle import move_circle
@@ -90,7 +91,13 @@ def main():
         g.detector = Detector(1280, 360, "Robot_Model_Pan2", g.cameras, render = True, tracking = True)
 
         # Initialize Detector Thread
-        g.detector_thread = threading.Thread(target = g.detector.detect, args = (), daemon=True, name="Detect")
+        g.detector_thread = threading.Thread(target = g.detector.detect, daemon=True, name="Detect")
+        
+        # Initialize LOS Found Thread
+        g.los_found = threading.Thread(target=los_found, daemon=True, name="LOS_Found")
+
+        # Initialize LOS Lost Thread
+        g.los_lost = threading.Thread(target=los_lost, daemon=True, name="LOS_Lost")
 
     start_threads()
 
@@ -120,8 +127,16 @@ def start_threads():
     # Running Send Manager Thread
     g.send_manager_thread.start()
 
+    # On Computer Vision Enabled Bots Only...
     if (g.robot == ("nano" or "orin")):
+        # Start the Detector Thread
         g.detector_thread.start()
+
+        # Start the LOS Found Thread
+        g.los_found_thread()
+
+        # Start the LOS Lost Thread
+        g.los_lost_thread()
 
     # Running New Threads based on new Robot Links
     while True:

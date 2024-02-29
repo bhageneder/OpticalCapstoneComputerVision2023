@@ -5,12 +5,15 @@ import jetson_utils
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
 import os
+import queue
 
 class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, cameras, render = False, tracking=False, debug = False):
                 self.initializing = True
+                self.visibleQ = queue.Queue()
+                self.lostQ = queue.Queue()
                 self.__width = width
                 self.__height = height
                 self.__render = render

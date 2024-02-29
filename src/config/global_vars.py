@@ -90,9 +90,18 @@ def init():
     global detector_thread
     discovery_thread = None
 
+    # Detector Object - Runs CV Object Detection, Detects Robots
     global detector
     detector = None
     
+    # Visible Robots List (Active LOS)
+    global visible
+    visible = []
+
+    # Lost Robots List (No Active LOS)
+    global lost
+    lost = []
+
     # Queue for data that is received by all transceivers
     global data_received
     data_received = queue.Queue()
