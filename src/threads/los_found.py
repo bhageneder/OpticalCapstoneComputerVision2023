@@ -1,4 +1,5 @@
 import config.global_vars as g
+from functions.ping import reassociate
 import node_discovery
 import threading
 
@@ -41,7 +42,7 @@ def findRobot(robot):
         # Try to Communicate on Open Robot Links Using New Robot Transceiver
         for lostRobot in g.lost:
             # Send Reassociate Ping
-            response = reassociate(robot.transceiver, lostRobot) # Needs to be implemented
+            response = reassociate(robot.transceiver, lostRobot.robotLink.ip_address, robot.trackID)
 
             # If it Got a Response
             if response:

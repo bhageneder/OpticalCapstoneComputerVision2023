@@ -21,6 +21,105 @@ def create_icmp_packet(identifier, sequence, payload):
     header = struct.pack('!BBHHH', 8, 0, chksum, identifier, sequence)
     return header + data
 
+# Send ICMP Ping out of Single Transceiver Directed at a Single Robot
+def reassociate(transceiver, robotIP, robotTrackID):
+    count = g.PING_COUNT
+    timeout = g.PING_TIMEOUT
+
+    icmp_proto = socket.getprotobyname('icmp')
+    try:
+        ICMP_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp_proto)
+    except socket.error as e:
+        if e.errno == errno.EPROTONOSUPPORT:
+            # Sometimes, the OS fails to open a new ICMP socket...
+            if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: ICMP Socket Failed to Open')
+        else:
+            if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: Unknown Socket Error')
+        return -1
+    
+    ICMP_socket.settimeout(timeout)
+    dest_ip = socket.gethostbyname(robotIP)
+    if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: PINGING {robotIP}')
+
+    # Create an array to hold the number of reply pings captured by each transceiver
+    num_received_pings_per_transceiver = [0 for i in range(8)]
+    total_rtt_time_per_transceiver = [0 for i in range(8)]
+    received_packets = set()
+
+    for sequence in range(count):
+        # The identifier of the packet will be robotTrackID number making up the
+        # first digit(s), and the transceiver number will be the last digit
+        # The robotTrackID number must be in the identifier because Maintenance Ping Replies must 
+        # distinguishable between eachother if more than one robot link is being maintained.
+        # The payload here must be unique for every robot. Read the method's top comment for
+        # more information why. (Strange behavior was happening due to light reflection or something else...)
+        # The payload is used here for extra verification later on.
+        payload = f'{g.ROBOT_IP_ADDRESS}_T_{transceiver}'
+        identifier = int(str(robotTrackID) + str(transceiver))
+
+        packet = create_icmp_packet(identifier, sequence, payload)
+        ICMP_socket.sendto(packet, (dest_ip, 0))
+
+        start_time = time.time()
+        # After sending out all (count) total ping packets, tally up the responses
+        while True:
+            try:
+                response, addr = ICMP_socket.recvfrom(1024)
+                received_identifier = struct.unpack('!H', response[24:26])[0]
+                received_sequence = struct.unpack('!H', response[26:28])[0]
+                source_ip = addr[0]
+
+                # Since one reply packet transmission from the other robot
+                # can potentially be received by multiple transceivers,
+                # it is unclear whether these duplicate received packets should be
+                # counted as additional received packets (indicating that it may be a
+                # better transceiver to use for communication), or if they should be ignored.
+                # If they are counted, then total number of received packets may be
+                # multiplicative based on how many transceivers received the communication.
+                if g.ignoring_duplicate_maintenance_packets is True:
+                    # Check if the packet is a duplicate
+                    packet_tuple = (received_identifier, received_sequence, source_ip)
+                    if packet_tuple in received_packets:
+                        continue  # Ignore duplicate packet
+                    else:
+                        received_packets.add(packet_tuple)
+
+                try:
+                    response_payload = response[28:].decode()
+                except UnicodeDecodeError:
+                    # Decoding Error because the payload got messed up in transmission
+                    continue
+
+                elapsed_time = (time.time() - start_time) * 1000 # RTT in milliseconds
+
+                # Confirming that the strings are not empty before converting them to an int
+                if str(received_identifier)[:-1] and str(received_identifier)[-1]:
+                    received_robotTrackID = int(str(received_identifier)[:-1])
+                    received_transceiver_number = int(str(received_identifier)[-1])
+                else:
+                    continue
+
+                if received_transceiver_number >= 0 and received_transceiver_number <= 7 and received_robotTrackID == robotTrackID and received_sequence == sequence and response_payload == f'{g.ROBOT_IP_ADDRESS}_T_{received_transceiver_number}':
+                    num_received_pings_per_transceiver[received_transceiver_number] += 1
+                    total_rtt_time_per_transceiver[received_transceiver_number] += elapsed_time
+                    if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: Ping_{received_transceiver_number}, {len(response)} bytes from {addr[0]}: icmp_seq={received_sequence} ttl={response[8]} time={elapsed_time:.2f} ms')
+
+            except socket.timeout:
+                # When all pings have been sent, and no more data is received, any ping requests that did not
+                # receive replies are considered timed out.
+                if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: All Unresponsive Ping Requests Have Timed Out')
+                break
+    
+    ICMP_socket.close()
+
+    # Check if the Received Packets Set is Empty
+    if(received_packets == set()):
+        # Reassociate Unsuccessful
+        return False
+
+    # Reassociate Succesful
+    return True
+
 # Some Interesting Behavior to Note:
 # Maintenance: Received Pings Array [18, 3, 0, 1, 5, 1, 0, 3]
 # This robot had transceiver 0 pointing at the other, and the other had transceiver 4 pointing at this robot.
