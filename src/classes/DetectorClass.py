@@ -18,7 +18,6 @@ class Detector:
                 self.__width = width
                 self.__height = height
                 self.__render = render
-                self.__current_transceiver = -1
                 self.__debug = debug
                 #self.__stopFlag = False """ For Auto Deconstruct Purposes """
                 self.__trackingMinFrames = 10
@@ -45,18 +44,6 @@ class Detector:
                 cv2.destroyAllWindows()
 
         #### Public Methods ####
-
-        # Transceiver Getter
-        def getTransceiver(self):
-               return self.__current_transceiver
-        
-        # robotList Getter
-        def getRobotLlist(self):
-                return self.__robotList
-        
-        # lostRobotList Getter
-        def getLostRobotLlist(self):
-                return self.__lostRobotList
 
         """        
         # For Auto Deconstruct Purposes        
