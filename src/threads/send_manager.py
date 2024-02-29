@@ -43,10 +43,14 @@ def send_manager():
             #    g.transceiver_send_queues[i].put(packet)
             
             # Send SYN Through Specific Transceiver
-            transceiver = g.best_transceiver
+            transceiver = -1
+            for robot in g.visible:
+                if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
+                    transceiver = robot.transceiver
+
             print("Trying to Discover on Transciever: " + str(transceiver))
             if (transceiver != -1):
-                if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Specific Transceiver {transceiver}"')
+                if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {transceiver}"')
                 g.transceiver_send_queues[transceiver].put(packet)
 
             continue
@@ -56,9 +60,12 @@ def send_manager():
             #    g.transceiver_send_queues[i].put(packet)
 
             # Send SYN-ACK Through Specific Transceiver
-            transceiver = g.best_transceiver
+            transceiver = -1
+            for robot in g.visible:
+                if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
+                    transceiver = robot.transceiver
             if (transceiver != -1):
-                if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Specific Transceiver {transceiver}"')
+                if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {transceiver}"')
                 g.transceiver_send_queues[transceiver].put(packet)
 
             continue
