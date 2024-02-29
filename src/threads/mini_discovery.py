@@ -48,6 +48,3 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
             g.robot_links.append(link)
         # Enqueue new robot link to be maintained
         g.robot_links_new.put(link)
-            
-            
-       
