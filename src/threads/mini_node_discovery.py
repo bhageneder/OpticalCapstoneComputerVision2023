@@ -4,9 +4,7 @@ import config.global_vars as g
 from classes.RobotLink import RobotLink
 from functions import led_manager as lc
 
-# For n Robots:
-# n - 1 possible IP addresses (not including our own), and 8 possible ports. (n - 1) * 8 threads need to be ran
-def mini_discovery(robot_receiving_ip_address, dst_port, client_port, robot):
+def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot):
     thread_name = threading.current_thread().name
     # Open a TCP socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -1,11 +1,9 @@
 import time
 import threading
 import config.global_vars as g
-from threads.mini_discovery import mini_discovery
+from threads.mini_node_discovery import mini_node_discovery
 
-# THIS FUNCTION NEEDS TO BE IMPLEMENTED STILL
-# Implementation is in progress
-
+# Attempt to Discover a TCP Connection (Robot Link) to a Newly Visible Robot
 def node_discovery(robot):
     # 1 Second Timeout
     timeout = 1000
@@ -17,14 +15,14 @@ def node_discovery(robot):
     # Try to Discover Until Robot Link is Established or Timeout Occurs
     while ((robot.robotLink is None) and (t - t0 < timeout)):
 
-        # Creating Mini-Discovery Threads
-        mini_discovery_threads = []
+        # Creating Mini Node Discovery Threads
+        mini_node_discovery_threads = []
         for i in range(g.EXPECTED_NUMBER_OF_ROBOTS):
             if g.POSSIBLE_ROBOT_IP_ADDRESSES[i] == g.ROBOT_IP_ADDRESS:
                 continue
             for j in range(g.EXPECTED_NUMBER_OF_ROBOTS):
-                mini_discovery_threads.append(threading.Thread(
-                    target=mini_discovery,
+                mini_node_discovery_threads.append(threading.Thread(
+                    target=mini_node_discovery,
                     args=(
                         g.POSSIBLE_ROBOT_IP_ADDRESSES[i],
                         g.POSSIBLE_RECEIVING_ROBOT_PORTS[j],
@@ -38,10 +36,10 @@ def node_discovery(robot):
         range_offset = 0
         for _ in range(g.EXPECTED_NUMBER_OF_ROBOTS):
             for i in range(range_offset, range_offset + g.EXPECTED_NUMBER_OF_ROBOTS - 1):
-                mini_discovery_threads[i].start()
+                mini_node_discovery_threads[i].start()
 
             for i in range(range_offset, range_offset + g.EXPECTED_NUMBER_OF_ROBOTS - 1):
-                mini_discovery_threads[i].join()
+                mini_node_discovery_threads[i].join()
 
             range_offset += g.EXPECTED_NUMBER_OF_ROBOTS - 1
 
