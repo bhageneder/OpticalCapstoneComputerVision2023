@@ -7,8 +7,12 @@ def los_lost():
 
         # Check for Robot Link
         if (robot.robotLink != None):
-            # Append to Global Lost List
-            g.lost.append(robot) # Needs to have mutex lock
+            # Acquire Visible Robot List Mutex
+            with g.lost_mutex:
+                # Append to Global Lost List
+                g.lost.append(robot)
 
-        # Remove from Global Visible List
-        g.visible.append(robot) # Needs to have mutex lock
+        # Acquire Visible Robot List Mutex
+        with g.visible_mutex:
+            # Remove from Global Visible List
+            g.visible.remove(robot)

@@ -98,9 +98,17 @@ def init():
     global visible
     visible = []
 
+    # Visible Robots List Mutex
+    global visible_mutex
+    visible_mutex = threading.Lock()
+
     # Lost Robots List (No Active LOS)
     global lost
     lost = []
+
+    # Lost Robots List Mutex
+    global lost_mutex
+    lost_mutex = threading.Lock()
 
     # Queue for data that is received by all transceivers
     global data_received

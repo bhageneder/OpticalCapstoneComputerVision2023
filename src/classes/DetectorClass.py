@@ -143,49 +143,46 @@ class Detector:
                 # Create a list to store found robot indeces
                 foundRobotIndeces = list()
 
-                # Get the Visible Robot List Mutex
-                # mutex goes here
+                # Acquire Visible Robot List Mutex
+                with g.visible_mutex:
+                        # Loop through all detections, create robots
+                        for detection in self.__detections:
+                                # If the detection is a robot and is tracked
+                                if (detection.ClassID == 1 and detection.TrackID > -1):
+                                        # Get the best transceiver for the robot and tracking information
+                                        transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
+                                        trackingID = detection.TrackID
+                                        trackingStatus = detection.TrackStatus
 
-                # Loop through all detections, create robots
-                for detection in self.__detections:
-                        # If the detection is a robot and is tracked
-                        if (detection.ClassID == 1 and detection.TrackID > -1):
-                                # Get the best transceiver for the robot and tracking information
-                                transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
-                                trackingID = detection.TrackID
-                                trackingStatus = detection.TrackStatus
+                                        # Flag for when the loop identifies the robot
+                                        foundRobotFlag = False
 
-                                # Flag for when the loop identifies the robot
-                                foundRobotFlag = False
+                                        # Find tracking ID in robot list
+                                        for i in range(0, len(g.visible)):
+                                                # If we are on the correct robot, update the tracking information
+                                                if (g.visible[i].trackingID == trackingID):
+                                                        foundRobotFlag = True
+                                                        foundRobotIndeces.append(i)
 
-                                # Find tracking ID in robot list
-                                for i in range(0, len(g.visible)):
-                                        # If we are on the correct robot, update the tracking information
-                                        if (g.visible[i].trackingID == trackingID):
-                                                foundRobotFlag = True
-                                                foundRobotIndeces.append(i)
+                                                        # Update Transceiver
+                                                        g.visible[i].transceiver = transceiver
 
-                                                # Update Transceiver
-                                                g.visible[i].transceiver = transceiver
+                                                        # Exit inner loop
+                                                        break
 
-                                                # Exit inner loop
-                                                break
+                                        # Check if the code in the loop executed
+                                        # If not, create a new robot object and store in the visibleQ
+                                        if not foundRobotFlag:
+                                                self.visibleQ.put(Robot(trackingID, transceiver))
+                                        
+                                        # Debug statement
+                                        if (self.__debug):
+                                                print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
 
-                                # Check if the code in the loop executed
-                                # If not, create a new robot object and store in the visibleQ
-                                if not foundRobotFlag:
-                                       newRobot = Robot(trackingID, transceiver)
-                                       self.visibleQ.put(newRobot)
-                                       
-                                # Debug statement
-                                if (self.__debug):
-                                        print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
-
-                # Make a copy of the robot list
-                robotListCopy = g.visible[:]
+                        # Make a copy of the robot list
+                        robotListCopy = g.visible[:]
 
                 # Release Visible Robot Mutex
-                # mutex release goes here
 
                 # Remove all the found elements from the list
                 for i in sorted(foundRobotIndeces, reverse=True):
