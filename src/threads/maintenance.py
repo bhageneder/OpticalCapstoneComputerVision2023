@@ -8,10 +8,13 @@ def maintenance(robot_link):
     thread_name = threading.current_thread().name
     transceiver_set = False
     while True:
-        # Get the best transceiver number from the Jetson Nano        
-        best_transceiver_number = g.best_transceiver
-
-        # Might want to ping for maintenance for backup
+        # Get the best transceiver number      
+        best_transceiver_number = multi_ping(
+            robot_link.ip_address, 
+            globals.PING_COUNT, 
+            globals.PING_INTERVAL,
+            globals.PING_TIMEOUT,
+        )
 
         # If the socket failed to open, multi_ping will return -1. 
         # In that case, try again.

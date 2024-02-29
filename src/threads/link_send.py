@@ -7,14 +7,30 @@ def link_send(robot_link):
     payload = b'hello'
     send_num = 0
 
-    while True:
-        # Send Payload through Socket 
-        if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-        robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+    # really bad as well
 
-        send_num += 1
-        time.sleep(g.PAYLOAD_INTERVAL_SLEEP)
+    if g.LEGACY_MODE:
+        while True:
+            # Send Payload through Socket 
+            if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
+            robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
 
-        # Terminate if robot_link no longer exists
-        if robot_link not in g.robot_links:
-            return
+            send_num += 1
+            time.sleep(g.PAYLOAD_INTERVAL_SLEEP)
+
+            # Terminate if robot_link no longer exists
+            if robot_link not in g.robot_links:
+                return
+    else:
+        while True:
+            # Send Payload through Socket 
+            if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
+            robot_link.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+
+            send_num += 1
+            time.sleep(g.PAYLOAD_INTERVAL_SLEEP)
+
+            # Terminate if robot_link no longer exists
+            with g.visible_mutex and g.lost_mutex:
+                if ((robot_link.robotLink not in g.visible) or (robot_link.robotLink not in g.lost)):
+                    return

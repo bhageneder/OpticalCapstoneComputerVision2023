@@ -156,6 +156,13 @@ def init():
                 cameras.append(config['Cameras'][f'camera{i}'])
     except:
         raise Exception("Incorrect camera configuration!")
+    
+    # Robot Mode Based on Config
+    global LEGACY_MODE
+    if numCameras > 0:
+        LEGACY_MODE = False
+    else:
+        LEGACY_MODE = True
 
     global PING_COUNT
     PING_COUNT = 2

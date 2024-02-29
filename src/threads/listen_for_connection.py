@@ -42,10 +42,17 @@ def listen_for_connection(port):
             # To make the socket never timed out now when sending or receiving data
             client_socket.settimeout(None) 
 
-            # Default the serial port to transceiver 0, Maintenance will set the best one.
-            link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
-            with g.robot_links_mutex:
-                g.robot_links.append(link)
-            if g.debug_listen_for_connection: print(f'{thread_name} New Robot Link Connected On: ', (robot_sending_ip_address, robot_sending_port))
-            # Enqueue new robot link to be maintained
-            g.robot_links_new.put(link)
+            if g.LEGACY_MODE:
+                # Default the serial port to transceiver 0, Maintenance will set the best one.
+                link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                with g.robot_links_mutex:
+                    g.robot_links.append(link)
+                if g.debug_listen_for_connection: print(f'{thread_name} New Robot Link Connected On: ', (robot_sending_ip_address, robot_sending_port))
+                # Enqueue new robot link to be maintained
+                g.robot_links_new.put(link)
+            else:
+                # Default the serial port to 0. Detector will set the best one when it finds it. Transceiver on robot object is used instead of port
+                link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                with g.lost_mutex:
+                    g.lost.append(link)
+                if g.debug_listen_for_connection: print(f'{thread_name} New Robot Link Connected On: ', (robot_sending_ip_address, robot_sending_port))

@@ -38,35 +38,41 @@ def send_manager():
         # then it is a mini_discovery or listen_for_connection packet.
         # Send it through all transceivers to find the other robots.
         if packet_summary.tcp_flags == 'S':
-            #if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through All Transceivers')
-            #for i in range(len(g.serial_ports)):
-            #    g.transceiver_send_queues[i].put(packet)
+            if g.LEGACY_MODE:
+                if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through All Transceivers')
+                for i in range(len(g.serial_ports)):
+                    g.transceiver_send_queues[i].put(packet)
             
             # Send SYN Through Specific Transceiver
-            transceiver = -1
-            for robot in g.visible:
-                if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
-                    transceiver = robot.transceiver
+            else:
+                transceiver = -1
+                for robot in g.visible:
+                    if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
+                        transceiver = robot.transceiver
+                        break
 
-            print("Trying to Discover on Transciever: " + str(transceiver))
-            if (transceiver != -1):
-                if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {transceiver}"')
-                g.transceiver_send_queues[transceiver].put(packet)
+                if (transceiver != -1):
+                    if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {transceiver}"')
+                    g.transceiver_send_queues[transceiver].put(packet)
 
             continue
         elif packet_summary.tcp_flags == 'SA':
-            #if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through All Transceivers')
-            #for i in range(len(g.serial_ports)):
-            #    g.transceiver_send_queues[i].put(packet)
+            if g.LEGACY_MODE:
+                if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through All Transceivers')
+                for i in range(len(g.serial_ports)):
+                    g.transceiver_send_queues[i].put(packet)
 
             # Send SYN-ACK Through Specific Transceiver
-            transceiver = -1
-            for robot in g.visible:
-                if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
-                    transceiver = robot.transceiver
-            if (transceiver != -1):
-                if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {transceiver}"')
-                g.transceiver_send_queues[transceiver].put(packet)
+            else:
+                transceiver = -1
+                for robot in g.visible:
+                    if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
+                        transceiver = robot.transceiver
+                        break
+
+                if (transceiver != -1):
+                    if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {transceiver}"')
+                    g.transceiver_send_queues[transceiver].put(packet)
 
             continue
         

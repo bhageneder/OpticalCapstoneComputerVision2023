@@ -119,7 +119,8 @@ def start_threads():
     # the socket is closed / destroyed SOMETIMES by one of the robots, causing payload tranmsissions to fail.
     # A temporary fix is to have 1 robot run this discovery thread, until the bug is fixed.
     # Running Discovery Thread
-    g.discovery_thread.start()
+    if g.LEGACY_MODE:
+        g.discovery_thread.start()
 
     # Running Receive Manager Thread
     g.receive_manager_thread.start()
@@ -128,7 +129,7 @@ def start_threads():
     g.send_manager_thread.start()
 
     # On Computer Vision Enabled Bots Only...
-    if (g.robot == ("nano" or "orin")):
+    if not g.LEGACY_MODE:
         # Start the Detector Thread
         g.detector_thread.start()
 
@@ -149,8 +150,10 @@ def start_threads():
         link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
         link_receive_thread.start()
 
-        maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
-        maintenance_thread.start()
+        # it should never not be legacy mode for now since we are only queuing robot links in legacy mode
+        if g.LEGACY_MODE:
+            maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
+            maintenance_thread.start()
 
 
 if __name__ == "__main__":
