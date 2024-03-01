@@ -1,6 +1,7 @@
 import config.global_vars as g
 
-def los_lost():
+# Handles Newly Lost Robots
+def new_lost():
     while True:
         # Blocking Call to Detector's Lost Queue
         robot = g.detector.lostQ.get()

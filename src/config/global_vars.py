@@ -110,11 +110,11 @@ def init():
     global lost_mutex
     lost_mutex = threading.Lock()
 
-    global los_found_thread
-    los_found_thread = None
+    global new_visible_thread
+    new_visible_thread = None
 
-    global los_lost_thread
-    los_lost_thread = None
+    global new_lost_thread
+    new_lost_thread = None
 
     # Queue for data that is received by all transceivers
     global data_received

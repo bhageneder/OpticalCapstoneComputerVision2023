@@ -14,8 +14,8 @@ from threads.receive_manager import receive_manager
 from threads.send_manager import send_manager
 from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
-from threads.los_found import los_found
-from threads.los_lost import los_lost
+from threads.new_visible import new_visible
+from threads.new_lost import new_lost
 import config.global_vars as g
 import functions.led_manager as lc
 from control_robot.move_circle import move_circle
@@ -93,11 +93,11 @@ def main():
         # Initialize Detector Thread
         g.detector_thread = threading.Thread(target = g.detector.detect, daemon=True, name="Detect")
         
-        # Initialize LOS Found Thread
-        g.los_found_thread = threading.Thread(target=los_found, daemon=True, name="LOS_Found")
+        # Initialize New Visible Thread
+        g.new_visible_thread = threading.Thread(target=new_visible, daemon=True, name="New_Visible")
 
-        # Initialize LOS Lost Thread
-        g.los_lost_thread = threading.Thread(target=los_lost, daemon=True, name="LOS_Lost")
+        # Initialize New Lost Thread
+        g.new_lost_thread = threading.Thread(target=new_lost, daemon=True, name="New_Lost")
 
     start_threads()
 
@@ -133,11 +133,11 @@ def start_threads():
         # Start the Detector Thread
         g.detector_thread.start()
 
-        # Start the LOS Found Thread
-        g.los_found_thread.start()
+        # Start the New Visible Thread
+        g.new_visible_thread.start()
 
-        # Start the LOS Lost Thread
-        g.los_lost_thread.start()
+        # Start the New Lost Thread
+        g.new_lost_thread.start()
 
     # Running New Threads based on new Robot Links
     while True:

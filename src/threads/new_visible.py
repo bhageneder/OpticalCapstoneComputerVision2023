@@ -3,10 +3,11 @@ from functions.ping import reassociate
 from threads.node_discovery import node_discovery
 import threading
 
-def los_found():
+# Handles Newly Visible Robots
+def new_visible():
     while True:
-        # Blocking Call to Detector's Lost Queue
-        robot = g.detector.lostQ.get()
+        # Blocking Call to the Visible Queue
+        robot = g.detector.Visible.get()
 
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)
