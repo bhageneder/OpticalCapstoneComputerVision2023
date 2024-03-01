@@ -128,9 +128,13 @@ def init():
     global discovery_data_received
     discovery_data_received = queue.Queue()
     
-    # Queue for other threads signify new robot links need to be maintained
+    # Queue for other threads signify new robot links need to be maintained. Legacy version of newRobotQ
     global robot_links_new
     robot_links_new = queue.Queue()
+
+    # Queue to create threads when new robots are created. 
+    global newRobotQ
+    newRobotQ = queue.Queue()
     
     # Queues for each of the Transceiver Send Threads (8 Transceivers)
     global transceiver_send_queues

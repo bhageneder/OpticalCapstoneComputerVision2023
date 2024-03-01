@@ -15,5 +15,6 @@ def new_lost():
 
         # Acquire Visible Robot List Mutex
         with g.visible_mutex:
-            # Remove from Global Visible List
-            g.visible.remove(robot)
+            if robot in g.visible:
+                # Remove from Global Visible List
+                g.visible.remove(robot)

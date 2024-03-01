@@ -3,6 +3,7 @@ import socket
 import psutil
 import config.global_vars as g
 from classes.RobotLink import RobotLink
+from classes.RobotClass import Robot
 
 # Listen for connection on all 8 possible ports (1 port per thread)
 def listen_for_connection(port):
@@ -53,6 +54,16 @@ def listen_for_connection(port):
             else:
                 # Default the serial port to 0. Detector will set the best one when it finds it. Transceiver on robot object is used instead of port
                 link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+
+                # Create Robot
+                robot = Robot(-1, -1, link) # check if there is a way to get the transceiver here...
+
+                # Append the Robot to the Global Lost Robot List
                 with g.lost_mutex:
-                    g.lost.append(link)
-                if g.debug_listen_for_connection: print(f'{thread_name} New Robot Link Connected On: ', (robot_sending_ip_address, robot_sending_port))
+                    g.lost.append(robot)
+
+                # Debug Statement
+                if g.debug_listen_for_connection: print(f'{thread_name} New Robot Connected On: ', (robot_sending_ip_address, robot_sending_port))
+                
+                # Queue the New Robot
+                g.newRobotQ.put(robot)

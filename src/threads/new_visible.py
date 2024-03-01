@@ -34,6 +34,9 @@ def new_visible():
             node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=[robot], name=f"Node_Discovery_For_Robot_{robot.trackingID}")
             node_discovery_thread.start()
 
+        # Queue to New Robot Queue
+        g.newRobotQ.put(robot)
+
 # Searchest Lost List for Parameter Robot
 def findRobot(robot):
     # Acquire Lost Robot Mutex

@@ -140,21 +140,37 @@ def start_threads():
         g.new_lost_thread.start()
 
     # Running New Threads based on new Robot Links
-    while True:
-        robot_link = g.robot_links_new.get()
+    if g.LEGACY_MODE:
+        while True:
+            robot_link = g.robot_links_new.get()
 
-        thread_number = len(g.robot_links)
-        link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
-        link_send_thread.start()
+            thread_number = len(g.robot_links)
+            link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
+            link_send_thread.start()
 
-        link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
-        link_receive_thread.start()
+            link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
+            link_receive_thread.start()
 
-        # it should never not be legacy mode for now since we are only queuing robot links in legacy mode
-        if g.LEGACY_MODE:
             maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
             maintenance_thread.start()
+    else:
+        # Store Thread Number
+        thread_number = 0
 
+        while True:
+            # Blocking Call to Get New Robot
+            robot = g.newRobotQ.get()
+
+            # Create and Start Link Send Thread
+            link_send_thread = threading.Thread(target=link_send, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
+            link_send_thread.start()
+
+            # Create and Start Link Receive Thread
+            link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
+            link_receive_thread.start()
+
+            # Increase Thread Number
+            thread_number += 1
 
 if __name__ == "__main__":
     main()

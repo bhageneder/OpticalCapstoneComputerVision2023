@@ -20,15 +20,16 @@ def robot_receive(robot):
     thread_name = threading.current_thread().name
 
     while True:
-        # Receive Data From Socket
-        # socket.recv(65536) will receive at most 65536 bytes from the socket at once,
-        # but it will block until it receives any data, or the connection is closed
-        data = robot.robotLink.socket.recv(65536)
-        if g.debug_link_receive: print(f'{thread_name} Received: {data}')
+        if robot.robotLink is not None:
+            # Receive Data From Socket
+            # socket.recv(65536) will receive at most 65536 bytes from the socket at once,
+            # but it will block until it receives any data, or the connection is closed
+            data = robot.robotLink.socket.recv(65536)
+            if g.debug_link_receive: print(f'{thread_name} Received: {data}')
 
-        # Terminate if robot_link no longer exists
+        # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
-            if ((robot.robotLink not in g.visible) or (robot.robotLink not in g.lost)):
+            if ((robot not in g.visible) or (robot not in g.lost)):
                 return
                 
 def link_receive_legacy(robot_link):
