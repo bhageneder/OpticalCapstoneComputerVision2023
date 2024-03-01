@@ -7,7 +7,7 @@ import threading
 def new_visible():
     while True:
         # Blocking Call to the Visible Queue
-        robot = g.detector.Visible.get()
+        robot = g.detector.visibleQ.get()
 
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)
@@ -33,7 +33,7 @@ def new_visible():
                 g.visible.append(robot)
 
             # Launch Node Discovery Thread
-            node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=robot, name=f"Node_Discovery_For_Robot_{robot.trackingID}")
+            node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=[robot], name=f"Node_Discovery_For_Robot_{robot.trackingID}")
             node_discovery_thread.start()
 
 # Searchest Lost List for Parameter Robot

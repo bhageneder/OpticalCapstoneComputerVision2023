@@ -6,11 +6,11 @@ from threads.mini_node_discovery import mini_node_discovery
 # Attempt to Discover a TCP Connection (Robot Link) to a Newly Visible Robot
 def node_discovery(robot):
     # 1 Second Timeout
-    timeout = 1000
+    timeout = 1
 
     # Store Initial Time
-    t0 = time.time_ns() // 1_000_000
-    t = t0
+    t0 = time.time()
+    t = 0
 
     # Try to Discover Until Robot Link is Established or Timeout Occurs
     while ((robot.robotLink is None) and (t - t0 < timeout)):
@@ -47,7 +47,7 @@ def node_discovery(robot):
         time.sleep(g.DISCOVERY_INTERVAL_SLEEP)
 
         # Update Time
-        t = time.time_ns() // 1_000_000
+        t = time.time()
 
     if (robot.robotLink is None):
         # Failed to Discover Robot
