@@ -98,8 +98,7 @@ class Detector:
                                 cv2.destroyAllWindows()
                                 break
 
-                        # Update the transceiver/robotList
-                        self.__updateTransceiver()
+                        # Update the robotList
                         self.__updateRobotList()
                         
                         self.initializing = False

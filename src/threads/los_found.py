@@ -1,6 +1,6 @@
 import config.global_vars as g
 from functions.ping import reassociate
-import node_discovery
+from threads.node_discovery import node_discovery
 import threading
 
 def los_found():

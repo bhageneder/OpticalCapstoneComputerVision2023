@@ -110,6 +110,12 @@ def init():
     global lost_mutex
     lost_mutex = threading.Lock()
 
+    global los_found_thread
+    los_found_thread = None
+
+    global los_lost_thread
+    los_lost_thread = None
+
     # Queue for data that is received by all transceivers
     global data_received
     data_received = queue.Queue()
@@ -147,7 +153,6 @@ def init():
     cameras = list()
     numCameras = int(config['Cameras']['numCameras'])
     camConfig = config['Cameras']['camConfig'].split(",")
-    print(camConfig)
     try:
         for i in range(0, numCameras):       
             if (camConfig[i] == "num"):

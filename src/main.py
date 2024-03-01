@@ -94,10 +94,10 @@ def main():
         g.detector_thread = threading.Thread(target = g.detector.detect, daemon=True, name="Detect")
         
         # Initialize LOS Found Thread
-        g.los_found = threading.Thread(target=los_found, daemon=True, name="LOS_Found")
+        g.los_found_thread = threading.Thread(target=los_found, daemon=True, name="LOS_Found")
 
         # Initialize LOS Lost Thread
-        g.los_lost = threading.Thread(target=los_lost, daemon=True, name="LOS_Lost")
+        g.los_lost_thread = threading.Thread(target=los_lost, daemon=True, name="LOS_Lost")
 
     start_threads()
 
@@ -134,10 +134,10 @@ def start_threads():
         g.detector_thread.start()
 
         # Start the LOS Found Thread
-        g.los_found_thread()
+        g.los_found_thread.start()
 
         # Start the LOS Lost Thread
-        g.los_lost_thread()
+        g.los_lost_thread.start()
 
     # Running New Threads based on new Robot Links
     while True:
