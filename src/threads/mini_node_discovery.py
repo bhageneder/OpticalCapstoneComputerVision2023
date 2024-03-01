@@ -18,8 +18,8 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
         # Socket already in use, a previous thread already successfully connected
         return
     try:
-        for robot in g.visible:
-            if robot.robotLink.ip_address == robot_receiving_ip_address:
+        for robot in (g.visible + g.lost):
+            if ((robot.robotLink is not None) and (robot.robotLink.ip_address == robot_receiving_ip_address)):
                 break
         else:
             if g.debug_mini_discovery: print(f'{thread_name} Attempting To Connect To: ', (robot_receiving_ip_address, int(dst_port)))
@@ -33,8 +33,8 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
     
     if g.debug_mini_discovery: print(f'{thread_name} Connected')
 
-    for robot in g.visible:
-            if robot.robotLink.ip_address == robot_receiving_ip_address:
+    for robot in (g.visible + g.lost):
+            if ((robot.robotLink is not None) and (robot.robotLink.ip_address == robot_receiving_ip_address)):
                 break
     else:
         # To make the socket never timed out now when sending or receiving data
