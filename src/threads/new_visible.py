@@ -15,13 +15,11 @@ def new_visible():
             # Update Robot Link
             robot.robotLink = foundRobot.robotLink
 
-            # Acquire Global Visible Robot List Mutex
-            with g.visible_mutex:
+            # Acquire Global Visible and Lost List Mutexes
+            with g.visible_mutex and g.lost_mutex:
                 # Append to Global Visible List
                 g.visible.append(robot)
 
-            # Acquire Global Lost Robot List Mutex
-            with g.lost_mutex:
                 # Remove from Global Lost List
                 g.lost.remove(foundRobot)
 

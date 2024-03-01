@@ -164,10 +164,10 @@ def init():
     
     # Robot Mode Based on Config
     global LEGACY_MODE
-    if numCameras > 0:
-        LEGACY_MODE = False
-    else:
+    if numCameras <= 0:
         LEGACY_MODE = True
+    else:
+        LEGACY_MODE = False
 
     global PING_COUNT
     PING_COUNT = 2
