@@ -75,19 +75,34 @@ def send_manager():
                     g.transceiver_send_queues[transceiver].put(packet)
 
             continue
+
+        ### TCP Data (Payload) Packets: ###
         
         # If the Packet is not an ICMP Ping Packet, send payload through specific transceiver 
         # if the packet's destination IP Address matches the Robot Link's IP Address 
-        # (and the Robot Link has a serial port)       
-        for robot_link in g.robot_links:
-            if (robot_link.serial_port != None and robot_link.ip_address == packet_summary.dest_IP):
-                if g.debug_send_manager: print(f"{thread_name}: Sending Payload Through Specific Transceiver {g.serial_ports.index(robot_link.serial_port)}: {packet_summary.payload}")
-                g.transceiver_send_queues[g.serial_ports.index(robot_link.serial_port)].put(packet)
-                break
+        # (and the Robot Link has a serial port)
+        if g.LEGACY_MODE:       
+            for robot_link in g.robot_links:
+                if (robot_link.serial_port != None and robot_link.ip_address == packet_summary.dest_IP):
+                    if g.debug_send_manager: print(f"{thread_name}: Sending Payload Through Specific Transceiver {g.serial_ports.index(robot_link.serial_port)}: {packet_summary.payload}")
+                    g.transceiver_send_queues[g.serial_ports.index(robot_link.serial_port)].put(packet)
+                    break
+            else:
+                # Send through all transceivers if the destination IP Address is not a known Robot Link
+                for i in range(len(g.serial_ports)):
+                    g.transceiver_send_queues[i].put(packet)
         else:
-            # Send through all transceivers if the destination IP Address is not a known Robot Link
-            for i in range(len(g.serial_ports)):
-                g.transceiver_send_queues[i].put(packet)
+            # Find the Robot With Matching IP
+            for robot in (g.visible + g.lost):
+                if (robot.robotLink is not None and robot.robotLink.ip_address == packet_summary.dest_IP):
+                    # Robot Found, Send Data Using Robot's Transceiver
+                    if g.debug_send_manager: print(f"{thread_name}: Sending Payload Through Specific Transceiver {robot.transceiver}: {packet_summary.payload}")
+                    g.transceiver_send_queues[robot.transceiver].put(packet)
+                    break
+            else:
+                # Send through all transceivers if the destination IP Address is not a known Robot Link
+                for i in range(len(g.serial_ports)):
+                    g.transceiver_send_queues[i].put(packet)
 
 
 # Bug Showcase: The bug that was breaking everything...
