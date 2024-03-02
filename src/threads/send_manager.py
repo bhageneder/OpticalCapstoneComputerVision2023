@@ -45,11 +45,7 @@ def send_manager():
             
             # Send SYN Through Specific Transceiver
             else:
-                transceiver = -1
-                for robot in g.visible:
-                    if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
-                        transceiver = robot.transceiver
-                        break
+                transceiver = -1 # Somehow get the transceiver number!!!
 
                 if (transceiver != -1):
                     if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {transceiver}"')
@@ -64,11 +60,7 @@ def send_manager():
 
             # Send SYN-ACK Through Specific Transceiver
             else:
-                transceiver = -1
-                for robot in g.visible:
-                    if (robot.robotLink.serial_port is not None and robot_link.ip_address == packet_summary.dest_IP):
-                        transceiver = robot.transceiver
-                        break
+                transceiver = -1 # Somehow get the transceiver number!!!
 
                 if (transceiver != -1):
                     if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {transceiver}"')
@@ -100,6 +92,7 @@ def send_manager():
                     g.transceiver_send_queues[robot.transceiver].put(packet)
                     break
             else:
+                # Not sure if this case is even possible
                 # Send through all transceivers if the destination IP Address is not a known Robot Link
                 for i in range(len(g.serial_ports)):
                     g.transceiver_send_queues[i].put(packet)
