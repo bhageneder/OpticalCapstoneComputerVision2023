@@ -20,7 +20,7 @@ class Logger:
 
     def __init__(self, logFilePath = None):
         self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
-       # self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         
        
         
@@ -35,23 +35,21 @@ class Logger:
         self.eventTable =  """ CREATE TABLE eventLog(
             ID INTEGER PRIMARY KEY,
             Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-            ProcessID INTEGER AUTOINCREMENT,
+            ProcessID INTEGER,
             Tag VARCHAR(10), 
             Module  VARCHAR(10),
             LevelNum INTEGER,
-            Message VARCHAR(255),
+            Message VARCHAR(255)
         )"""
 
         self.levelTable = """ CREATE TABLE levelTable(
-            levelNum INTEGER
-            Level  VARCHAR(10)
+            LevelNum INTEGER PRIMARY KEY,
+            Level VARCHAR(10)
         )"""
-
+        print(self.levelTable)
         self.logSetup()
-
-        for level_enum in Level:
-            self.cursor.execute("INSERT INTO levelTable (levelNum, Level) VALUES (?, ?)",
-                   (level_enum.value, level_enum.name))
+        
+       
 
     # Logger Class Deconstructor
     def __del__(self):
@@ -77,13 +75,29 @@ class Logger:
             print("FATAL ERROR connecting to database: {e}")
             return None
         
+    def createTable(self, tableDefinition):
+        try:
+            self.cursor.execute(tableDefinition)
+            self.sqliteConnection.commit()
+        except sqlite3.Error as sqliteError:
+            print("Error creating table: {sqliteError}")
+
+    def populateLevelTable(self):
+        try:
+            for level in Level:
+                self.cursor.execute("INSERT OR IGNORE INTO levelTable (LevelNum, Level) VALUES (?, ?)",
+                                    (level.value, level.name))
+            self.sqliteConnection.commit()
+        except sqlite3.Error as sqliteError:
+            print("Error populating levelTable: {sqliteError}")
+ 
       
     def logSetup(self):
         # Get the process ID and module name
         #pid = os.getpid()
         # Used to store the full path of the script file in the eventTable as a way to identify which script or module inserted a particular log entry
         #modname = __file__ 
-
+        
         # Export logs to CSV when an instance is created (previous log?)
         csvFilePath = self.exportCsv()
         self.logger.info('Logs exported to CSV: {csvFilePath}')
@@ -92,29 +106,28 @@ class Logger:
         # Use cursor execute to populate all desired data into table
         print("Current Tables: ") # --> not really necessary
         # To select specific column replace * with the column name(s) ('''SELECT * FROM eventTable''')
-        event = self.cursor.execute(self.eventTable)
-        level = self.cursor.execute(self.levelTable)
         
         # Set loguru to use SQLite sink
-        logger.add(self.logFilePath, table='eventTable', 
-                   format=" <ID: {record[id]}> | <Timestamp: {record[timestamp]}> | <Process ID: {record[processID]}> | "
+        logger.add(self.logFilePath, serialize=True,
+                   format = " <ID: {record[id]}> | <Timestamp: {record[timestamp]}> | <Process ID: {record[processID]}> | "
                         "<Tag:{record[tag]}> | <Module: {record[module]}> | <Level:{record[level]}>   |" 
                         " |<Message: {record[message]}> ", 
-                    level='INFO', enqueue=True, serialize=True)
+                    enqueue=True)
         # Commit Changes to Database
         self.sqliteConnection.commit()
 
-    def addEvent(self, tag, module, levelNum, message):
+    def addEvent(self, tag, module, LevelNum, message):
        # instantiantion method detection = logging.getLogger(Detect)
         
         try:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-            self.cursor.execute("INSERT INTO eventTable (ID, Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?, ?)", (id, timestamp, tag, module, levelNum, message))
+            sqlite3.connect(self.DEFAULT_LOG_FILE)
+            self.cursor.execute("INSERT INTO eventLog (ID, Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?, ?)", (id, timestamp, tag, module, LevelNum, message))
             self.sqliteConnection.commit()
 
         except Exception as e:
             print("Error inserting log to eventTable: {e}")
-
+        
             
 
 
