@@ -20,7 +20,8 @@ class Logger:
 
     def __init__(self, logFilePath = None):
         self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
-        self.logger = logging.getLogger(__name__)
+       # self.logger = logging.getLogger(__name__)
+        
        
         
         # Obtain sql database connection
@@ -32,12 +33,12 @@ class Logger:
 
         # Define the event table
         self.eventTable =  """ CREATE TABLE eventLog(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ID INTEGER PRIMARY KEY,
             Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
             ProcessID INTEGER AUTOINCREMENT,
             Tag VARCHAR(10), 
             Module  VARCHAR(10),
-            Level INTEGER,
+            LevelNum INTEGER,
             Message VARCHAR(255),
         )"""
 
@@ -61,15 +62,13 @@ class Logger:
 
     # Create / open database existing on disk and return database connection
     def createDatabaseConnection(self):
-        conn = sqlite3.connect(self.logFilePath)
-        #conn.row = sqlite3.Row #to access column by name
-        return conn
-        '''
         try:
-            # Check if connection exists 
             conn = sqlite3.connect(self.logFilePath)
-            conn.row = sqlite3.Row #to access column by name
+            #conn.row = sqlite3.Row #to access column by name
             return conn
+    
+            #conn.row = sqlite3.Row #to access column by name
+            
         except sqlite3.Error as sqliteError:
             print("Error connecting to SQLite database at path: {}".format(self.logFilePath))
             print(sqliteError)
@@ -77,7 +76,7 @@ class Logger:
         except Exception as e:
             print("FATAL ERROR connecting to database: {e}")
             return None
-        '''
+        
       
     def logSetup(self):
         # Get the process ID and module name
@@ -86,8 +85,8 @@ class Logger:
         #modname = __file__ 
 
         # Export logs to CSV when an instance is created (previous log?)
-        csvFilepath = self.exportToCsv()
-        logger.INFO('Logs exported to CSV: {csvFilepath}')
+        csvFilePath = self.exportCsv()
+        self.logger.info('Logs exported to CSV: {csvFilePath}')
 
         # Execute the tables
         # Use cursor execute to populate all desired data into table
@@ -105,12 +104,12 @@ class Logger:
         # Commit Changes to Database
         self.sqliteConnection.commit()
 
-    def addEvent(self, tag, module, level, message):
+    def addEvent(self, tag, module, levelNum, message):
        # instantiantion method detection = logging.getLogger(Detect)
         
         try:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-            self.cursor.execute("INSERT INTO eventTable (Timestamp, Tag, Module, Level, Message) VALUES (?, ?, ?, ?, ?)", (timestamp, tag, module, level, message))
+            self.cursor.execute("INSERT INTO eventTable (ID, Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?, ?)", (id, timestamp, tag, module, levelNum, message))
             self.sqliteConnection.commit()
 
         except Exception as e:
@@ -119,7 +118,7 @@ class Logger:
             
 
 
-    def exportCsv(self, csvFilepath):
+    def exportCsv(self, csvFilePath = 'eventLogs.csv'):
         try:
             # Retrieve all logs from the database
             self.cursor.execute("SELECT * FROM eventTable")
@@ -131,19 +130,19 @@ class Logger:
             os.makedirs(csvFolder, exist_ok=True)
 
             # Write logs to a CSV file
-            with open(csvFilepath, 'w', newline='') as csvFile:
-                csvWriter = csv.writer(csvFile)
+            with open(csvFilePath, 'w', newline='') as csvFile:
+                csvWriter = csv.writer(csvFilePath)
                 header = ["ID", "Timestamp", "Process ID", "Tag", "Module", "Level", "Message"]
                 csvWriter.writerow(header)
-                csvWriter.writerows(rows) #need to create separate csv for data table 
+                csvWriter.writerows(rows) 
         
             # Update the database with the CSV file path
-            self.cursor.execute("UPDATE eventTable SET csvFilepath = ?", (csvFilepath))
+            self.cursor.execute("UPDATE eventTable SET csvFilePath = ?", (csvFilePath))
             self.sqliteConnection.commit()
 
-            print("Logs exported to CSV: {csvFilepath}")
+            print("Logs exported to CSV: {csvFilePath}")
 
-            return csvFilepath
+            return csvFilePath
 
         except Exception as e:
-            print("Error exporting logs to CSV: {e}")
+            print("Error exporting logs to CSV: {e}") #eventually change to self.logger.error
