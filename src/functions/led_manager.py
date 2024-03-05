@@ -18,8 +18,6 @@ purple = (128, 0, 255)
 pink = (255, 102, 178)
 white = (255, 255, 255)
 
-rainbow = (red,orange,yellow,lime,green,light_blue,blue,purple,pink)
-
 # Functions
 def colorAll(color, delay):
     for i in range(0,24):
@@ -73,8 +71,8 @@ def receiving(transceiver):
 
 def startup():
     for i in range(8):
-        illuminate(i, red)
-        time.sleep(0.1)
+        illuminate(i, red, green, blue)
+        time.sleep(0.5)
         
 # these are functions so that i do not have to redefine the colors in the startup program
 def allGreen():
@@ -84,8 +82,5 @@ def turn_all_LEDs_off():
     colorAll(off, 0)
 
 def test_LEDs():
-    for j in range(0,24):
-        for i in range(0,8):
-            illuminate(i,random.choice(rainbow))
-        time.sleep(0.075)
+    startup()
     turn_all_LEDs_off()
