@@ -10,7 +10,7 @@ def detector_manager():
     #cameras = [1, 0]
 
     # Initialize Detector
-    detector = Detector(1280, 360, "Robot_Model_Pan2", g.cameras, render = True, tracking = True)
+    detector = Detector(1280, 360, "RobotPanModel4-80-10-10-e29", g.cameras, render = True, tracking = True)
 
     # Run Detector in a Thread
     g.detector_thread = Thread(target = detector.detect, args = (), daemon=True, name="Detect")
