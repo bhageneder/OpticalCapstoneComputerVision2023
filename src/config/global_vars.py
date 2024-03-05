@@ -216,7 +216,7 @@ def init():
     global virtual_serial_port
     global robot_serial_port
 
-    spi = board.SPI()   # MOSI pin
+    spi = board.SPI()   # MOSI pin 19
     global pixels
     # Board Setup
     pixels = neopixel.NeoPixel_SPI(
