@@ -22,7 +22,8 @@ def create_icmp_packet(identifier, sequence, payload):
     return header + data
 
 # Send ICMP Ping out of Single Transceiver Directed at a Single Robot
-def reassociate(transceiver, robotIP, robotTrackID):
+# Used for Associate (In Node Discovery) and Reassociate (in New Visible)
+def associate(transceiver, robotIP, robotTrackID):
     count = g.PING_COUNT
     timeout = g.PING_TIMEOUT
 
@@ -32,14 +33,14 @@ def reassociate(transceiver, robotIP, robotTrackID):
     except socket.error as e:
         if e.errno == errno.EPROTONOSUPPORT:
             # Sometimes, the OS fails to open a new ICMP socket...
-            if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: ICMP Socket Failed to Open')
+            if g.debug_maintenance is True: print(f'Associate on T{transceiver}: ICMP Socket Failed to Open')
         else:
-            if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: Unknown Socket Error')
+            if g.debug_maintenance is True: print(f'Associate on T{transceiver}: Unknown Socket Error')
         return -1
     
     ICMP_socket.settimeout(timeout)
     dest_ip = socket.gethostbyname(robotIP)
-    if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: PINGING {robotIP}')
+    if g.debug_maintenance is True: print(f'Associate on T{transceiver}: PINGING {robotIP}')
 
     # Create an array to hold the number of reply pings captured by each transceiver
     num_received_pings_per_transceiver = [0 for i in range(8)]
@@ -102,22 +103,22 @@ def reassociate(transceiver, robotIP, robotTrackID):
                 if received_transceiver_number >= 0 and received_transceiver_number <= 7 and received_robotTrackID == robotTrackID and received_sequence == sequence and response_payload == f'{g.ROBOT_IP_ADDRESS}_T_{received_transceiver_number}':
                     num_received_pings_per_transceiver[received_transceiver_number] += 1
                     total_rtt_time_per_transceiver[received_transceiver_number] += elapsed_time
-                    if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: Ping_{received_transceiver_number}, {len(response)} bytes from {addr[0]}: icmp_seq={received_sequence} ttl={response[8]} time={elapsed_time:.2f} ms')
+                    if g.debug_maintenance is True: print(f'Associate on T{transceiver}: Ping_{received_transceiver_number}, {len(response)} bytes from {addr[0]}: icmp_seq={received_sequence} ttl={response[8]} time={elapsed_time:.2f} ms')
 
             except socket.timeout:
                 # When all pings have been sent, and no more data is received, any ping requests that did not
                 # receive replies are considered timed out.
-                if g.debug_maintenance is True: print(f'Reassociate on T{transceiver}: All Unresponsive Ping Requests Have Timed Out')
+                if g.debug_maintenance is True: print(f'Associate on T{transceiver}: All Unresponsive Ping Requests Have Timed Out')
                 break
     
     ICMP_socket.close()
 
     # Check if the Received Packets Set is Empty
     if(received_packets == set()):
-        # Reassociate Unsuccessful
+        # Associate Unsuccessful
         return False
 
-    # Reassociate Succesful
+    # Associate Succesful
     return True
 
 # Some Interesting Behavior to Note:
