@@ -49,7 +49,7 @@ def send_manager():
                 for robot in (g.visible + g.lost):
                     if (robot.IP == packet_summary.dest_IP):
                         # Robot Found, Send Data Using Robot's Transceiver
-                        if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {transceiver}"')
+                        if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {robot.transceiver}"')
                         g.transceiver_send_queues[robot.transceiver].put(packet)
                         break
                 else:
@@ -72,7 +72,7 @@ def send_manager():
                 for robot in (g.visible + g.lost):
                     if (robot.IP == packet_summary.dest_IP):
                         # Robot Found, Send Data Using Robot's Transceiver
-                        if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {transceiver}"')
+                        if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {robot.transceiver}"')
                         g.transceiver_send_queues[robot.transceiver].put(packet)
                         break
                 else:
