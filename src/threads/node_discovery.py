@@ -20,7 +20,7 @@ def node_discovery(robot):
         robotIP = None
 
         # Identify Which IP the Robot Has
-        for i in range(g.POSSIBLE_ROBOT_IP_ADDRESSES):
+        for i in range(len(g.POSSIBLE_ROBOT_IP_ADDRESSES)):
             # Skip over our own IP (we should really not have any used IPs in this list tbh, should change this)
             if g.POSSIBLE_ROBOT_IP_ADDRESSES[i] == g.ROBOT_IP_ADDRESS:
                 continue
@@ -38,26 +38,28 @@ def node_discovery(robot):
             # Set the IP - Checked by the Send Manager
             robot.IP = robotIP
 
+            numThreads = len(g.EXPECTED_NUMBER_OF_ROBOTS)
+
             # Try to discovery on possible ports
             # Creating Mini Node Discovery Threads For Each Port
             mini_node_discovery_threads = []
-            for j in range(g.EXPECTED_NUMBER_OF_ROBOTS):
+            for i in range(numThreads):
                 mini_node_discovery_threads.append(threading.Thread(
                     target=mini_node_discovery,
                     args=(
                         robotIP,
-                        g.POSSIBLE_RECEIVING_ROBOT_PORTS[j],
-                        g.POSSIBLE_SENDING_ROBOT_PORTS[j],
+                        g.POSSIBLE_RECEIVING_ROBOT_PORTS[i],
+                        g.POSSIBLE_SENDING_ROBOT_PORTS[i],
                         robot.transceiver
                     ),
                     daemon=True,
-                    name=f"Mini_Node_Discovery_{i}_{j}"
+                    name=f"Mini_Node_Discovery__{i}"
                 ))
 
-            for i in range(g.EXPECTED_NUMBER_OF_ROBOTS):
+            for i in range(numThreads):
                 mini_node_discovery_threads[i].start()
 
-            for i in range(g.EXPECTED_NUMBER_OF_ROBOTS):
+            for i in range(numThreads):
                 mini_node_discovery_threads[i].join()
 
         # Sleep
