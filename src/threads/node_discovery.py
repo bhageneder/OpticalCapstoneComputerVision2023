@@ -73,4 +73,8 @@ def node_discovery(robot):
         # Acquire Global Visible Robot List Mutex
             with g.visible_mutex:
                 # Remove Robot from Global Visible List
-                g.visible.remove(robot)
+                try:
+                    g.visible.remove(robot)
+                except ValueError:
+                    # Robot is Already Considered Lost and Has Been Removed from List
+                    pass
