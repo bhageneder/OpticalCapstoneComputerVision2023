@@ -1,6 +1,0 @@
-transceiver.o
-transceiver/bin/Debug
-transceiver/obj/Debug
-src/sharedMemory/*.o
-src/*.o
-src/main
