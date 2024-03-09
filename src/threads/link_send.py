@@ -7,15 +7,15 @@ import config.global_vars as g
 # Calls the correct link send version depending upon mode. Checks the type of the parameter to ensure type safety.
 def link_send(generic):
     if g.LEGACY_MODE:
-        if type(generic) is not type(RobotLink):
-            raise Exception("Type Error: link_send() takes generic parameter as type RobotLink in Legacy Mode")
-        else: 
+        if isinstance(generic, RobotLink):
             link_send_legacy(generic)
+        else: 
+            raise Exception("Type Error: link_send() takes generic parameter as type RobotLink in Legacy Mode")
     else:
-        if type(generic) is not type(Robot):
-            raise Exception("Type Error: link_send() takes generic parameter as type Robot when not in Legacy Mode")
-        else:
+        if isinstance(generic, Robot):
             robot_send(generic)
+        else:
+            raise Exception("Type Error: link_send() takes generic parameter as type Robot when not in Legacy Mode")
 
                 
 def robot_send(robot):
