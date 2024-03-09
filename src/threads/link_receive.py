@@ -30,7 +30,8 @@ def robot_receive(robot):
 
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
-            if ((robot not in g.visible) or (robot not in g.lost)):
+            if ((robot not in g.visible) and (robot not in g.lost)):
+                if g.debug_link_receive: print(f'{thread_name} Exiting. Robot is Not in Visible or Lost List')
                 return
                 
 def link_receive_legacy(robot_link):
