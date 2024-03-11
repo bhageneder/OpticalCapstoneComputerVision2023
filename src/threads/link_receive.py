@@ -6,15 +6,16 @@ import config.global_vars as g
 
 def link_receive(generic):
     if g.LEGACY_MODE:
-        if type(generic) is not type(RobotLink):
-            raise Exception("Type Error: link_receive() takes generic parameter as type RobotLink in Legacy Mode")
-        else:
+        if isinstance(generic, RobotLink):
             link_receive_legacy(generic)
-    else:
-        if type(generic) is not type(Robot):
-            raise Exception("Type Error: link_receive() takes generic parameter as type Robot when not in Legacy Mode")
         else:
+            raise Exception("Type Error: link_receive() takes generic parameter as type RobotLink in Legacy Mode") 
+    else:
+        if isinstance(generic, Robot):
             robot_receive(generic)
+        else:
+            raise Exception("Type Error: link_receive() takes generic parameter as type Robot when not in Legacy Mode")
+            
         
 def robot_receive(robot):
     thread_name = threading.current_thread().name
@@ -29,7 +30,8 @@ def robot_receive(robot):
 
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
-            if ((robot not in g.visible) or (robot not in g.lost)):
+            if ((robot not in g.visible) and (robot not in g.lost)):
+                if g.debug_link_receive: print(f'{thread_name} Exiting. Robot is Not in Visible or Lost List')
                 return
                 
 def link_receive_legacy(robot_link):

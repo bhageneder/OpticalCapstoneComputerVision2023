@@ -1,5 +1,5 @@
 import config.global_vars as g
-from functions.ping import reassociate
+from functions.ping import associate
 from threads.node_discovery import node_discovery
 import threading
 
@@ -31,7 +31,7 @@ def new_visible():
                 g.visible.append(robot)
 
             # Launch Node Discovery Thread
-            node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=[robot], name=f"Node_Discovery_For_Robot_{robot.trackingID}")
+            node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=[robot], name=f"Node_Discovery_For_Robot_{robot.trackID}")
             node_discovery_thread.start()
 
         # Queue to New Robot Queue
@@ -43,8 +43,8 @@ def findRobot(robot):
     with g.lost_mutex:
         # Try to Communicate on Open Robot Links Using New Robot Transceiver
         for lostRobot in g.lost:
-            # Send Reassociate Ping
-            response = reassociate(robot.transceiver, lostRobot.robotLink.ip_address, robot.trackID)
+            # Send an Associate Ping to Reassociate
+            response = associate(robot.transceiver, lostRobot.robotLink.ip_address, robot.trackID)
 
             # If it Got a Response
             if response:

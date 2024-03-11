@@ -137,7 +137,7 @@ class Detector:
                                 if (detection.ClassID == 1 and detection.TrackID > -1):
                                         # Get the best transceiver for the robot and tracking information
                                         transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
-                                        trackingID = detection.TrackID
+                                        trackID = detection.TrackID
                                         trackingStatus = detection.TrackStatus
 
                                         # Flag for when the loop identifies the robot
@@ -146,7 +146,7 @@ class Detector:
                                         # Find tracking ID in robot list
                                         for i in range(0, len(g.visible)):
                                                 # If we are on the correct robot, update the tracking information
-                                                if (g.visible[i].trackingID == trackingID):
+                                                if (g.visible[i].trackID == trackID):
                                                         foundRobotFlag = True
                                                         foundRobotIndeces.append(i)
 
@@ -159,11 +159,11 @@ class Detector:
                                         # Check if the code in the loop executed
                                         # If not, create a new robot object and store in the visibleQ
                                         if not foundRobotFlag:
-                                                self.visibleQ.put(Robot(trackingID, transceiver))
+                                                self.visibleQ.put(Robot(trackID, transceiver))
                                         
                                         # Debug statement
                                         if (self.__debug):
-                                                print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
+                                                print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackID, trackingStatus, transceiver))
 
                         # Make a copy of the robot list
                         robotListCopy = g.visible[:]

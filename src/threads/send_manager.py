@@ -45,13 +45,21 @@ def send_manager():
             
             # Send SYN Through Specific Transceiver
             else:
-                transceiver = -1 # Somehow get the transceiver number!!!
-
-                if (transceiver != -1):
-                    if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {transceiver}"')
-                    g.transceiver_send_queues[transceiver].put(packet)
+                # Find the Robot With Matching IP Address
+                for robot in (g.visible + g.lost):
+                    if (robot.IP == packet_summary.dest_IP):
+                        # Robot Found, Send Data Using Robot's Transceiver
+                        if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {robot.transceiver}"')
+                        g.transceiver_send_queues[robot.transceiver].put(packet)
+                        break
+                else:
+                    if g.debug_send_manager: print(f"Send Manager: Send Error: Transceiver Number for Robot with IP {packet_summary.dest_IP} is -1. Sending SYN Through All Transceivers.")     
+                    # Send through all transceivers if the destination IP Address is not a known Robot Link
+                    for i in range(len(g.serial_ports)):
+                        g.transceiver_send_queues[i].put(packet)
 
             continue
+
         elif packet_summary.tcp_flags == 'SA':
             if g.LEGACY_MODE:
                 if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through All Transceivers')
@@ -60,11 +68,18 @@ def send_manager():
 
             # Send SYN-ACK Through Specific Transceiver
             else:
-                transceiver = -1 # Somehow get the transceiver number!!!
-
-                if (transceiver != -1):
-                    if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {transceiver}"')
-                    g.transceiver_send_queues[transceiver].put(packet)
+                # Find the Robot With Matching IP Address
+                for robot in (g.visible + g.lost):
+                    if (robot.IP == packet_summary.dest_IP):
+                        # Robot Found, Send Data Using Robot's Transceiver
+                        if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {robot.transceiver}"')
+                        g.transceiver_send_queues[robot.transceiver].put(packet)
+                        break
+                else:
+                    if g.debug_send_manager: print(f"Send Manager: Send Error: Transceiver Number for Robot with IP {packet_summary.dest_IP} is -1. Sending SYN-ACK through All Transceivers.")     
+                    # Send through all transceivers if the destination IP Address is not a known Robot Link
+                    for i in range(len(g.serial_ports)):
+                        g.transceiver_send_queues[i].put(packet)
 
             continue
 

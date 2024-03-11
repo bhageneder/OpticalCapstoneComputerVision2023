@@ -7,15 +7,15 @@ import config.global_vars as g
 # Calls the correct link send version depending upon mode. Checks the type of the parameter to ensure type safety.
 def link_send(generic):
     if g.LEGACY_MODE:
-        if type(generic) is not type(RobotLink):
-            raise Exception("Type Error: link_send() takes generic parameter as type RobotLink in Legacy Mode")
-        else: 
+        if isinstance(generic, RobotLink):
             link_send_legacy(generic)
+        else: 
+            raise Exception("Type Error: link_send() takes generic parameter as type RobotLink in Legacy Mode")
     else:
-        if type(generic) is not type(Robot):
-            raise Exception("Type Error: link_send() takes generic parameter as type Robot when not in Legacy Mode")
-        else:
+        if isinstance(generic, Robot):
             robot_send(generic)
+        else:
+            raise Exception("Type Error: link_send() takes generic parameter as type Robot when not in Legacy Mode")
 
                 
 def robot_send(robot):
@@ -34,7 +34,8 @@ def robot_send(robot):
 
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
-            if ((robot not in g.visible) or (robot not in g.lost)):
+            if ((robot not in g.visible) and (robot not in g.lost)):
+                if g.debug_link_send: print(f'{thread_name} Exiting. Robot is Not in Visible or Lost List')
                 return
 
 def link_send_legacy(robot_link):
