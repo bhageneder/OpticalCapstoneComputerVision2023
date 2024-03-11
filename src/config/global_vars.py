@@ -1,7 +1,7 @@
 import queue
 import threading
 import board    # needed for neopixel
-import neopixel # needed for neopixel
+import neopixel_spi as neopixel # needed for neopixel
 import configparser
 
 '''
@@ -246,15 +246,15 @@ def init():
     global virtual_serial_port
     global robot_serial_port
 
-    #global pixels ### Not supported on Nano
+    spi = board.SPI()   # MOSI pin 19
+    global pixels
     # Board Setup
-    #pixels = neopixel.NeoPixel(
-    '''    board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
+    pixels = neopixel.NeoPixel_SPI(
+        spi,                            # SPI object
         24,                             # Number of LEDs (Num of Pixels)
         brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
         pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
     )
-    '''
     
     
     

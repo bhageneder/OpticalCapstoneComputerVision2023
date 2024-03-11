@@ -4,7 +4,7 @@ import glob
 import time
 import subprocess
 import board    # needed for neopixel
-import neopixel # needed for neopixel
+import neopixel_spi as neopixel # needed for neopixel
 from threads.maintenance import maintenance
 from threads.discovery import discovery
 from threads.link_send import link_send
@@ -38,8 +38,8 @@ def main():
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
-    lc.turn_all_LEDs_off()
-
+    lc.test_LEDs()
+    
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
     if g.robot_serial_port is not None and g.ROBOT_IP_ADDRESS == g.POSSIBLE_ROBOT_IP_ADDRESSES[0]:
         moving_thread = threading.Thread(target=move_circle, args=(g.robot_serial_port, 0xC8,), daemon=True, name=f"Moving")

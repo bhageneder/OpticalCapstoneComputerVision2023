@@ -18,51 +18,49 @@ purple = (128, 0, 255)
 pink = (255, 102, 178)
 white = (255, 255, 255)
 
-
-
 # Functions
 def colorAll(color, delay):
     for i in range(0,24):
-        #g.pixels[i] = color
-        #time.sleep(delay)
+        g.pixels[i] = color
+        time.sleep(delay)
         pass
 
 def illuminate(transceiver, color1, color2=None, color3=None):
     if(color2 is None or color3 is None):
         # If 3 colors are not specified, only use the first color
-        #g.pixels[transceiver*3] = color1
-        #g.pixels[transceiver*3+1] = color1
-        #g.pixels[transceiver*3+2] = color1
+        g.pixels[transceiver*3] = color1
+        g.pixels[transceiver*3+1] = color1
+        g.pixels[transceiver*3+2] = color1
         pass
     else:
         # All 3 colors were entered
-        #g.pixels[transceiver*3] = color1
-        #g.pixels[transceiver*3+1] = color2
-        #g.pixels[transceiver*3+2] = color3
+        g.pixels[transceiver*3] = color1
+        g.pixels[transceiver*3+1] = color2
+        g.pixels[transceiver*3+2] = color3
         pass
 
 def illuminate_for_finding(transceiver_number):
-        #g.pixels[transceiver_number * 3] = red
+        g.pixels[transceiver_number * 3] = red
         pass
 
 def turn_off_for_finding(transceiver_number):
-        #g.pixels[transceiver_number * 3] = off
+        g.pixels[transceiver_number * 3] = off
         pass
 
 def illuminate_for_robot_link(transceiver_number):
-        #g.pixels[transceiver_number * 3 + 1] = green
+        g.pixels[transceiver_number * 3 + 1] = green
         pass
 
 def turn_off_for_robot_link(transceiver_number):
-        #g.pixels[transceiver_number * 3 + 1] = off
+        g.pixels[transceiver_number * 3 + 1] = off
         pass
 
 def illuminate_for_connecting(transceiver_number):
-        #g.pixels[transceiver_number * 3 + 2] = blue
+        g.pixels[transceiver_number * 3 + 2] = blue
         pass
 
 def turn_off_for_connecting(transceiver_number):
-        #g.pixels[transceiver_number * 3 + 2] = off
+        g.pixels[transceiver_number * 3 + 2] = off
         pass
 
 def transmitting(transceiver):
@@ -73,8 +71,8 @@ def receiving(transceiver):
 
 def startup():
     for i in range(8):
-        illuminate(i, red)
-        time.sleep(0.1)
+        illuminate(i, red, green, blue)
+        time.sleep(0.5)
         
 # these are functions so that i do not have to redefine the colors in the startup program
 def allGreen():
@@ -82,3 +80,7 @@ def allGreen():
     
 def turn_all_LEDs_off():
     colorAll(off, 0)
+
+def test_LEDs():
+    startup()
+    turn_all_LEDs_off()
