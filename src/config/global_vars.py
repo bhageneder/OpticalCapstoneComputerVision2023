@@ -90,12 +90,32 @@ def init():
     global detector_thread
     discovery_thread = None
 
-    global detector_manager_thread
-    detector_manager_thread = None
-
-    global best_transceiver
-    best_transceiver = -1
+    # Detector Object - Runs CV Object Detection, Detects Robots
+    global detector
+    detector = None
     
+    # Visible Robots List (Active LOS)
+    global visible
+    visible = []
+
+    # Visible Robots List Mutex
+    global visible_mutex
+    visible_mutex = threading.Lock()
+
+    # Lost Robots List (No Active LOS)
+    global lost
+    lost = []
+
+    # Lost Robots List Mutex
+    global lost_mutex
+    lost_mutex = threading.Lock()
+
+    global new_visible_thread
+    new_visible_thread = None
+
+    global new_lost_thread
+    new_lost_thread = None
+
     # Queue for data that is received by all transceivers
     global data_received
     data_received = queue.Queue()
@@ -108,9 +128,13 @@ def init():
     global discovery_data_received
     discovery_data_received = queue.Queue()
     
-    # Queue for other threads signify new robot links need to be maintained
+    # Queue for other threads signify new robot links need to be maintained. Legacy version of newRobotQ
     global robot_links_new
     robot_links_new = queue.Queue()
+
+    # Queue to create threads when new robots are created. 
+    global newRobotQ
+    newRobotQ = queue.Queue()
     
     # Queues for each of the Transceiver Send Threads (8 Transceivers)
     global transceiver_send_queues
@@ -133,7 +157,6 @@ def init():
     cameras = list()
     numCameras = int(config['Cameras']['numCameras'])
     camConfig = config['Cameras']['camConfig'].split(",")
-    print(camConfig)
     try:
         for i in range(0, numCameras):       
             if (camConfig[i] == "num"):
@@ -142,6 +165,13 @@ def init():
                 cameras.append(config['Cameras'][f'camera{i}'])
     except:
         raise Exception("Incorrect camera configuration!")
+    
+    # Robot Mode Based on Config
+    global LEGACY_MODE
+    if numCameras <= 0:
+        LEGACY_MODE = True
+    else:
+        LEGACY_MODE = False
 
     global PING_COUNT
     PING_COUNT = 2
