@@ -20,7 +20,7 @@ class Logger:
 
     def __init__(self, logFilePath = None):
         self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__) # maybe change to .addEvent for ease
         
         # Obtain sql database connection
         self.sqliteConnection = self.createDatabaseConnection()
@@ -50,6 +50,7 @@ class Logger:
             print(sqliteError)
             return None
         except Exception as e:
+            print(e)
             print("FATAL ERROR connecting to database: {e}")
             return None
         
@@ -57,8 +58,9 @@ class Logger:
         try:
             self.conn.cursor()
             self.conn.execute(tableDefinition)
-            self.sqliteConnection.commit()
+            self.sqliteConnection.commit() #pick conn or sqliteConnection
         except sqlite3.Error as sqliteError:
+            print(sqliteError)
             print("Error creating table: {sqliteError}")
  
     def tableDefinition(self):
@@ -77,9 +79,10 @@ class Logger:
                 LevelNum INTEGER PRIMARY KEY,
                 Level VARCHAR(10)
             )"""
-        print(self.levelTable)
-        #self.conn = createDatabaseConnection()
+        
         self.logSetup()
+        print(self.levelTable)
+        
     def populateLevelTable(self):
         try:
             for level in Level:
@@ -87,6 +90,7 @@ class Logger:
                                     (level.value, level.name))
             self.sqliteConnection.commit()
         except sqlite3.Error as sqliteError:
+            print(sqliteError)
             print("Error populating levelTable: {sqliteError}")       
     
     def logSetup(self):
@@ -123,6 +127,7 @@ class Logger:
             self.sqliteConnection.commit()
 
        except Exception as e:
+            print(e)
             print("Error inserting log to eventTable: {e}")
         
             
@@ -140,7 +145,7 @@ class Logger:
             os.makedirs(csvFolder, exist_ok=True)
 
             # Write logs to a CSV file
-            with open(csvFilePath, 'w', newline='') as csvFile:
+            with open(csvFilePath, 'w', newline='') as csvFilePath:
                 csvWriter = csv.writer(csvFilePath)
                 header = ["ID", "Timestamp", "Process ID", "Tag", "Module", "Level", "Message"]
                 csvWriter.writerow(header)
@@ -155,4 +160,5 @@ class Logger:
             return csvFilePath
 
         except Exception as e:
+            print(e)
             print("Error exporting logs to CSV: {e}") #eventually change to self.logger.error
