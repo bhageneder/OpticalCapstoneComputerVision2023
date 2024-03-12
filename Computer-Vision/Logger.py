@@ -22,34 +22,12 @@ class Logger:
         self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
         self.logger = logging.getLogger(__name__)
         
-       
-        
         # Obtain sql database connection
         self.sqliteConnection = self.createDatabaseConnection()
         print(self.sqliteConnection)
 
         # Add cursor to retrieve data from database using queries
         self.cursor = self.sqliteConnection.cursor()
-
-        # Define the event table
-        self.eventTable =  """ CREATE TABLE eventLog(
-            ID INTEGER PRIMARY KEY,
-            Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-            ProcessID INTEGER,
-            Tag VARCHAR(10), 
-            Module  VARCHAR(10),
-            LevelNum INTEGER,
-            Message VARCHAR(255)
-        )"""
-
-        self.levelTable = """ CREATE TABLE levelTable(
-            LevelNum INTEGER PRIMARY KEY,
-            Level VARCHAR(10)
-        )"""
-        print(self.levelTable)
-        self.logSetup()
-        
-       
 
     # Logger Class Deconstructor
     def __del__(self):
@@ -61,9 +39,9 @@ class Logger:
     # Create / open database existing on disk and return database connection
     def createDatabaseConnection(self):
         try:
-            conn = sqlite3.connect(self.logFilePath)
+            self.conn = sqlite3.connect(self.logFilePath)
             #conn.row = sqlite3.Row #to access column by name
-            return conn
+            return self.conn
     
             #conn.row = sqlite3.Row #to access column by name
             
@@ -77,11 +55,31 @@ class Logger:
         
     def createTable(self, tableDefinition):
         try:
-            self.cursor.execute(tableDefinition)
+            self.conn.cursor()
+            self.conn.execute(tableDefinition)
             self.sqliteConnection.commit()
         except sqlite3.Error as sqliteError:
             print("Error creating table: {sqliteError}")
+ 
+    def tableDefinition(self):
+        # Define the event table
+        self.eventTable =  """ CREATE TABLE IF NOT EXISTS eventLog (
+                ID INTEGER PRIMARY KEY,
+                Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+                ProcessID INTEGER,
+                Tag VARCHAR(10), 
+                Module  VARCHAR(10),
+                LevelNum INTEGER,
+                Message VARCHAR(255)
+            )"""
 
+        self.levelTable = """ CREATE TABLE IF NOT EXISTS levelTable (
+                LevelNum INTEGER PRIMARY KEY,
+                Level VARCHAR(10)
+            )"""
+        print(self.levelTable)
+        #self.conn = createDatabaseConnection()
+        self.logSetup()
     def populateLevelTable(self):
         try:
             for level in Level:
@@ -89,9 +87,8 @@ class Logger:
                                     (level.value, level.name))
             self.sqliteConnection.commit()
         except sqlite3.Error as sqliteError:
-            print("Error populating levelTable: {sqliteError}")
- 
-      
+            print("Error populating levelTable: {sqliteError}")       
+    
     def logSetup(self):
         # Get the process ID and module name
         #pid = os.getpid()
@@ -119,13 +116,13 @@ class Logger:
     def addEvent(self, tag, module, LevelNum, message):
        # instantiantion method detection = logging.getLogger(Detect)
         
-        try:
+       try:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
             sqlite3.connect(self.DEFAULT_LOG_FILE)
-            self.cursor.execute("INSERT INTO eventLog (ID, Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?, ?)", (id, timestamp, tag, module, LevelNum, message))
+            self.cursor.execute("INSERT INTO eventLog (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)", (timestamp, tag, module, LevelNum, message))
             self.sqliteConnection.commit()
 
-        except Exception as e:
+       except Exception as e:
             print("Error inserting log to eventTable: {e}")
         
             
