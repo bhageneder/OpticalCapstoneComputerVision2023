@@ -4,6 +4,7 @@ import jetson_inference
 import jetson_utils
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
+import config.global_vars as g
 import os
 
 class Detector:
@@ -24,7 +25,8 @@ class Detector:
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
 
                 # Set up detect net for the custom model
-                self.__net = jetson_inference.detectNet(model=os.path.expanduser(f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/ssd-mobilenet.onnx"), labels=os.path.expanduser(f"~/jetson-inference/python/training/detection/ssd/models/{modelName}/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                print(g.modelPath + g.model + "/ssd-mobilenet.onnx")
+                self.__net = jetson_inference.detectNet(model=(g.modelPath + g.model + "/ssd-mobilenet.onnx"), labels=(g.modelPath + g.model + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
                 self.__net.SetTrackingEnabled(tracking)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
