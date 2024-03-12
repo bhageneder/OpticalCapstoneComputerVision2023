@@ -169,6 +169,8 @@ def start_threads():
             link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
             link_receive_thread.start()
 
+            #connected LEDs
+
             # Increase Thread Number
             thread_number += 1
 

@@ -9,6 +9,8 @@ def new_visible():
         # Blocking Call to the Visible Queue
         robot = g.detector.visibleQ.get()
 
+        #connecting/finding LEDs
+
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)
         if (foundRobot is not None):
