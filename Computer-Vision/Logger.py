@@ -16,34 +16,33 @@ class Level(Enum):
 
 class Logger:
     DEFAULT_LOG_FILE = 'logger.db'
-    DEFAULT_CSV_FOLDER = 'csvFolder.csv'
+    DEFAULT_CSV_FOLDER = 'csvLogFolder'
 
     def __init__(self, logFilePath = None):
         self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
         self.logger = logging.getLogger(__name__) # maybe change to .addEvent for ease
         
         # Obtain sql database connection
-        self.sqliteConnection = self.createDatabaseConnection()
-        print(self.sqliteConnection)
+        self.conn = self.createDatabaseConnection()
+        print(self.conn)
 
         # Add cursor to retrieve data from database using queries
-        self.cursor = self.sqliteConnection.cursor()
-
+        self.cursor = self.conn.cursor()
+    
+        self.logSetup()
+        
     # Logger Class Deconstructor
     def __del__(self):
         print("Commiting changes to Database and Deconstructing Logger")
         
         # Close sql connection 
-        self.sqliteConnection.close()
+        self.conn.close()
 
     # Create / open database existing on disk and return database connection
     def createDatabaseConnection(self):
         try:
             self.conn = sqlite3.connect(self.logFilePath)
-            #conn.row = sqlite3.Row #to access column by name
             return self.conn
-    
-            #conn.row = sqlite3.Row #to access column by name
             
         except sqlite3.Error as sqliteError:
             print("Error connecting to SQLite database at path: {}".format(self.logFilePath))
@@ -56,15 +55,16 @@ class Logger:
         
     def createTable(self, tableDefinition):
         try:
-            self.conn.cursor()
-            self.conn.execute(tableDefinition)
-            self.sqliteConnection.commit() #pick conn or sqliteConnection
+            self.cursor()
+            self.cursor.execute(tableDefinition)
+            self.conn.commit() 
+
         except sqlite3.Error as sqliteError:
             print(sqliteError)
             print("Error creating table: {sqliteError}")
  
     def tableDefinition(self):
-        # Define the event table
+        # Define the tables
         self.eventTable =  """ CREATE TABLE IF NOT EXISTS eventLog (
                 ID INTEGER PRIMARY KEY,
                 Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
@@ -80,15 +80,16 @@ class Logger:
                 Level VARCHAR(10)
             )"""
         
-        self.logSetup()
-        print(self.levelTable)
+
         
+         
     def populateLevelTable(self):
         try:
             for level in Level:
                 self.cursor.execute("INSERT OR IGNORE INTO levelTable (LevelNum, Level) VALUES (?, ?)",
                                     (level.value, level.name))
-            self.sqliteConnection.commit()
+            self.conn.commit()
+            
         except sqlite3.Error as sqliteError:
             print(sqliteError)
             print("Error populating levelTable: {sqliteError}")       
@@ -99,7 +100,7 @@ class Logger:
         # Used to store the full path of the script file in the eventTable as a way to identify which script or module inserted a particular log entry
         #modname = __file__ 
         
-        # Export logs to CSV when an instance is created (previous log?)
+        # Export logs to CSV  (previous log?)
         csvFilePath = self.exportCsv()
         self.logger.info('Logs exported to CSV: {csvFilePath}')
 
@@ -114,8 +115,10 @@ class Logger:
                         "<Tag:{record[tag]}> | <Module: {record[module]}> | <Level:{record[level]}>   |" 
                         " |<Message: {record[message]}> ", 
                     enqueue=True)
+        
+        self.populateLevelTable()
         # Commit Changes to Database
-        self.sqliteConnection.commit()
+        self.conn.commit()
 
     def addEvent(self, tag, module, LevelNum, message):
        # instantiantion method detection = logging.getLogger(Detect)
@@ -124,7 +127,7 @@ class Logger:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
             sqlite3.connect(self.DEFAULT_LOG_FILE)
             self.cursor.execute("INSERT INTO eventLog (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)", (timestamp, tag, module, LevelNum, message))
-            self.sqliteConnection.commit()
+            self.conn.commit()
 
        except Exception as e:
             print(e)
@@ -136,8 +139,8 @@ class Logger:
     def exportCsv(self, csvFilePath = 'eventLogs.csv'):
         try:
             # Retrieve all logs from the database
-            self.cursor.execute("SELECT * FROM eventTable")
-            self.sqliteConnection.commit()
+            self.cursor.execute("SELECT * FROM eventLog")
+            self.conn.commit()
             rows = self.cursor.fetchall()
             
             # Create a folder for storing CSV files if it doesn't exist
@@ -151,9 +154,8 @@ class Logger:
                 csvWriter.writerow(header)
                 csvWriter.writerows(rows) 
         
-            # Update the database with the CSV file path
-            self.cursor.execute("UPDATE eventTable SET csvFilePath = ?", (csvFilePath))
-            self.sqliteConnection.commit()
+            # Update the database
+            self.conn.commit()
 
             print("Logs exported to CSV: {csvFilePath}")
 
