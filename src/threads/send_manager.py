@@ -76,7 +76,7 @@ def send_manager():
                         g.transceiver_send_queues[robot.transceiver].put(packet)
                         break
                 else:
-                    if g.debug_send_manager: print(f"Send Manager: Send Error: Transceiver Number for Robot with IP {packet_summary.dest_IP} is -1. Sending SYN-ACK through All Transceivers.")     
+                    if g.debug_send_manager: print(f"{thread_name}: Send Error: Transceiver Number for Robot with IP {packet_summary.dest_IP} is -1. Sending SYN-ACK through All Transceivers.")     
                     # Send through all transceivers if the destination IP Address is not a known Robot Link
                     for i in range(len(g.serial_ports)):
                         g.transceiver_send_queues[i].put(packet)
@@ -109,6 +109,7 @@ def send_manager():
             else:
                 # Not sure if this case is even possible
                 # Send through all transceivers if the destination IP Address is not a known Robot Link
+                if g.debug_send_manager: print(f"{thread_name}: Send Error: No Robot With Matching IP. Sending Payload Through All Transceivers: {packet_summary.payload}")
                 for i in range(len(g.serial_ports)):
                     g.transceiver_send_queues[i].put(packet)
 
