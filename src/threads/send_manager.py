@@ -47,7 +47,7 @@ def send_manager():
             else:
                 # Find the Robot With Matching IP Address
                 for robot in (g.visible + g.lost):
-                    if (robot.IP == packet_summary.dest_IP):
+                    if (robot.transceiver != -1 and robot.IP == packet_summary.dest_IP):
                         # Robot Found, Send Data Using Robot's Transceiver
                         if g.debug_send_manager: print(f'{thread_name}: Sending SYN Through Through Transceiver {robot.transceiver}"')
                         g.transceiver_send_queues[robot.transceiver].put(packet)
@@ -70,7 +70,7 @@ def send_manager():
             else:
                 # Find the Robot With Matching IP Address
                 for robot in (g.visible + g.lost):
-                    if (robot.IP == packet_summary.dest_IP):
+                    if (robot.transceiver != -1 and robot.IP == packet_summary.dest_IP):
                         # Robot Found, Send Data Using Robot's Transceiver
                         if g.debug_send_manager: print(f'{thread_name}: Sending SYN-ACK Through Through Transceiver {robot.transceiver}"')
                         g.transceiver_send_queues[robot.transceiver].put(packet)
@@ -101,7 +101,7 @@ def send_manager():
         else:
             # Find the Robot With Matching IP
             for robot in (g.visible + g.lost):
-                if (robot.robotLink is not None and robot.robotLink.ip_address == packet_summary.dest_IP):
+                if (robot.transceiver != -1 and robot.robotLink is not None and robot.robotLink.ip_address == packet_summary.dest_IP):
                     # Robot Found, Send Data Using Robot's Transceiver
                     if g.debug_send_manager: print(f"{thread_name}: Sending Payload Through Specific Transceiver {robot.transceiver}: {packet_summary.payload}")
                     g.transceiver_send_queues[robot.transceiver].put(packet)
