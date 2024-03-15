@@ -38,7 +38,8 @@ def main():
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
-    lc.test_LEDs()
+    if g.robot == "orin":
+        lc.test_LEDs()
     
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
     if g.robot_serial_port is not None and g.ROBOT_IP_ADDRESS == g.POSSIBLE_ROBOT_IP_ADDRESSES[0]:
