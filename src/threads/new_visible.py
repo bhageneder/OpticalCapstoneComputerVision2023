@@ -9,27 +9,24 @@ def new_visible():
         # Blocking Call to the Visible Queue
         robot = g.detector.visibleQ.get()
 
+        # Aquire Visible Mutex
+        with g.visible_mutex:
+            # Add Robot to the Visible List
+            g.visible.append(robot)
+
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)
         if (foundRobot is not None):
             # Update Robot Link
             robot.robotLink = foundRobot.robotLink
 
-            # Acquire Global Visible and Lost List Mutexes
+            # Acquire Global Lost List Mutex
             with g.visible_mutex and g.lost_mutex:
-                # Append to Global Visible List
-                g.visible.append(robot)
-
                 # Remove from Global Lost List
                 g.lost.remove(foundRobot)
 
         # Robot is Not in Lost List
         else:
-            # Acquire Global Visible Robot List Mutex
-            with g.visible_mutex:
-                # Append to Global Visible List
-                g.visible.append(robot)
-
             # Launch Node Discovery Thread
             node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=[robot], name=f"Node_Discovery_For_Robot_{robot.trackID}")
             node_discovery_thread.start()
