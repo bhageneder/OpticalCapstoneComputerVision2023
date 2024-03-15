@@ -28,15 +28,16 @@ def robot_send(robot):
             # Send Payload through Socket 
             if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
             robot.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
-
             send_num += 1
-            time.sleep(g.PAYLOAD_INTERVAL_SLEEP)
 
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
             if ((robot not in g.visible) and (robot not in g.lost)):
                 if g.debug_link_send: print(f'{thread_name} Exiting. Robot is Not in Visible or Lost List')
                 return
+
+        # Sleep the Link Send Thread
+        time.sleep(g.PAYLOAD_INTERVAL_SLEEP)
 
 def link_send_legacy(robot_link):
     thread_name = threading.current_thread().name
