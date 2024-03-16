@@ -25,14 +25,14 @@ def new_visible():
                 # Remove from Global Lost List
                 g.lost.remove(foundRobot)
 
+            # Queue to New Robot Queue
+            g.newRobotQ.put(robot)
+
         # Robot is Not in Lost List
         else:
             # Launch Node Discovery Thread
             node_discovery_thread = threading.Thread(target=node_discovery, daemon=True, args=[robot], name=f"Node_Discovery_For_Robot_{robot.trackID}")
             node_discovery_thread.start()
-
-        # Queue to New Robot Queue
-        g.newRobotQ.put(robot)
 
 # Searchest Lost List for Parameter Robot
 def findRobot(robot):

@@ -78,3 +78,6 @@ def node_discovery(robot):
                 except ValueError:
                     # Robot is Already Considered Lost and Has Been Removed from List
                     pass
+    else:
+        # Queue to New Robot Queue
+        g.newRobotQ.put(robot)
