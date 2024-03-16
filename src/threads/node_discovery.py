@@ -38,7 +38,7 @@ def node_discovery(robot):
             # Set the IP - Checked by the Send Manager
             robot.IP = robotIP
 
-            numThreads = len(g.EXPECTED_NUMBER_OF_ROBOTS)
+            numThreads = g.EXPECTED_NUMBER_OF_ROBOTS
 
             # Try to discovery on possible ports
             # Creating Mini Node Discovery Threads For Each Port
