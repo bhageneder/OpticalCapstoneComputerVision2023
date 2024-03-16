@@ -113,8 +113,13 @@ def associate(transceiver, robotIP, robotTrackID):
     
     ICMP_socket.close()
 
-    # Successful if received_packets is not an empty set
-    return not (received_packets == set())
+    # Successful if num_received_pings_per_transceiver has a reply
+    for num in num_received_pings_per_transceiver:
+        if(num_received_pings_per_transceiver[num] > 0):
+            return True
+        
+    # No Ping Replies
+    return False
 
 # Some Interesting Behavior to Note:
 # Maintenance: Received Pings Array [18, 3, 0, 1, 5, 1, 0, 3]

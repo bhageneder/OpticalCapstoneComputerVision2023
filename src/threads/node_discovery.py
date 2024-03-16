@@ -30,7 +30,7 @@ def node_discovery(robot):
             
             # If we get a response
             if response:
-                robotIP = g.POSSIBLE_RECEIVING_ROBOT_PORTS
+                robotIP = g.POSSIBLE_ROBOT_IP_ADDRESSES[i]
                 break
 
         # Only try to discover if we know the IP
