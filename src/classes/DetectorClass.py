@@ -137,7 +137,9 @@ class Detector:
                                 if (detection.ClassID == 1 and detection.TrackID > -1):
                                         # Get the best transceiver for the robot and tracking information
                                         transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
-                                        trackID = detection.TrackID
+                                        # The trackID must be incremented by 1
+                                        # Cannot start trackID at 0, or the associative ping will fail
+                                        trackID = detection.TrackID + 1
                                         trackingStatus = detection.TrackStatus
 
                                         # Flag for when the loop identifies the robot

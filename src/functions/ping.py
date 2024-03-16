@@ -114,7 +114,7 @@ def associate(transceiver, robotIP, robotTrackID):
     ICMP_socket.close()
 
     # Successful if num_received_pings_per_transceiver has a reply
-    for num in num_received_pings_per_transceiver:
+    for num in range(len(num_received_pings_per_transceiver)):
         if(num_received_pings_per_transceiver[num] > 0):
             return True
         
