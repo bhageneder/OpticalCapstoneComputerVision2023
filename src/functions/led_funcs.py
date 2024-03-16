@@ -18,6 +18,8 @@ purple = (128, 0, 255)
 pink = (255, 102, 178)
 white = (255, 255, 255)
 
+colors = [red, orange, yellow, lime, green, light_blue, blue, purple, pink, white]
+
 # Functions
 def colorAll(color, delay):
     for i in range(0,24):
@@ -39,27 +41,27 @@ def illuminate(transceiver, color1, color2=None, color3=None):
         g.pixels[transceiver*3+2] = color3
         pass
 
-def illuminate_for_finding(transceiver_number):
+def illuminate_for_lost(transceiver_number):
         g.pixels[transceiver_number * 3] = red
         pass
 
-def turn_off_for_finding(transceiver_number):
+def turn_off_for_lost(transceiver_number):
         g.pixels[transceiver_number * 3] = off
         pass
 
-def illuminate_for_robot_link(transceiver_number):
+def illuminate_for_connected(transceiver_number):
         g.pixels[transceiver_number * 3 + 1] = green
         pass
 
-def turn_off_for_robot_link(transceiver_number):
+def turn_off_for_connected(transceiver_number):
         g.pixels[transceiver_number * 3 + 1] = off
         pass
 
-def illuminate_for_connecting(transceiver_number):
+def illuminate_for_finding(transceiver_number):
         g.pixels[transceiver_number * 3 + 2] = blue
         pass
 
-def turn_off_for_connecting(transceiver_number):
+def turn_off_for_finding(transceiver_number):
         g.pixels[transceiver_number * 3 + 2] = off
         pass
 
@@ -70,9 +72,11 @@ def receiving(transceiver):
     illuminate(transceiver, blue, light_blue, blue)
 
 def startup():
-    for i in range(8):
-        illuminate(i, red, green, blue)
-        time.sleep(0.5)
+    for color in colors:
+        for i in range(8):
+            illuminate(i, color)
+            time.sleep(0.5)
+    turn_all_LEDs_off()
         
 # these are functions so that i do not have to redefine the colors in the startup program
 def allGreen():
@@ -80,7 +84,3 @@ def allGreen():
     
 def turn_all_LEDs_off():
     colorAll(off, 0)
-
-def test_LEDs():
-    startup()
-    turn_all_LEDs_off()
