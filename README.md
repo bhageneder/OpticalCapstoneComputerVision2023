@@ -42,7 +42,7 @@ The specific implementation employs TCP to establish reliable connections betwee
 
 ## Dependencies
 - [Pip Packages](https://docs.google.com/document/d/19U83-BOBsWA5D3D2DjtCTBzkktnS8ETZsRZ8RgFJoPo/edit?usp=sharing)
-- The project is also dependent upon having trained an ONXX model on images of your robot. This model must be trained using the same configuration variables as the script in the Jetson-Inference library uses. See the model training section for more information.
+- The project is also dependent upon having trained an ONNX model on images of your robot. This model must be trained using the same configuration variables as the script in the Jetson-Inference library uses. See the model training section for more information.
 
 ## Config
 The config file requires a variety of information:
