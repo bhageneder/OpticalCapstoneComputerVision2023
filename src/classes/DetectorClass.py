@@ -11,7 +11,7 @@ import queue
 class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
-        def __init__(self, width, height, modelName, cameras, render = False, tracking=False, debug = False):
+        def __init__(self, width, height, modelName, modelPath, cameras, render = False, tracking=False, debug = False):
                 self.initializing = True
                 self.visibleQ = queue.Queue()
                 self.lostQ = queue.Queue()
@@ -27,8 +27,7 @@ class Detector:
                 self.__division = 2 * self.__sections # Create the width of the divison (width/2*section)) or half the width of a section
 
                 # Set up detect net for the custom model
-                print(g.modelPath + g.model + "/ssd-mobilenet.onnx")
-                self.__net = jetson_inference.detectNet(model=(g.modelPath + g.model + "/ssd-mobilenet.onnx"), labels=(g.modelPath + g.model + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                self.__net = jetson_inference.detectNet(model=(modelPath + modelName + "/ssd-mobilenet.onnx"), labels=(modelPath + modelName + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
                 self.__net.SetTrackingEnabled(tracking)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)

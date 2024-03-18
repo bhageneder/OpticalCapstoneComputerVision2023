@@ -38,7 +38,8 @@ def main():
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
-    if g.robot == "orin":
+    # Nano does not support neopixel
+    if g.robot != "nano":
         lc.test_LEDs()
     
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
@@ -87,9 +88,15 @@ def main():
     # Creating Receive Manager Thread
     g.receive_manager_thread = threading.Thread(target=receive_manager, daemon=True, name=f"Receive_Manager")
 
-    if (g.robot == ("nano" or "orin")):
+    # Create Threads Specific to CV Enabled Bots
+    if not g.LEGACY_MODE:
+        # Calculate Resultion
+        resolution = 720
+        for i in range(len(g.cameras) - 1):
+            resolution /= 2
+
         # Initialize Detector
-        g.detector = Detector(1280, 360, "Robot_Model_Pan2", g.cameras, render = True, tracking = True)
+        g.detector = Detector(1280, resolution, g.model, g.modelPath, g.cameras, render = True, tracking = True)
 
         # Initialize Detector Thread
         g.detector_thread = threading.Thread(target = g.detector.detect, daemon=True, name="Detect")
@@ -100,6 +107,7 @@ def main():
         # Initialize New Lost Thread
         g.new_lost_thread = threading.Thread(target=new_lost, daemon=True, name="New_Lost")
 
+    # Start the threads
     start_threads()
 
 def start_threads():
