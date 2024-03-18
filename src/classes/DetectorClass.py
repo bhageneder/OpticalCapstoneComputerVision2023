@@ -6,16 +6,18 @@ from classes.StreamClass import Stream
 from classes.RobotClass import Robot
 import config.global_vars as g
 import os
+import queue
 
 class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, cameras, render = False, tracking=False, debug = False):
                 self.initializing = True
+                self.visibleQ = queue.Queue()
+                self.lostQ = queue.Queue()
                 self.__width = width
                 self.__height = height
                 self.__render = render
-                self.__current_transceiver = -1
                 self.__debug = debug
                 #self.__stopFlag = False """ For Auto Deconstruct Purposes """
                 self.__trackingMinFrames = 10
@@ -34,12 +36,6 @@ class Detector:
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
 
-                # List of all robots currently being tracked
-                self.__robotList = list()
-
-                # List of all robots that we have lost tracking for
-                self.__lostRobotList = list()
-
         # Destructor
         # Releases camera captures and destroys windows
         def __del__(self):
@@ -49,18 +45,6 @@ class Detector:
                 cv2.destroyAllWindows()
 
         #### Public Methods ####
-
-        # Transceiver Getter
-        def getTransceiver(self):
-               return self.__current_transceiver
-        
-        # robotList Getter
-        def getRobotLlist(self):
-                return self.__robotList
-        
-        # lostRobotList Getter
-        def getLostRobotLlist(self):
-                return self.__lostRobotList
 
         """        
         # For Auto Deconstruct Purposes        
@@ -115,8 +99,7 @@ class Detector:
                                 cv2.destroyAllWindows()
                                 break
 
-                        # Update the transceiver/robotList
-                        self.__updateTransceiver()
+                        # Update the robotList
                         self.__updateRobotList()
                         
                         self.initializing = False
@@ -139,125 +122,62 @@ class Detector:
 
                         section = int(normalized_x) - 1
                         
-                        
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
 
                         return section
 
-                # Create a copy of the robotList
-                robotListCopy = self.__robotList[:]
-
                 # Create a list to store found robot indeces
                 foundRobotIndeces = list()
 
-                # Loop through all detections, create robots
-                for detection in self.__detections:
-                        # If the detection is a robot
-                        if (detection.ClassID == 1 and detection.TrackID > -1):
-                                # Get the best transceiver for the robot and tracking information
-                                transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
-                                trackingID = detection.TrackID
-                                trackingStatus = detection.TrackStatus
+                # Acquire Visible Robot List Mutex
+                with g.visible_mutex:
+                        # Loop through all detections, create robots
+                        for detection in self.__detections:
+                                # If the detection is a robot and is tracked
+                                if (detection.ClassID == 1 and detection.TrackID > -1):
+                                        # Get the best transceiver for the robot and tracking information
+                                        transceiver = obtain_transceiver_number(detection.Center[0], self.__width)
+                                        # The trackID must be incremented by 1
+                                        # Cannot start trackID at 0, or the associative ping will fail
+                                        trackID = detection.TrackID + 1
+                                        trackingStatus = detection.TrackStatus
 
-                                # Flag for when the loop identifies the robot
-                                foundRobotFlag = False
+                                        # Flag for when the loop identifies the robot
+                                        foundRobotFlag = False
 
-                                # Find tracking ID in robot list
-                                for i in range(0, len(self.__robotList)):
-                                        # If we are on the correct robot, update the tracking information
-                                        if (self.__robotList[i].trackingID == trackingID):
-                                                foundRobotFlag = True
-                                                foundRobotIndeces.append(i)
+                                        # Find tracking ID in robot list
+                                        for i in range(0, len(g.visible)):
+                                                # If we are on the correct robot, update the tracking information
+                                                if (g.visible[i].trackID == trackID):
+                                                        foundRobotFlag = True
+                                                        foundRobotIndeces.append(i)
 
-                                                # In theory, this is always true if the detection is in the list
-                                                self.__robotList[i].losActive = False if trackingStatus == -1 else True
+                                                        # Update Transceiver
+                                                        g.visible[i].transceiver = transceiver
 
-                                                # Only update the transceiver if the LOS is active. In theory this should always be true (see above)
-                                                if (self.__robotList[i].losActive):
-                                                        self.__robotList[i].transceiver = transceiver
+                                                        # Exit inner loop
+                                                        break
 
-                                                # Exit inner loop
-                                                break
+                                        # Check if the code in the loop executed
+                                        # If not, create a new robot object and store in the visibleQ
+                                        if not foundRobotFlag:
+                                                self.visibleQ.put(Robot(trackID, transceiver))
+                                        
+                                        # Debug statement
+                                        if (self.__debug):
+                                                print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackID, trackingStatus, transceiver))
 
-                                # Check if the code in the loop executed
-                                # If so, remove from robotListCopy 
-                                # If not, create a new robot object and store in the robotList
-                                if not foundRobotFlag:
-                                       newRobot = Robot(trackingID, transceiver, True)
-                                       self.__robotList.append(newRobot)
-                                       
-                                # Debug statement
-                                if (self.__debug):
-                                        print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackingID, trackingStatus, transceiver))
+                        # Make a copy of the robot list
+                        robotListCopy = g.visible[:]
+
+                # Release Visible Robot Mutex
 
                 # Remove all the found elements from the list
                 for i in sorted(foundRobotIndeces, reverse=True):
                         robotListCopy.pop(i)
 
-                # Cleanup missing robots
-                popList = list()
+                # Queue up lost robots
                 for robot in robotListCopy:
-                        for i in range(0, len(self.__robotList)):
-                                if (robot == self.__robotList[i]):
-                                        # Identified one of the missing robots in the robots list
-                                        # Remove it and append to the Lost Robot List only if the robot has a link already
-                                        if robot.RobotLink != None:
-                                                self.__lostRobotList.append(self.__robotList[i])
-
-                                        # Add the robot to the 'needs to be removed' from Robot List list
-                                        popList.append(i)
-
-                # Pop all lost robots out of robotList
-                for i in reversed(popList):
-                        self.__robotList.pop(i)
-
-                # Debug Statements
-                if self.__debug:
-                    print("Robot List: " + str(self.__robotList) + "\n")
-                    print("Lost Robot List: " + str(self.__lostRobotList) + "\n")
-
-
-        #### Remove __updateTransceiver when __updateRobotList is officially working ####
-
-        # Helper method to update the transceiver number
-        def __updateTransceiver(self):
-                """
-                Function_Name: obtain_transceiver_number
-                params_type: int Center_Of_Object, width_of_frame
-                param_desc (Center_Of_Object): value of the center pixel location of the detect object
-                param_desc (width_of_frame): value of the frame width determined from frame concat
-                return_type: int normalized_x
-                return_desc: normalized_x is the modified integer that represents the transceiver number to use for each section
-                """
-                def obtain_transceiver_number(Center_Of_Object, width_of_frame):
-                        # Use integer division to obtain a section the object is detected in
-                        #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
-                        normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
-                        
-                        # Edge Cases
-                        if (normalized_x == 0):
-                                normalized_x = self.__sections
-                        # Mathematics found in the ReadME for logic
-                        else:
-                                normalized_x = (normalized_x / 2 + 1) if normalized_x % 2 == 1 else (normalized_x / 2)                               
-
-                        section = int(normalized_x) - 1
-                        
-                        
-                        # Offset the value to line up with numbers on physical transceivers
-                        section = (section + 4) if section < 4 else (section - 4)
-
-                        return section                
-                
-                # Loop through the detections, update the transceiver number when there is a robot detected
-                # Note that this is a temporary implementation, we should, in the future attempt to communicate with all robots...
-                # ...using all sections that a robot is found in, not just the last one in the list
-                for detection in self.__detections:
-                        if (detection.ClassID == 1):
-                                if (self.__debug):
-                                    print("Current Tracking Status for ID {} is: {}".format(detection.TrackID, detection.TrackStatus))
-                                self.__current_transceiver = obtain_transceiver_number(detection.Center[0], self.__width)   
-                
-                if (self.__debug):        
-                        print("The best transceiver is number {}".format(self.__current_transceiver))
+                        # Queue it to the lostQ
+                        self.lostQ.put(robot)
