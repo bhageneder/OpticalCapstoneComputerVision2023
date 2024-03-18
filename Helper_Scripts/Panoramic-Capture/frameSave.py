@@ -35,7 +35,7 @@ def imageCapture(imgPath, streams):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        time.sleep(5)
+        time.sleep(2)
 
 
 def main():

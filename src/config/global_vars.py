@@ -173,6 +173,15 @@ def init():
     else:
         LEGACY_MODE = False
 
+    global modelPath
+    global model
+    if cameras != list():
+        modelPath = config['Model']['modelPath']
+        model = config['Model']['model']
+    else:
+        modelPath = None
+        model = None
+
     global PING_COUNT
     PING_COUNT = 2
 
