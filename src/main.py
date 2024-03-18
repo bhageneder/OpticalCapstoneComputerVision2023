@@ -3,8 +3,6 @@ import os
 import glob
 import time
 import subprocess
-import board    # needed for neopixel
-import neopixel_spi as neopixel # needed for neopixel
 from threads.maintenance import maintenance
 from threads.discovery import discovery
 from threads.link_send import link_send
@@ -20,7 +18,6 @@ import config.global_vars as g
 import functions.led_manager as lc
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
-from classes.DetectorClass import Detector
 
 def main():
     # Clear robot_link_data directory
@@ -38,8 +35,8 @@ def main():
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
-    # Nano does not support neopixel
-    if g.robot != "nano":
+    # Temporarily just orin until neopixel class is made
+    if g.robot == "orin":
         lc.test_LEDs()
     
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
@@ -90,14 +87,6 @@ def main():
 
     # Create Threads Specific to CV Enabled Bots
     if not g.LEGACY_MODE:
-        # Calculate Resultion
-        resolution = 720
-        for i in range(len(g.cameras) - 1):
-            resolution /= 2
-
-        # Initialize Detector
-        g.detector = Detector(1280, resolution, g.model, g.modelPath, g.cameras, render = True, tracking = True)
-
         # Initialize Detector Thread
         g.detector_thread = threading.Thread(target = g.detector.detect, daemon=True, name="Detect")
         

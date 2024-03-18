@@ -11,7 +11,7 @@ import queue
 class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
-        def __init__(self, width, height, modelName, modelPath, cameras, render = False, tracking=False, debug = False):
+        def __init__(self, width, height, modelName, modelPath, cameras, render = False, debug = False):
                 self.initializing = True
                 self.visibleQ = queue.Queue()
                 self.lostQ = queue.Queue()
@@ -29,7 +29,7 @@ class Detector:
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=(modelPath + modelName + "/ssd-mobilenet.onnx"), labels=(modelPath + modelName + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
 
-                self.__net.SetTrackingEnabled(tracking)
+                self.__net.SetTrackingEnabled(True)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
 
                 # Private list to hold captures

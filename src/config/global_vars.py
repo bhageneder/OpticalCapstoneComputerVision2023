@@ -90,10 +90,6 @@ def init():
     global detector_thread
     discovery_thread = None
 
-    # Detector Object - Runs CV Object Detection, Detects Robots
-    global detector
-    detector = None
-    
     # Visible Robots List (Active LOS)
     global visible
     visible = []
@@ -175,12 +171,28 @@ def init():
 
     global modelPath
     global model
-    if cameras != list():
+    if not LEGACY_MODE:
         modelPath = config['Model']['modelPath']
         model = config['Model']['model']
     else:
         modelPath = None
         model = None
+
+    # Detector Object - Runs CV Object Detection, Detects Robots
+    global detector
+    if not LEGACY_MODE:
+        # Only can import this if running on CV Enabled System
+        from classes.DetectorClass import Detector
+
+        resolutionX = config['Model']['resolutionX']
+        resolutionY = config['Model']['resolutionY']
+        render = config['Model']['render'] == "True"
+
+        # Initialize Detector
+        g.detector = Detector(resolutionX, resolutionY, model, modelPath, cameras, render = render, tracking = True)
+    
+    else:
+        detector = None
 
     global PING_COUNT
     PING_COUNT = 2
