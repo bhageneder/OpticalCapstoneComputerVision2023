@@ -3,7 +3,6 @@ import threading
 import binascii
 import config.global_vars as g
 from functions import utilities
-from functions import led_manager as lc
 from functions.analyze_packet import analyze_packet
 
 def receive_manager():

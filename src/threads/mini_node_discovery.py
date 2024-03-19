@@ -2,7 +2,6 @@ import threading
 import socket
 import config.global_vars as g
 from classes.RobotLink import RobotLink
-from functions import led_manager as lc
 
 def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot):
     thread_name = threading.current_thread().name

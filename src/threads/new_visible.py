@@ -9,6 +9,8 @@ def new_visible():
         # Blocking Call to the Visible Queue
         robot = g.detector.visibleQ.get()
 
+        #connecting/finding LEDs
+
         # Aquire Visible Mutex
         with g.visible_mutex:
             # Add Robot to the Visible List

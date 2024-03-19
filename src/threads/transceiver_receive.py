@@ -1,7 +1,6 @@
 import threading
 import config.global_vars as g
 from functions import utilities
-from functions import led_manager as lc
 
 def transceiver_receive(serial_port):
     thread_name = threading.current_thread().name

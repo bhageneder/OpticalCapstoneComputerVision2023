@@ -2,7 +2,7 @@ import time
 import threading
 import queue
 import config.global_vars as g
-from src.functions import led_manager as lc
+from src.functions import led_funcs as lc
 from src.functions.ping import ping
 
 # 8 Mini_Maintenance Threads and 1 Maintenance Thread per Robot Link
@@ -66,8 +66,6 @@ def old_maintenance(robot_link):
                     for i in range(len(g.robot_links)):
                         if (g.robot_links[i].serial_port == g.serial_ports[current_serial_port_number]):
                             break
-                    else:
-                        lc.turn_off_for_robot_link(current_serial_port_number)
                     
                     # Turn on LED for the new Transceiver being used
                     lc.illuminate_for_robot_link(int(best_transceiver_number))
