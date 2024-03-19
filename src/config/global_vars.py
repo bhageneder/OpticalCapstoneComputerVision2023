@@ -1,7 +1,5 @@
 import queue
 import threading
-import board    # needed for neopixel
-import neopixel_spi as neopixel # needed for neopixel
 import configparser
 
 '''
@@ -268,6 +266,9 @@ def init():
     global robot_serial_port
 
     if robot == "orin":
+        import board    # needed for neopixel
+        import neopixel_spi as neopixel # needed for neopixel
+
         spi = board.SPI()   # MOSI pin 19
         global pixels
         # Board Setup
