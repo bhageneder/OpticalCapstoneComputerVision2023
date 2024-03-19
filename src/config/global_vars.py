@@ -93,9 +93,6 @@ def init():
     # Detector Object - Runs CV Object Detection, Detects Robots
     global detector
     detector = None
-
-    global led_manager_thread
-    led_manager_thread = None
     
     # Visible Robots List (Active LOS)
     global visible
@@ -250,7 +247,8 @@ def init():
     global robot_serial_port
 
     global pixels
-    if LEGACY_MODE:
+    pixels = None
+    if robot == "pi":
         pixels = neopixel.NeoPixel(
             board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
             24,                             # Number of LEDs (Num of Pixels)

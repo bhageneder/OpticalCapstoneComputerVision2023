@@ -39,8 +39,8 @@ def main():
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
     if g.robot == "orin":
-        g.led_manager_thread = threading.Thread(target=led_manager, daemon=True, name=f"LED_Manager")
-        g.led_manager_thread.start()
+        led_manager_thread = threading.Thread(target=led_manager, daemon=True, name=f"LED_Manager")
+        led_manager_thread.start()
     
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
     if g.robot_serial_port is not None and g.ROBOT_IP_ADDRESS == g.POSSIBLE_ROBOT_IP_ADDRESSES[0]:
