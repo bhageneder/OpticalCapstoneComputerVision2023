@@ -279,10 +279,11 @@ def init():
             pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
         )
     elif robot == "orin":
+        import NeoPixel_SPI as neopixel
         spi = board.SPI()   # MOSI pin 19
         
         # Board Setup
-        g.pixels = neopixel.NeoPixel_SPI(
+        pixels = neopixel.NeoPixel_SPI(
             spi,                            # SPI object
             24,                             # Number of LEDs (Num of Pixels)
             brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
