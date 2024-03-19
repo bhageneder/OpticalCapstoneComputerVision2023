@@ -4,18 +4,20 @@ import jetson_inference
 import jetson_utils
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
+from interfaces.iDetectorClass import iDetector
 import config.global_vars as g
 import os
 
-class Detector:
+
+class Detector(iDetector):
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
-        def __init__(self, width, height, modelName, cameras, render = False, tracking=False, debug = False):
+        def __init__(self, width, height, cameras, render = False, tracking=False, debug = False):
+                super().init()
                 self.initializing = True
                 self.__width = width
                 self.__height = height
                 self.__render = render
-                self.__current_transceiver = -1
                 self.__debug = debug
                 #self.__stopFlag = False """ For Auto Deconstruct Purposes """
                 self.__trackingMinFrames = 10
@@ -33,12 +35,6 @@ class Detector:
 
                 # Private list to hold captures
                 self.__captures = list(map(lambda x: Stream(x), cameras))
-
-                # List of all robots currently being tracked
-                self.__robotList = list()
-
-                # List of all robots that we have lost tracking for
-                self.__lostRobotList = list()
 
         # Destructor
         # Releases camera captures and destroys windows
