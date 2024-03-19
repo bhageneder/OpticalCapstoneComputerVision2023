@@ -1,4 +1,4 @@
-class LEDClass:
+class LEDState:
     def __init__():
         # creates list containing 3 lists of 8 items each
         LEDs = [[0 for x in range(8)] for y in range(3)]
@@ -9,15 +9,15 @@ class LEDClass:
     def on(state, transceiver):
         if state == "finding":
             LEDs[0][transceiver] = 1
-        if state == "connected":
+        elif state == "connected":
             LEDs[1][transceiver] = 1
-        if state == "lost":
+        elif state == "lost":
             LEDs[2][transceiver] = 1
 
     def off(state, transceiver):
         if state == "finding":
             LEDs[0][transceiver] = 0
-        if state == "connected":
+        elif state == "connected":
             LEDs[1][transceiver] = 0
-        if state == "lost":
+        elif state == "lost":
             LEDs[2][transceiver] = 0

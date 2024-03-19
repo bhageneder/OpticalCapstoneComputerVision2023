@@ -1,22 +1,11 @@
 import threading
 import time
-import NeoPixel_SPI as neopixel
 import config.global_vars as g
-import classes.LEDClass
+import classes.LEDStateClass
 import functions.led_funcs
 
 def led_manager():
     thread_name = threading.current_thread().name
-
-    spi = board.SPI()   # MOSI pin 19
-    
-    # Board Setup
-    g.pixels = neopixel.NeoPixel_SPI(
-        spi,                            # SPI object
-        24,                             # Number of LEDs (Num of Pixels)
-        brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
-        pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
-    )
 
     led_funcs.startup()
     while True:

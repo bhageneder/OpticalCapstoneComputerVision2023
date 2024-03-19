@@ -38,7 +38,7 @@ def main():
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
-    if g.robot == "orin":
+    if g.robot != "nano":
         led_manager_thread = threading.Thread(target=led_manager, daemon=True, name=f"LED_Manager")
         led_manager_thread.start()
     
