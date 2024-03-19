@@ -150,6 +150,15 @@ def init():
     global cameras
     cameras = list()
     numCameras = int(config['Cameras']['numCameras'])
+
+    # Robot Mode Based on Camera Numbers Config
+    global LEGACY_MODE
+    if numCameras <= 0:
+        LEGACY_MODE = True
+    else:
+        LEGACY_MODE = False
+
+    # Camera Configurations
     camConfig = config['Cameras']['camConfig'].split(",")
     try:
         for i in range(0, numCameras):       
@@ -159,13 +168,6 @@ def init():
                 cameras.append(config['Cameras'][f'camera{i}'])
     except:
         raise Exception("Incorrect camera configuration!")
-    
-    # Robot Mode Based on Config
-    global LEGACY_MODE
-    if numCameras <= 0:
-        LEGACY_MODE = True
-    else:
-        LEGACY_MODE = False
 
     global modelPath
     global model
