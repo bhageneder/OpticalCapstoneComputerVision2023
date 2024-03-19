@@ -190,7 +190,7 @@ def init():
         render = config['Model']['render'] == "True"
 
         # Initialize Detector
-        g.detector = Detector(resolutionX, resolutionY, model, modelPath, cameras, render = render, tracking = True)
+        g.detector = Detector(resolutionX, resolutionY, model, modelPath, cameras, render = render)
     
     else:
         detector = None
