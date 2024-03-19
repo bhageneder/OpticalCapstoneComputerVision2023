@@ -159,15 +159,16 @@ def init():
         LEGACY_MODE = False
 
     # Camera Configurations
-    camConfig = config['Cameras']['camConfig'].split(",")
-    try:
-        for i in range(0, numCameras):       
-            if (camConfig[i] == "num"):
-                cameras.append(int(config['Cameras'][f'camera{i}']))
-            else:
-                cameras.append(config['Cameras'][f'camera{i}'])
-    except:
-        raise Exception("Incorrect camera configuration!")
+    if not LEGACY_MODE:
+        camConfig = config['Cameras']['camConfig'].split(",")
+        try:
+            for i in range(0, numCameras):       
+                if (camConfig[i] == "num"):
+                    cameras.append(int(config['Cameras'][f'camera{i}']))
+                else:
+                    cameras.append(config['Cameras'][f'camera{i}'])
+        except:
+            raise Exception("Incorrect camera configuration!")
 
     global modelPath
     global model
