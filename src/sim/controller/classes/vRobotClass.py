@@ -1,4 +1,4 @@
-from src.interfaces.iRobotClass import iRobot
+from interfaces.iRobotClass import iRobot
 
 
 class vRobot(iRobot):

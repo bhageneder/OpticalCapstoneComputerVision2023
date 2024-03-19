@@ -140,6 +140,13 @@ class MainWindow():
     def __del__(self):
         print("Decontructing Main Window Object")
         
+def view():
+    for monitor in get_monitors():
+        if monitor.is_primary:
+            m = monitor
+            break
+    view = MainWindow([m.height_mm,m.width_mm], "SIMDEV Main")
+    view.startWindow()
 
 
 if __name__ == "__main__":
@@ -147,7 +154,7 @@ if __name__ == "__main__":
         if monitor.is_primary:
             m = monitor
             break
-    main = MainWindow([m.height_mm,m.width_mm], "SIMDEV Main")
-    main.startWindow()
+    view = MainWindow([m.height_mm,m.width_mm], "SIMDEV Main")
+    view.startWindow()
     
 

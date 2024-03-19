@@ -1,5 +1,4 @@
-
-from src.interfaces.iDetectorClass import iDetector
+from interfaces.iDetectorClass import iDetector
 
 
 class simDetector(iDetector):
