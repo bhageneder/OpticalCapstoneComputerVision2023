@@ -4,12 +4,11 @@ import jetson_inference
 import jetson_utils
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
-from interfaces.iDetectorClass import iDetector
 import config.global_vars as g
 import os
 
 
-class Detector(iDetector):
+class Detector():
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, cameras, render = False, tracking=False, debug = False):
@@ -51,11 +50,11 @@ class Detector(iDetector):
                return self.__current_transceiver
         
         # robotList Getter
-        def getRobotLlist(self):
+        def getRobotList(self):
                 return self.__robotList
         
         # lostRobotList Getter
-        def getLostRobotLlist(self):
+        def getLostRobotList(self):
                 return self.__lostRobotList
 
         """        

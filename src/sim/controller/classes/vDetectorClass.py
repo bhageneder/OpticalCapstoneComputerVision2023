@@ -1,7 +1,7 @@
-from interfaces.iDetectorClass import iDetector
+from classes.DetectorClass import Detector
 
 
-class simDetector(iDetector):
+class vDetector(Detector):
     def __init__(self):
         super.__init__()
         self.detected = False

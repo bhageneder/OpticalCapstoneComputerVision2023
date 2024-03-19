@@ -1,7 +1,7 @@
-from interfaces.iRobotClass import iRobot
+from classes.RobotClass import Robot
 
 
-class vRobot(iRobot):
+class vRobot(Robot):
     def __init__(self, trackingID, transceiver, losActive, RobotLink = None):
         super.__init__(trackingID, transceiver, losActive, RobotLink)
 
