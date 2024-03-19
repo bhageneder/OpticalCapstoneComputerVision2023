@@ -1,6 +1,7 @@
 import queue
 import threading
 import configparser
+import board
 
 '''
 Contains global variables that will be used across all files
@@ -270,6 +271,10 @@ def init():
 
     global pixels
     pixels = None
+    
+    global LEDs
+    LEDs = None
+    
     if robot == "pi":
         import neopixel # needed for neopixel
         pixels = neopixel.NeoPixel(
@@ -279,7 +284,7 @@ def init():
             pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
         )
     elif robot == "orin":
-        import NeoPixel_SPI as neopixel
+        import neopixel_spi as neopixel
         spi = board.SPI()   # MOSI pin 19
         
         # Board Setup
