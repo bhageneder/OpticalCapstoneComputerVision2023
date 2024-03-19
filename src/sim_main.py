@@ -23,7 +23,7 @@ from functions.initialize_serial_ports import initialize_serial_ports
 # from classes.DetectorClass import Detector
 
 from sim.UI.view import view
-from sim.controller.classes.vDetectorClass import simDetector 
+from sim.controller.classes.vDetectorClass import vDetector 
 
 def main():
     # Clear robot_link_data directory
