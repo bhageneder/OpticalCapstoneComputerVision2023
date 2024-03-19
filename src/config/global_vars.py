@@ -185,8 +185,8 @@ def init():
         # Only can import this if running on CV Enabled System
         from classes.DetectorClass import Detector
 
-        resolutionX = config['Model']['resolutionX']
-        resolutionY = config['Model']['resolutionY']
+        resolutionX = int(config['Model']['resolutionX'])
+        resolutionY = int(config['Model']['resolutionY'])
         render = config['Model']['render'] == "True"
 
         # Initialize Detector
