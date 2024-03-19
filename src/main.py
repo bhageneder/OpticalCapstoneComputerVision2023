@@ -16,8 +16,8 @@ from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
 from threads.new_visible import new_visible
 from threads.new_lost import new_lost
+from threads.led_manager import led_manager
 import config.global_vars as g
-import functions.led_manager as lc
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
 from classes.DetectorClass import Detector
@@ -38,7 +38,9 @@ def main():
     time.sleep(1.5) # Wait for virtual serial ports to be fully created
     g.serial_ports, g.robot_serial_port, g.virtual_serial_port = initialize_serial_ports()
 
-    lc.test_LEDs()
+    if g.robot == "orin":
+        g.led_manager_thread = threading.Thread(target=led_manager, daemon=True, name=f"LED_Manager")
+        g.led_manager_thread.start()
     
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
     if g.robot_serial_port is not None and g.ROBOT_IP_ADDRESS == g.POSSIBLE_ROBOT_IP_ADDRESSES[0]:

@@ -93,6 +93,9 @@ def init():
     # Detector Object - Runs CV Object Detection, Detects Robots
     global detector
     detector = None
+
+    global led_manager_thread
+    led_manager_thread = None
     
     # Visible Robots List (Active LOS)
     global visible
@@ -246,16 +249,11 @@ def init():
     global virtual_serial_port
     global robot_serial_port
 
-    spi = board.SPI()   # MOSI pin 19
     global pixels
-    # Board Setup
-    pixels = neopixel.NeoPixel_SPI(
-        spi,                            # SPI object
-        24,                             # Number of LEDs (Num of Pixels)
-        brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
-        pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
-    )
-    
-    
-    
-
+    if LEGACY_MODE:
+        pixels = neopixel.NeoPixel(
+            board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
+            24,                             # Number of LEDs (Num of Pixels)
+            brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
+            pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
+        )
