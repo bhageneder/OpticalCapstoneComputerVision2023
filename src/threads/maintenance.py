@@ -2,7 +2,7 @@ import time
 import threading
 import config.global_vars as g
 from functions.ping import multi_ping
-from functions import led_manager as lc
+from functions import led_funcs as lc
 
 def maintenance(robot_link):
     thread_name = threading.current_thread().name
