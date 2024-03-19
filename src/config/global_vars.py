@@ -1,7 +1,7 @@
 import queue
 import threading
 import board    # needed for neopixel
-import neopixel_spi as neopixel # needed for neopixel
+import neopixel # needed for neopixel
 import configparser
 
 '''

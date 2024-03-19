@@ -1,5 +1,6 @@
 import threading
 import time
+import NeoPixel_SPI as neopixel
 import config.global_vars as g
 import classes.LEDClass
 import functions.led_funcs
