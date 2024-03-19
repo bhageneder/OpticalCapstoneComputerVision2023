@@ -11,9 +11,9 @@ def maintenance(robot_link):
         # Get the best transceiver number      
         best_transceiver_number = multi_ping(
             robot_link.ip_address, 
-            globals.PING_COUNT, 
-            globals.PING_INTERVAL,
-            globals.PING_TIMEOUT,
+            g.PING_COUNT, 
+            g.PING_INTERVAL,
+            g.PING_TIMEOUT,
         )
 
         # If the socket failed to open, multi_ping will return -1. 
