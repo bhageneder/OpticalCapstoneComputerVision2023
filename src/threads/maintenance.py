@@ -2,16 +2,19 @@ import time
 import threading
 import config.global_vars as g
 from functions.ping import multi_ping
-from functions import led_manager as lc
+from functions import led_funcs as lc
 
 def maintenance(robot_link):
     thread_name = threading.current_thread().name
     transceiver_set = False
     while True:
-        # Get the best transceiver number from the Jetson Nano        
-        best_transceiver_number = g.best_transceiver
-
-        # Might want to ping for maintenance for backup
+        # Get the best transceiver number      
+        best_transceiver_number = multi_ping(
+            robot_link.ip_address, 
+            g.PING_COUNT, 
+            g.PING_INTERVAL,
+            g.PING_TIMEOUT,
+        )
 
         # If the socket failed to open, multi_ping will return -1. 
         # In that case, try again.
@@ -29,6 +32,7 @@ def maintenance(robot_link):
                 if g.debug_maintenance or g.ROBOT_IP_ADDRESS == g.POSSIBLE_ROBOT_IP_ADDRESSES[0]: print(f'{thread_name}: Switching LED from {current_transceiver_number} to {best_transceiver_number}')
                 
                 # Do not turn off LED if the Transceiver is being used by other Robot Links
+                '''
                 for i in range(len(g.robot_links)):
                     if (g.robot_links[i].serial_port == g.serial_ports[current_transceiver_number]):
                         break
@@ -38,6 +42,7 @@ def maintenance(robot_link):
                 
                 # Turn on LED for the new Transceiver being used
                 lc.illuminate_for_robot_link(best_transceiver_number)
+                '''
 
         time.sleep(g.MAINTENANCE_INTERVAL_SLEEP)
 
