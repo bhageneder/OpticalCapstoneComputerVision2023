@@ -8,7 +8,7 @@ import config.global_vars as g
 import os
 
 
-class Detector():
+class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, cameras, render = False, tracking=False, debug = False):
