@@ -1,8 +1,6 @@
-import threading
 from sim.UI.view import View
 from sim.ModelClass import Model
 from sim.controller.ControllerClass import Controller
-#from sim.controller.v_main import v_main
 
 def main():
     # Create Model
