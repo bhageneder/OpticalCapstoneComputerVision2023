@@ -1,5 +1,5 @@
-from sim.UI.view import View
-from sim.ModelClass import Model
+from sim.UI.ViewClass import View
+from sim.model.ModelClass import Model
 from sim.controller.ControllerClass import Controller
 
 def main():
