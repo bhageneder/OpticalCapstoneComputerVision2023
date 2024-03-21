@@ -19,9 +19,9 @@ class View():
 
     def initUI(self):
         # create layouts for main window
-        top_layout = QHBoxLayout()
-        bottom_layout = QVBoxLayout()
-        main_layout = QVBoxLayout()
+        topLayout = QHBoxLayout()
+        bottomLayout = QVBoxLayout()
+        mainLayout = QVBoxLayout()
 
         # Create IP Label and Textbox
         ipLabel = QLabel('IP Address')
@@ -34,12 +34,12 @@ class View():
         newRobotButton.clicked.connect(self.__addRobotButtonClicked)
 
         # Add IP Label, IP Textbox, New Robot Button to Top Layout
-        top_layout.addWidget(ipLabel)
-        top_layout.addWidget(ipTextbox)
-        top_layout.addWidget(newRobotButton)
+        topLayout.addWidget(ipLabel)
+        topLayout.addWidget(ipTextbox)
+        topLayout.addWidget(newRobotButton)
 
         # Set Top Layout Properties
-        top_layout.setSpacing(5)
+        topLayout.setSpacing(5)
 
         # Create Grid Widget
         openGrid = QLabel('This is where grid goes')
@@ -48,14 +48,14 @@ class View():
         openGrid.setStyleSheet("background-color: white;")
 
         # append grid layout to bottom layout
-        bottom_layout.addWidget(openGrid)
+        bottomLayout.addWidget(openGrid)
 
-        # append top_layout and bottom_layout to a main_layout
-        main_layout.addLayout(top_layout)
-        main_layout.addLayout(bottom_layout)
+        # append topLayout and bottomLayout to a mainLayout
+        mainLayout.addLayout(topLayout)
+        mainLayout.addLayout(bottomLayout)
 
         # set the main layout as the window layout
-        self.__window.setLayout(main_layout)
+        self.__window.setLayout(mainLayout)
 
     def startWindow(self):
         self.__window.show()
@@ -75,11 +75,3 @@ class View():
     # Add Robot Button Click Event
     def __addRobotButtonClicked(self):
         self.__controller.addNewRobot()
-
-if __name__ == "__main__":
-    for monitor in get_monitors():
-        if monitor.is_primary:
-            m = monitor
-            break
-    view = MainWindow([m.height_mm,m.width_mm], "SIMDEV Main")
-    view.startWindow()
