@@ -1,15 +1,21 @@
 import threading
-from sim.UI.view import view
-from sim.controller.v_main import v_main
+from sim.UI.view import View
+from sim.ModelClass import Model
+from sim.controller.ControllerClass import Controller
+#from sim.controller.v_main import v_main
 
 def main():
-    # Creating View Thread 
-    view_thread = threading.Thread(target=view, daemon=False, name=f'View')
-    view_thread.start()
+    # Create Model
+    model = Model()
 
-    """ IF ROBOT CREATED"""
-    """ v_main() """
+    # Create Controller
+    controller = Controller(model)
 
+    # Create View
+    view = View(controller)
+
+    # Start the View Window
+    view.startWindow()
 
 if __name__ == "__main__":
     main()
