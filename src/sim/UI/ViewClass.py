@@ -23,45 +23,39 @@ class View():
         bottomLayout = QVBoxLayout()
         mainLayout = QVBoxLayout()
 
-        # Create IP Label and Textbox
-        ipLabel = QLabel('IP Address')
-        ipTextbox = QLineEdit()
-
         # Make Push Button
         newRobotButton = QPushButton("Add Robot")
 
         # Bind Push Button to Event Handler
         newRobotButton.clicked.connect(self.__addRobotButtonClicked)
 
-        # Add IP Label, IP Textbox, New Robot Button to Top Layout
-        topLayout.addWidget(ipLabel)
-        topLayout.addWidget(ipTextbox)
+        # Add New Robot Button to Top Layout
         topLayout.addWidget(newRobotButton)
 
         # Set Top Layout Properties
         topLayout.setSpacing(5)
 
-        # Create Grid Widget
-        openGrid = QLabel('This is where grid goes')
-        openGrid.setAlignment(QtCore.Qt.AlignCenter) 
-        openGrid.setFixedSize(1000, 450)
-        openGrid.setStyleSheet("background-color: white;")
+        # Create Graphics Widget
+        graphicsScene = QGraphicsScene()
+        graphicsScene.addText("Graphics Go Here")
+        graphicsView = QGraphicsView(graphicsScene)
+        graphicsView.show()
 
-        # append grid layout to bottom layout
-        bottomLayout.addWidget(openGrid)
+        # Append Graphics Widget to the Bottom Layout
+        bottomLayout.addWidget(graphicsView)
 
-        # append topLayout and bottomLayout to a mainLayout
+        # Append Top and Bottom Layouts to the Main Layout
         mainLayout.addLayout(topLayout)
         mainLayout.addLayout(bottomLayout)
 
-        # set the main layout as the window layout
+        # Set the Window Layout to Main Layout
         self.__window.setLayout(mainLayout)
 
     def startWindow(self):
         self.__window.show()
         sys.exit(self.__app.exec())
 
-    def updateUI():
+    def updateUI(self):
         # Read from the model and update UI
         pass
         
