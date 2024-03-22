@@ -19,18 +19,56 @@ class View():
 
     def initUI(self):
         # create layouts for main window
-        topLayout = QHBoxLayout()
+        topLayout = QGridLayout()
         bottomLayout = QVBoxLayout()
         mainLayout = QVBoxLayout()
+
+        # New Robot Layout
+        newRobotLayout = QVBoxLayout()
+        newRobotLabel = QLabel('Configure New Robot')
+        newRobotLayout.addWidget(newRobotLabel)
+
+        # New Robot X Coordinates
+        xLayout = QHBoxLayout()
+        xLabel = QLabel('X: ')
+        xLayout.addWidget(xLabel)
+        xTextbox = QLineEdit()
+        xTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        xLayout.addWidget(xTextbox)
+        
+        # New Robot Y Coordinates
+        yLayout = QHBoxLayout()
+        yLabel = QLabel('Y: ')
+        yLayout.addWidget(yLabel)
+        yTextbox = QLineEdit()
+        yTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        yLayout.addWidget(yTextbox)
+
+        # Add Coordinates to New Robot Layout
+        newRobotLayout.addLayout(xLayout)
+        newRobotLayout.addLayout(yLayout)
 
         # Make Push Button
         newRobotButton = QPushButton("Add Robot")
 
+        # Add Push Button to New Robot Layout
+        newRobotLayout.addWidget(newRobotButton)
+
         # Bind Push Button to Event Handler
         newRobotButton.clicked.connect(self.__addRobotButtonClicked)
 
-        # Add New Robot Button to Top Layout
-        topLayout.addWidget(newRobotButton)
+        # Simulator Settings
+        settingsLayout = QVBoxLayout()
+        settingsLabel = QLabel('Simulator Settings')
+        settingsLayout.addWidget(settingsLabel)
+        
+        setting1 = QCheckBox('Test Setting')
+        settingsLayout.addWidget(setting1)
+        setting1.clicked.connect(self.__settingHandler)
+
+        # Add Settings and New Robot Sections to Top Layout
+        topLayout.addLayout(settingsLayout, 0, 0, 0, 2)
+        topLayout.addLayout(newRobotLayout, 0, 2, 0, 1)
 
         # Set Top Layout Properties
         topLayout.setSpacing(5)
@@ -69,3 +107,6 @@ class View():
     # Add Robot Button Click Event
     def __addRobotButtonClicked(self):
         self.__controller.addNewRobot()
+
+    def __settingHandler(self):
+        print("Setting1 Changed")
