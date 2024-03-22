@@ -10,7 +10,8 @@ class View():
         self.__window = QWidget()
         self.__controller = controller
 
-        #self.__window.setStyleSheet("background-color: white; border: 2px solid black;")
+        #self.__window.setStyleSheet("background-color: black; border: 5px solid green; color: white;")
+        #self.__window.setStyleSheet("background-color: black; border: 2px solid white; color: white;")
         m = self.__getMainMonitor()
         self.__window.setGeometry(m.height_mm, m.width_mm, 1000, 500) 
         self.__window.setWindowTitle("Optical Wireless Communications Simulator")
@@ -62,6 +63,10 @@ class View():
         settingsLabel = QLabel('Simulator Settings')
         settingsLayout.addWidget(settingsLabel)
         
+        radio1 = QRadioButton('Radio1')
+        settingsLayout.addWidget(radio1)
+        radio1.clicked.connect(self.__radioHandler)
+
         setting1 = QCheckBox('Test Setting')
         settingsLayout.addWidget(setting1)
         setting1.clicked.connect(self.__settingHandler)
@@ -110,3 +115,6 @@ class View():
 
     def __settingHandler(self):
         print("Setting1 Changed")
+
+    def __radioHandler(self):
+        print("Radio1 Changed")
