@@ -16,6 +16,10 @@ class View():
         self.__window.setGeometry(m.height_mm, m.width_mm, 1000, 500) 
         self.__window.setWindowTitle("Optical Wireless Communications Simulator")
 
+        # Set Default States
+        self.__xTextboxVal = 0
+        self.__yTextboxVal = 0
+
         self.initUI()
 
     def initUI(self):
@@ -35,6 +39,7 @@ class View():
         xLayout.addWidget(xLabel)
         xTextbox = QLineEdit()
         xTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        xTextbox.textChanged.connect(self.__xTextboxHandler)
         xLayout.addWidget(xTextbox)
         
         # New Robot Y Coordinates
@@ -43,6 +48,7 @@ class View():
         yLayout.addWidget(yLabel)
         yTextbox = QLineEdit()
         yTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        yTextbox.textChanged.connect(self.__yTextboxHandler)
         yLayout.addWidget(yTextbox)
 
         # Add Coordinates to New Robot Layout
@@ -79,9 +85,9 @@ class View():
         topLayout.setSpacing(5)
 
         # Create Graphics Widget
-        graphicsScene = QGraphicsScene()
-        graphicsScene.addText("Graphics Go Here")
-        graphicsView = QGraphicsView(graphicsScene)
+        self.graphicsScene = QGraphicsScene()
+        #graphicsScene.addText("Graphics Go Here")
+        graphicsView = QGraphicsView(self.graphicsScene)
         graphicsView.show()
 
         # Append Graphics Widget to the Bottom Layout
@@ -111,10 +117,46 @@ class View():
     ### Event Handlers ###
     # Add Robot Button Click Event
     def __addRobotButtonClicked(self):
-        self.__controller.addNewRobot()
+        '''
+        ellipse = QGraphicsEllipseItem(0, 0, 100, 100)
+        ellipse.setPos(75, 30)
+        self.graphicsScene.addItem(ellipse)
+
+        #ellipse.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
+        '''
+        self.__controller.addNewRobot(self.__xTextboxVal, self.__yTextboxVal)
+
+    def __xTextboxHandler(self, text):
+        try:
+            self.__xTextboxVal = int(text)
+        except:
+            self.__xTextboxVal = 0
+
+    def __yTextboxHandler(self, text):
+        try:
+            self.__yTextboxVal = int(text)
+        except:
+            self.__yTextboxVal = 0
 
     def __settingHandler(self):
         print("Setting1 Changed")
 
     def __radioHandler(self):
         print("Radio1 Changed")
+
+    ### Public Methods ###
+    def drawRobot(self, robotModel):
+        # Create an Ellipse
+        ellipse = QGraphicsEllipseItem(robotModel.x, robotModel.y, 100, 100)
+
+        # Make Ellipse Moveable
+        ellipse.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
+
+        # Attach Event Handlers for Ellipse Movement
+
+        # Add Text Item to the Ellipse (Display the IP in the Ellipse)
+        text = QGraphicsTextItem(robotModel.ip, ellipse)
+        text.setPos(20,35)
+
+        # Render
+        self.graphicsScene.addItem(ellipse)
