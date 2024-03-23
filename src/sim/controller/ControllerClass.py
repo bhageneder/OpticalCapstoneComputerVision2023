@@ -4,6 +4,8 @@ class Controller:
     def __init__(self, model):
         self.__model = model
         self.__view = None
+        self.__IPs = [x for x in range(0,245)]
+        self.__usableIPs = self.__IPs.copy()
 
     def setView(self, view):
         self.__view = view
@@ -12,7 +14,8 @@ class Controller:
         # Check if robot is valid
 
         # Get next robot IP
-        ip = "10.0.0.10" # temp
+        ip = f"10.0.0.1{self.__usableIPs[0]}"
+        self.__usableIPs.remove(self.__usableIPs[0])
 
         # Make new RobotModel
         robotModel = RobotModel(x, y, ip)
@@ -24,3 +27,8 @@ class Controller:
         
         # Update the View
         self.__view.drawRobot(robotModel)        
+
+    def deleteRobots(self, robots):
+        #for robot in robots:
+            # if its a robot remove it from the model
+        pass

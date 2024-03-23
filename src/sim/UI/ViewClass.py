@@ -55,13 +55,13 @@ class View():
         newRobotLayout.addLayout(xLayout)
         newRobotLayout.addLayout(yLayout)
 
-        # Make Push Button
+        # Make New Robot Push Button
         newRobotButton = QPushButton("Add Robot")
 
-        # Add Push Button to New Robot Layout
+        # Add New Robot Push Button to New Robot Layout
         newRobotLayout.addWidget(newRobotButton)
 
-        # Bind Push Button to Event Handler
+        # Bind New Robot Push Button to Event Handler
         newRobotButton.clicked.connect(self.__addRobotButtonClicked)
 
         # Simulator Settings
@@ -76,6 +76,11 @@ class View():
         setting1 = QCheckBox('Test Setting')
         settingsLayout.addWidget(setting1)
         setting1.clicked.connect(self.__settingHandler)
+
+        # Make Remove Robots Push Button
+        removeRobotsButton = QPushButton("Remove Robots")
+        settingsLayout.addWidget(removeRobotsButton)
+        removeRobotsButton.clicked.connect(self.__deleteRobotsButtonClicked)
 
         # Add Settings and New Robot Sections to Top Layout
         topLayout.addLayout(settingsLayout, 0, 0, 0, 2)
@@ -117,14 +122,10 @@ class View():
     ### Event Handlers ###
     # Add Robot Button Click Event
     def __addRobotButtonClicked(self):
-        '''
-        ellipse = QGraphicsEllipseItem(0, 0, 100, 100)
-        ellipse.setPos(75, 30)
-        self.graphicsScene.addItem(ellipse)
-
-        #ellipse.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
-        '''
         self.__controller.addNewRobot(self.__xTextboxVal, self.__yTextboxVal)
+
+    def __deleteRobotsButtonClicked(self):
+        self.__controller.deleteRobots(self.graphicsScene.selectedItems())
 
     def __xTextboxHandler(self, text):
         try:
@@ -156,7 +157,7 @@ class View():
 
         # Add Text Item to the Ellipse (Display the IP in the Ellipse)
         text = QGraphicsTextItem(robotModel.ip, ellipse)
-        text.setPos(20,35)
+        text.setPos(robotModel.x + 20, robotModel.y + 35)
 
         # Render
         self.graphicsScene.addItem(ellipse)
