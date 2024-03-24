@@ -146,9 +146,9 @@ class View():
         print("Radio1 Changed")
 
     ### Public Methods ###
-    def drawRobot(self, robotModel):
+    def drawRobot(self, robotModel, x, y):
         # Create an Ellipse
-        ellipse = QGraphicsEllipseItem(robotModel.x, robotModel.y, 100, 100)
+        ellipse = QGraphicsEllipseItem(x, y, 100, 100)
 
         # Make Ellipse Moveable
         ellipse.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
@@ -157,7 +157,14 @@ class View():
 
         # Add Text Item to the Ellipse (Display the IP in the Ellipse)
         text = QGraphicsTextItem(robotModel.ip, ellipse)
-        text.setPos(robotModel.x + 20, robotModel.y + 35)
+        text.setPos(x + 20, y + 35)
 
         # Render
         self.graphicsScene.addItem(ellipse)
+
+        # Return the ellipse
+        return ellipse
+    
+    def eraseRobot(self, robotItem):
+        # Remove the robotItem
+        self.graphicsScene.removeItem(robotItem)

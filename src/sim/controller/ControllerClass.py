@@ -11,14 +11,12 @@ class Controller:
         self.__view = view
 
     def addNewRobot(self, x, y):
-        # Check if robot is valid
-
         # Get next robot IP
         ip = f"10.0.0.1{self.__usableIPs[0]}"
         self.__usableIPs.remove(self.__usableIPs[0])
 
         # Make new RobotModel
-        robotModel = RobotModel(x, y, ip)
+        robotModel = RobotModel(ip)
 
         # Add robot to model
         self.__model.addRobot(robotModel)
@@ -26,9 +24,25 @@ class Controller:
         # Start Threads for Robot (v_main for robot with ip)
         
         # Update the View
-        self.__view.drawRobot(robotModel)        
+        robotItem = self.__view.drawRobot(robotModel, x, y)        
 
-    def deleteRobots(self, robots):
-        #for robot in robots:
-            # if its a robot remove it from the model
-        pass
+        # Update the robotItem Field
+        robotModel.robotItem = robotItem
+
+    def deleteRobots(self, robotItems):
+        for robotItem in robotItems:
+            robotModel = next((x for x in self.__model.robots if x.robotItem is robotItem), None)
+
+            if robotModel is None:
+                raise "Error in deleteRobots(). Robot is not in list"
+            
+            # Stop the Threads
+
+            # Delete the Robot
+            self.__model.robots.remove(robotModel)
+
+            # Update Available IPs
+            self.__usableIPs.append(robotModel.ip)
+
+            # Remove from UI
+            self.__view.eraseRobot(robotItem)

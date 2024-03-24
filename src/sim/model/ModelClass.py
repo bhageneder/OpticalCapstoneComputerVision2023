@@ -1,16 +1,15 @@
 class Model:
     def __init__(self):
-        self.__robots = list()
+        self.robots = list()
 
     def addRobot(self, robot):
-        self.__robots.append(robot)
+        self.robots.append(robot)
 
     def removeRobot(self, robot):
         self.__robots.remove(robot)
 
 
 class RobotModel:
-    def __init__(self, x, y, ip):
-        self.x = x
-        self.y = y
+    def __init__(self, ip):
         self.ip = ip
+        self.robotItem = None
