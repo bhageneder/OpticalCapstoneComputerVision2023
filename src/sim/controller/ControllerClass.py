@@ -24,7 +24,7 @@ class Controller:
         # Start Threads for Robot (v_main for robot with ip)
         
         # Update the View
-        robotItem = self.__view.drawRobot(robotModel, x, y)        
+        robotItem = self.__view.drawRobot(robotModel, x, y)   
 
         # Update the robotItem Field
         robotModel.robotItem = robotItem
@@ -37,6 +37,8 @@ class Controller:
                 raise "Error in deleteRobots(). Robot is not in list"
             
             # Stop the Threads
+            robotModel.thread.raise_exception()
+            robotModel.thread.join()
 
             # Delete the Robot
             self.__model.robots.remove(robotModel)
