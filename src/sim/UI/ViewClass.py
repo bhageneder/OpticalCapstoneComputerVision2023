@@ -107,7 +107,14 @@ class View():
 
     def startWindow(self):
         self.__window.show()
-        sys.exit(self.__app.exec())
+        sys.exit(self.__appExec())
+
+    def __appExec(self):
+        # Run the app
+        self.__app.exec()
+        
+        # Cleanup (executes when window closes)
+        self.__controller.cleanupThreads()
 
     def updateUI(self):
         # Read from the model and update UI

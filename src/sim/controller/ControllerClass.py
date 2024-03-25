@@ -48,3 +48,7 @@ class Controller:
 
             # Remove from UI
             self.__view.eraseRobot(robotItem)
+    
+    def cleanupThreads(self):
+        for robotModel in self.__model.robots:
+            robotModel.thread.raise_exception()
