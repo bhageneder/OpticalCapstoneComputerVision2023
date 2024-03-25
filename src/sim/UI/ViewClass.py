@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import * 
-from PyQt5 import QtCore 
+from PyQt5.QtCore import *
 from PyQt5.QtGui import * 
 from screeninfo import get_monitors
 
@@ -9,6 +9,7 @@ class View():
         self.__app = QApplication([])
         self.__window = QWidget()
         self.__controller = controller
+        self.__threadPool = QThreadPool()
 
         #self.__window.setStyleSheet("background-color: black; border: 5px solid green; color: white;")
         #self.__window.setStyleSheet("background-color: black; border: 2px solid white; color: white;")
@@ -132,7 +133,8 @@ class View():
         self.__controller.addNewRobot(self.__xTextboxVal, self.__yTextboxVal)
 
     def __deleteRobotsButtonClicked(self):
-        self.__controller.deleteRobots(self.graphicsScene.selectedItems())
+        worker = Worker(self.__controller.deleteRobots, (self.graphicsScene.selectedItems()))
+        self.__threadPool.start(worker)
 
     def __xTextboxHandler(self, text):
         try:
@@ -174,3 +176,16 @@ class View():
     def eraseRobot(self, robotItem):
         # Remove the robotItem
         self.graphicsScene.removeItem(robotItem)
+
+
+# Worker Thread Class
+class Worker(QRunnable):
+    def __init__(self, target, args):
+        self.__target = target
+        self.__args = args
+
+        super().__init__()
+
+    @pyqtSlot()
+    def run(self):
+        self.__target(self.__args)
