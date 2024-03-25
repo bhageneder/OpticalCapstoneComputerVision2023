@@ -155,16 +155,15 @@ class View():
     ### Public Methods ###
     def drawRobot(self, robotModel, x, y):
         # Create an Ellipse
-        ellipse = QGraphicsEllipseItem(x, y, 100, 100)
+        ellipse = QGraphicsEllipseItem(0, 0, 100, 100)
+        ellipse.setPos(x,y) # Must set position seperately (or the QPointF data gets screwed)
 
         # Make Ellipse Moveable
         ellipse.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
 
-        # Attach Event Handlers for Ellipse Movement
-
         # Add Text Item to the Ellipse (Display the IP in the Ellipse)
         text = QGraphicsTextItem(robotModel.ip, ellipse)
-        text.setPos(x + 20, y + 35)
+        text.setPos(20, 35)
 
         # Render
         self.graphicsScene.addItem(ellipse)
