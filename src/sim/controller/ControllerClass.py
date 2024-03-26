@@ -37,7 +37,7 @@ class Controller:
                 raise "Error in deleteRobots(). Robot is not in list"
             
             # Stop the Threads
-            robotModel.thread.raise_exception()
+            robotModel.thread.kill()
             robotModel.thread.join()
 
             # Delete the Robot
@@ -51,4 +51,5 @@ class Controller:
     
     def cleanupThreads(self):
         for robotModel in self.__model.robots:
-            robotModel.thread.raise_exception()
+            robotModel.thread.kill()
+            robotModel.thread.join()
