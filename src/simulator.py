@@ -12,6 +12,9 @@ def main():
     # Create View
     view = View(controller)
 
+    # Set the View in Controller
+    controller.setView(view)
+
     # Start the View Window
     view.startWindow()
 
