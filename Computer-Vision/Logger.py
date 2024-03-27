@@ -1,18 +1,20 @@
 
 from loguru import logger
 import sqlite3
-from datetime import datetime
+import datetime
 import os
 import csv
 import logging
-from enum import Enum
+import psutil
 
-class Level(Enum):
-    DEBUG = 0
-    INFO = 1
-    WARNING = 2
-    ERROR = 3
-    CRITICAL = 4
+
+LOGLEVELS = [
+    ('DEBUG', 0),
+    ('INFO', 1),
+    ('WARNING', 2),
+    ('ERROR', 3),
+    ('CRITICAL', 4)
+]
 
 class Logger:
     DEFAULT_LOG_FILE = 'logger.db'
@@ -30,6 +32,7 @@ class Logger:
         self.cursor = self.conn.cursor()
     
         self.logSetup()
+        
         
     # Logger Class Deconstructor
     def __del__(self):
@@ -65,7 +68,7 @@ class Logger:
  
     def tableDefinition(self):
         # Define the tables
-        self.eventTable =  """ CREATE TABLE IF NOT EXISTS eventLog (
+        self.eventTable =  """ CREATE TABLE IF NOT EXISTS eventTable (
                 ID INTEGER PRIMARY KEY,
                 Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                 ProcessID INTEGER,
@@ -76,23 +79,35 @@ class Logger:
             )"""
 
         self.levelTable = """ CREATE TABLE IF NOT EXISTS levelTable (
-                LevelNum INTEGER PRIMARY KEY,
-                Level VARCHAR(10)
+                Level VARCHAR(10) PRIMARY KEY,
+                LevelNum INTEGER 
+                
             )"""
         
-
+        #Maybe a float instead for utilization
+        self.cpuData =  """ CREATE TABLE IF NOT EXISTS cpuData (
+                ID INTEGER PRIMARY KEY,
+                Utilization DECIMAL(2), 
+                Speed DECIMAL(2),
+                Processes INTEGER,
+                Threads   INTEGER,
+                Uptime    TIME(6)
+        
+            )"""
         
          
     def populateLevelTable(self):
-        try:
-            for level in Level:
-                self.cursor.execute("INSERT OR IGNORE INTO levelTable (LevelNum, Level) VALUES (?, ?)",
-                                    (level.value, level.name))
-            self.conn.commit()
+        self.tableDefinition()
+        for Level in LOGLEVELS:
+            try:
             
-        except sqlite3.Error as sqliteError:
-            print(sqliteError)
-            print("Error populating levelTable: {sqliteError}")       
+                self.cursor.execute("INSERT OR IGNORE INTO levelTable (Level, LevelNum) VALUES (?, ?)",
+                                    (LOGLEVELS))
+                self.conn.commit()
+            
+            except sqlite3.Error as sqliteError:
+                print(sqliteError)
+                print("Error populating levelTable: {sqliteError}")       
     
     def logSetup(self):
         # Get the process ID and module name
@@ -116,7 +131,13 @@ class Logger:
                         " |<Message: {record[message]}> ", 
                     enqueue=True)
         
+        self.setFilePermissions()
+        self.tableDefinition()
+        #self.createTable(self.eventTable)
+        #self.createTable(self.levelTable)
         self.populateLevelTable()
+        self.addData()
+        #self.createTable(self.cpuData)
         # Commit Changes to Database
         self.conn.commit()
 
@@ -124,7 +145,7 @@ class Logger:
        # instantiantion method detection = logging.getLogger(Detect)
         
        try:
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
             sqlite3.connect(self.DEFAULT_LOG_FILE)
             self.cursor.execute("INSERT INTO eventLog (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)", (timestamp, tag, module, LevelNum, message))
             self.conn.commit()
@@ -132,9 +153,31 @@ class Logger:
        except Exception as e:
             print(e)
             print("Error inserting log to eventTable: {e}")
-        
-            
+      
+    def addData(self):
+        utilization = psutil.cpu_percent()
+        speed = psutil.cpu_freq().current
+        processes= 0
+        for _ in psutil.process_iter():
+            processes+= 1
 
+        #avgLoad = psutil.getloadavg() [0]
+        threads = psutil.cpu_count(logical=True)
+        uptime = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%H:%M:%S")
+        
+    def recordData(self, utilization, speed, processes, threads, uptime): 
+        try:
+            #CPU percent for each core
+            self.addData()
+            sqlite3.connect(self.DEFAULT_LOG_FILE)
+            self.cursor.execute("INSERT INTO cpuData (Utilization, Speed, Processes, Threads, Uptime) VALUES (?, ?, ?, ?, ?)", (utilization, speed, processes, threads, uptime))
+            self.conn.commit()   
+
+        except Exception as e: 
+            print(e)
+            print("Error inserting log to dataTable: {e}")     
+            
+  
 
     def exportCsv(self, csvFilePath = 'eventLogs.csv'):
         try:
@@ -164,3 +207,7 @@ class Logger:
         except Exception as e:
             print(e)
             print("Error exporting logs to CSV: {e}") #eventually change to self.logger.error
+
+    def setFilePermissions(self):
+        # Grant all privileges to all users on the file
+        os.chmod(self.logFilePath, 0o777)
