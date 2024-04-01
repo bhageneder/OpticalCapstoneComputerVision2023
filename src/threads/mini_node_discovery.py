@@ -43,3 +43,5 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
         link = RobotLink(None, g.serial_ports[0], client_socket, robot_receiving_ip_address, dst_port)
         if g.debug_mini_discovery: print(f'{thread_name} New Robot Link Found On: ', (robot_receiving_ip_address, int(dst_port)))
         robot.robotLink = link
+        g.LEDs.off("finding", robot.transceiver)
+        g.LEDs.on("connected", robot.transceiver)

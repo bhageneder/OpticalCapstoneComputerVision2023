@@ -16,15 +16,15 @@ def led_manager():
         LEDs = g.LEDs.getLEDs()
 
         for transceiver in range(8):
-            if LEDs[0][transceiver] == 1:
+            if LEDs[0][transceiver] > 0:
                 led_funcs.illuminate_for_finding(transceiver)
             else:
                 led_funcs.turn_off_for_finding(transceiver)
-            if LEDs[1][transceiver] == 1:
+            if LEDs[1][transceiver] > 0:
                 led_funcs.illuminate_for_connected(transceiver)
             else:
                 led_funcs.turn_off_for_connected(transceiver)
-            if LEDs[2][transceiver] == 1:
+            if LEDs[2][transceiver] > 0:
                 led_funcs.illuminate_for_lost(transceiver)
             else:
                 led_funcs.turn_off_for_lost(transceiver)

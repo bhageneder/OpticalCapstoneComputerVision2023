@@ -6,6 +6,8 @@ def new_lost():
         # Blocking Call to Detector's Lost Queue
         robot = g.detector.lostQ.get()
 
+        g.LEDs.on("lost", robot.transceiver)
+
         # Check for Robot Link
         if (robot.robotLink != None):
             # Acquire Visible Robot List Mutex
