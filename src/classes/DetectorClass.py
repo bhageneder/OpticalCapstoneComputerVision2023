@@ -1,12 +1,15 @@
-import math
-import cv2
-import jetson_inference
-import jetson_utils
-from classes.StreamClass import Stream
-from classes.RobotClass import Robot
-import config.global_vars as g
-import os
-import queue
+try:
+        import math
+        import cv2
+        import jetson_inference
+        import jetson_utils
+        from classes.StreamClass import Stream
+        from classes.RobotClass import Robot
+        import config.global_vars as g
+        import os
+        import queue
+except:
+        pass # Simulation Environment
 
 
 class Detector:

@@ -1,14 +1,34 @@
 from sim.model.ModelClass import RobotModel
+from sim.controller.KillableThreadClass import KillableThread
+from sim.controller.v_main import v_main
+import time
+import threading
 
 class Controller:
-    def __init__(self, model):
+    def __init__(self, model, globals):
         self.__model = model
         self.__view = None
         self.__IPs = [x for x in range(0,245)]
         self.__usableIPs = self.__IPs.copy()
+        self.__globals = globals
+        self.__threadList = []
+        self.__robot_position_thread = threading.Thread(target=self.__updateRobotPositions, daemon=True, name="UpdateRobotPosition")
+
+        self.__robot_position_thread.start()
+
 
     def setView(self, view):
         self.__view = view
+
+
+    def __updateRobotPositions(self):
+        while True:
+            # continuously update robot positions
+            # TODO: Very rudimentary, would be much more efficient to set up a listener in the View
+            time.sleep(1)
+            for robotModel in self.__model.robots:
+                self.__globals.robot_positions.update({robotModel.ip: self.__view.getRobotPosition(robotModel)})
+
 
     def addNewRobot(self, x, y):
         # Get next robot IP
@@ -21,13 +41,20 @@ class Controller:
         # Add robot to model
         self.__model.addRobot(robotModel)
         
-        # Start Threads for Robot (v_main for robot with ip)
-        
         # Update the View
         robotItem = self.__view.drawRobot(robotModel, x, y)   
 
         # Update the robotItem Field
         robotModel.robotItem = robotItem
+
+        # Add robot positions to known list of robot positions
+        self.__globals.robot_positions.update({robotModel.ip: self.__view.getRobotPosition(robotModel)})
+
+        # Start Threads for Robot (v_main for robot with ip)
+        v_main_thread = KillableThread(v_main, (robotModel, self.__globals))
+        self.__threadList.append(v_main_thread)
+        v_main_thread.start()
+
 
     def deleteRobots(self, robotItems):
         for robotItem in robotItems:
@@ -50,6 +77,6 @@ class Controller:
             self.__view.eraseRobot(robotItem)
     
     def cleanupThreads(self):
-        for robotModel in self.__model.robots:
-            robotModel.thread.kill()
-            robotModel.thread.join()
+        for thread in self.__threadList:
+            thread.kill()
+            thread.join()

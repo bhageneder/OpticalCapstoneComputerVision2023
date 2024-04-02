@@ -157,7 +157,7 @@ class View():
     ### Public Methods ###
     def drawRobot(self, robotModel, x, y):
         # Create an Ellipse
-        ellipse = QGraphicsEllipseItem(0, 0, 100, 100)
+        ellipse = NamedEllipseItem(robotModel.ip, 0, 0, 100, 100)
         ellipse.setPos(x,y) # Must set position seperately (or the QPointF data gets screwed)
 
         # Make Ellipse Moveable
@@ -177,6 +177,15 @@ class View():
         # Remove the robotItem
         self.graphicsScene.removeItem(robotItem)
 
+    def getRobotPosition(self, robotModel):
+        # return the items x,y coordinate of robotModel
+        for item in self.graphicsScene.items():
+            # Need check because items contains both Ellipse & Text but Ellipse does not contain objectName()
+            # Since they are in the same position, this works to get coordinates
+            if (item.__class__.__name__ == "NamedEllipseItem"):
+                if (item.getName() == robotModel.ip):
+                    return(item.x(), item.y())
+
 
 # Worker Thread Class
 class Worker(QRunnable):
@@ -189,3 +198,14 @@ class Worker(QRunnable):
     @pyqtSlot()
     def run(self):
         self.__target(self.__args)
+
+
+# Custom QGraphicsEllipseItem
+class NamedEllipseItem(QGraphicsEllipseItem):
+    def __init__(self, name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__name = name
+
+    def getName(self):
+        return self.__name
+    
