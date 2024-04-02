@@ -41,7 +41,7 @@ class Controller:
         robotModel.robotItem = robotItem
 
         # Add robot positions to known list of robot positions
-        self.__globals.robot_positions.update({robotModel.ip: self.__view.getRobotPosition(robotModel)})
+        self.__globals.robot_positions.update({robotModel.ip: (x, y)})
 
         # Start Threads for Robot (v_main for robot with ip)
         v_main_thread = KillableThread(v_main, (robotModel, self.__globals), name=robotModel.ip)
@@ -74,7 +74,7 @@ class Controller:
             # Remove from UI
             self.__view.eraseRobot(robotItem)
     
-    
+
     def cleanupThreads(self):
         for thread in self.__threadList:
             thread.kill()
