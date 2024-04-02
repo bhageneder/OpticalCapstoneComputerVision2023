@@ -15,11 +15,6 @@ class Controller:
         self.__view = view
 
 
-    def updateRobotPositions(self, robotIP, x, y):
-        # Update robot positions from view
-        self.__vg.robot_positions.update({robotIP: (x, y)})
-
-
     def addNewRobot(self, x, y):
         # Get next robot IP
         ip = f"10.0.0.1{self.__usableIPs[0]}"
@@ -37,11 +32,8 @@ class Controller:
         # Update the robotItem Field
         robotModel.robotItem = robotItem
 
-        # Add robot positions to known list of robot positions
-        self.__vg.robot_positions.update({robotModel.ip: (x, y)})
-
         # Start Threads for Robot (v_main for robot with ip)
-        robotModel.thread = KillableThread(v_main, (robotModel, self.__vg), name=robotModel.ip)
+        robotModel.thread = KillableThread(v_main, (robotModel, self.__vg, self.__model), name=robotModel.ip)
         robotModel.thread.start()
 
 

@@ -3,10 +3,10 @@ import math
 from classes.DetectorClass import Detector
 
 class vDetector(Detector):
-    def __init__(self, ip, vg):
+    def __init__(self, robotModel, model):
         self.detected = False
-        self.__ip = ip
-        self.__vg = vg
+        self.__robotModel = robotModel
+        self.__model = model
         self.__threshold = 300  # Arbitrary threshold of 300 pixels
 
     def __del__(self):
@@ -20,25 +20,20 @@ class vDetector(Detector):
 
     def detect(self):
         while True:
-            for robotIP in self.__vg.robot_positions.keys():
-                # If only 1 robot, it will always be itself
-                if (robotIP == self.__ip):
+            for robot in self.__model.robots:
+                if (robot.ip == self.__robotModel.ip):
                     pass
                 else:
-                    try:
-                        distance = self.__distance_between_points(
-                                                                self.__vg.robot_positions[self.__ip][0], 
-                                                                self.__vg.robot_positions[self.__ip][1], 
-                                                                self.__vg.robot_positions[robotIP][0], 
-                                                                self.__vg.robot_positions[robotIP][1]
-                                                                )
-                        if (distance <= self.__threshold):
-                            self.detected = True
-                            print("INFO:    {} Detected {}".format(self.__ip, robotIP)) # Helpful print statement
-                        else:
-                            self.detected = False
-                    except KeyError as ke:
-                        # Robot was removed
+                    distance = self.__distance_between_points(
+                                                            self.__robotModel.robotItem.pos().x(),
+                                                            self.__robotModel.robotItem.pos().y(),
+                                                            robot.robotItem.pos().x(),
+                                                            robot.robotItem.pos().y()
+                                                            )
+                    if (distance <= self.__threshold):
+                        self.detected = True
+                        print("INFO:    {} Detected {}".format(self.__robotModel.ip, robot.ip)) # Helpful print statement
+                    else:
                         self.detected = False
 
-            time.sleep(3)
+            time.sleep(1)

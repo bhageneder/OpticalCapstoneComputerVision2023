@@ -92,7 +92,7 @@ class View():
         topLayout.setSpacing(5)
 
         # Create Graphics Widget
-        self.graphicsScene = CustomQGraphicsScene(self.__controller)
+        self.graphicsScene = QGraphicsScene()
 
         graphicsView = QGraphicsView(self.graphicsScene)
         graphicsView.show()
@@ -168,7 +168,7 @@ class View():
     ### Public Methods ###
     def drawRobot(self, robotModel, x, y):
         # Create an Ellipse
-        ellipse = NamedEllipseItem(robotModel.ip, 0, 0, 100, 100)
+        ellipse = QGraphicsEllipseItem(0, 0, 100, 100)
         ellipse.setPos(x,y) # Must set position seperately (or the QPointF data gets screwed)
 
         # Make Ellipse Moveable
@@ -202,41 +202,5 @@ class Worker(QRunnable):
     @pyqtSlot()
     def run(self):
         self.__target(self.__args)
-
-
-# Custom QGraphicsEllipseItem
-class NamedEllipseItem(QGraphicsEllipseItem):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__name = name
-
-
-    def getName(self):
-        return self.__name
     
-
-# TODO: I don't like having to pass the controller to this class, need to update to find a work around for that
-class CustomQGraphicsScene(QGraphicsScene):
-    def __init__(self, controller, parent=None):
-        super().__init__(parent)
-        self.__controller = controller
-
-    def mouseReleaseEvent(self, event):
-        # Call the base class method to handle normal mouse press events
-        super().mouseReleaseEvent(event)
-        
-        # Custom release handler TODO: UPDATE TO MOVE PROCESSING TO WORKER
-        self.__CustomReleaseHandler(event)
-
-
-    # Custom release handler to call controller and update robot positions
-    def __CustomReleaseHandler(self, event):
-        if event.button() == Qt.LeftButton:
-            mousePos = event.scenePos()
-            items = self.items(mousePos)
-            for item in items:
-                # Need check because items contains both Ellipse & Text but Ellipse is the only one with updated coordinates
-                if (item.__class__.__name__ == "NamedEllipseItem"):
-                    # update the robots x,y coordinate in robot_positions
-                    self.__controller.updateRobotPositions(item.getName(), item.x(), item.y())
                     
