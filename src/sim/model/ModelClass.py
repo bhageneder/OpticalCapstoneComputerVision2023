@@ -12,6 +12,7 @@ class Model:
 
 
 class RobotModel:
-    def __init__(self, ip):
+    def __init__(self, ip, thread=None):
         self.ip = ip
         self.robotItem = None
+        self.thread = thread

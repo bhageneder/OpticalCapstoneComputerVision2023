@@ -9,7 +9,6 @@ class Controller:
         self.__IPs = [x for x in range(0,245)]
         self.__usableIPs = self.__IPs.copy()
         self.__vg = vg
-        self.__threadList = []
 
 
     def setView(self, view):
@@ -42,9 +41,8 @@ class Controller:
         self.__vg.robot_positions.update({robotModel.ip: (x, y)})
 
         # Start Threads for Robot (v_main for robot with ip)
-        v_main_thread = KillableThread(v_main, (robotModel, self.__vg), name=robotModel.ip)
-        self.__threadList.append(v_main_thread)
-        v_main_thread.start()
+        robotModel.thread = KillableThread(v_main, (robotModel, self.__vg), name=robotModel.ip)
+        robotModel.thread.start()
 
 
     def deleteRobots(self, robotItems):
@@ -54,11 +52,9 @@ class Controller:
             if robotModel is None:
                 raise "Error in deleteRobots(). Robot is not in list"
             
-            for thread in self.__threadList:
-                if (thread.name() == robotModel.ip):
-                    # Stop the Threads
-                    thread.kill()
-                    thread.join()
+            # Stop the Threads
+            robotModel.thread.kill()
+            robotModel.thread.join()
 
             # Remove from Robot Positions
             self.__vg.robot_positions.pop(robotModel.ip)
@@ -74,6 +70,6 @@ class Controller:
     
 
     def cleanupThreads(self):
-        for thread in self.__threadList:
-            thread.kill()
-            thread.join()
+        for robotModel in self.__model.robots:
+            robotModel.thread.kill()
+            robotModel.thread.join()
