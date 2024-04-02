@@ -7,6 +7,10 @@ def new_lost():
         robot = g.detector.lostQ.get()
 
         g.LEDs.on("lost", robot.transceiver)
+        if robot.state == 0:    # finding state
+            g.LEDs.off("finding", robot.transceiver)
+        else:                   # connected state
+            g.LEDs.off("connected", robot.transceiver)
 
         # Check for Robot Link
         if (robot.robotLink != None):

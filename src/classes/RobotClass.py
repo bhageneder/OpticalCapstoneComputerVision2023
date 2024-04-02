@@ -4,3 +4,4 @@ class Robot:
         self.transceiver = transceiver      # Integer - Best transceiver to use for communications
         self.robotLink = robotLink          # RobotLink (includes IP info) - set when a TCP socket is created
         self.IP = None                      # IP - Needed for when an IP has been selected, but discovery has not completed (No RobotLink Exists Yet)
+        self.state = 0                      # Integer - For finding, set 0. For connected, set 1.

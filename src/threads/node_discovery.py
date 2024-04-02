@@ -79,5 +79,6 @@ def node_discovery(robot):
                     # Robot is Already Considered Lost and Has Been Removed from List
                     pass
     else:
+        g.LEDs.off("finding", robot.transceiver)
         # Queue to New Robot Queue
         g.newRobotQ.put(robot)

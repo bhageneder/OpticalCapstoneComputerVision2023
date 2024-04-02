@@ -10,6 +10,7 @@ def new_visible():
         robot = g.detector.visibleQ.get()
 
         g.LEDs.on("finding", robot.transceiver)
+        robot.state = 0
 
         # Aquire Visible Mutex
         with g.visible_mutex:
@@ -26,6 +27,9 @@ def new_visible():
             with g.visible_mutex and g.lost_mutex:
                 # Remove from Global Lost List
                 g.lost.remove(foundRobot)
+
+            g.LEDs.off("finding", robot.transceiver)
+            g.LEDs.off("lost", robot.transceiver)
 
             # Queue to New Robot Queue
             g.newRobotQ.put(robot)
