@@ -3,12 +3,12 @@ from sim.controller.KillableThreadClass import KillableThread
 from sim.controller.v_main import v_main
 
 class Controller:
-    def __init__(self, model, globals):
+    def __init__(self, model, vg):
         self.__model = model
         self.__view = None
         self.__IPs = [x for x in range(0,245)]
         self.__usableIPs = self.__IPs.copy()
-        self.__globals = globals
+        self.__vg = vg
         self.__threadList = []
 
 
@@ -18,7 +18,7 @@ class Controller:
 
     def updateRobotPositions(self, robotIP, x, y):
         # Update robot positions from view
-        self.__globals.robot_positions.update({robotIP: (x, y)})
+        self.__vg.robot_positions.update({robotIP: (x, y)})
 
 
     def addNewRobot(self, x, y):
@@ -39,10 +39,10 @@ class Controller:
         robotModel.robotItem = robotItem
 
         # Add robot positions to known list of robot positions
-        self.__globals.robot_positions.update({robotModel.ip: (x, y)})
+        self.__vg.robot_positions.update({robotModel.ip: (x, y)})
 
         # Start Threads for Robot (v_main for robot with ip)
-        v_main_thread = KillableThread(v_main, (robotModel, self.__globals), name=robotModel.ip)
+        v_main_thread = KillableThread(v_main, (robotModel, self.__vg), name=robotModel.ip)
         self.__threadList.append(v_main_thread)
         v_main_thread.start()
 
@@ -61,7 +61,7 @@ class Controller:
                     thread.join()
 
             # Remove from Robot Positions
-            self.__globals.robot_positions.pop(robotModel.ip)
+            self.__vg.robot_positions.pop(robotModel.ip)
 
             # Delete the Robot
             self.__model.robots.remove(robotModel)

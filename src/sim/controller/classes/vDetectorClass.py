@@ -3,10 +3,10 @@ import math
 from classes.DetectorClass import Detector
 
 class vDetector(Detector):
-    def __init__(self, ip, globals):
+    def __init__(self, ip, vg):
         self.detected = False
         self.__ip = ip
-        self.__globals = globals
+        self.__vg = vg
         self.__threshold = 300  # Arbitrary threshold of 300 pixels
 
     def __del__(self):
@@ -20,17 +20,17 @@ class vDetector(Detector):
 
     def detect(self):
         while True:
-            for robotIP in self.__globals.robot_positions.keys():
+            for robotIP in self.__vg.robot_positions.keys():
                 # If only 1 robot, it will always be itself
                 if (robotIP == self.__ip):
                     pass
                 else:
                     try:
                         distance = self.__distance_between_points(
-                                                                self.__globals.robot_positions[self.__ip][0], 
-                                                                self.__globals.robot_positions[self.__ip][1], 
-                                                                self.__globals.robot_positions[robotIP][0], 
-                                                                self.__globals.robot_positions[robotIP][1]
+                                                                self.__vg.robot_positions[self.__ip][0], 
+                                                                self.__vg.robot_positions[self.__ip][1], 
+                                                                self.__vg.robot_positions[robotIP][0], 
+                                                                self.__vg.robot_positions[robotIP][1]
                                                                 )
                         if (distance <= self.__threshold):
                             self.detected = True
