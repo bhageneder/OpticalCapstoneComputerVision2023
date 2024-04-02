@@ -48,9 +48,6 @@ class Controller:
             robotModel.thread.kill()
             robotModel.thread.join()
 
-            # Remove from Robot Positions
-            self.__vg.robot_positions.pop(robotModel.ip)
-
             # Delete the Robot
             self.__model.robots.remove(robotModel)
 
