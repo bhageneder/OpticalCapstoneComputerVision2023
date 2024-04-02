@@ -51,7 +51,7 @@ class Controller:
         self.__globals.robot_positions.update({robotModel.ip: self.__view.getRobotPosition(robotModel)})
 
         # Start Threads for Robot (v_main for robot with ip)
-        v_main_thread = KillableThread(v_main, (robotModel, self.__globals))
+        v_main_thread = KillableThread(v_main, (robotModel, self.__globals), name=robotModel.ip)
         self.__threadList.append(v_main_thread)
         v_main_thread.start()
 
@@ -63,9 +63,14 @@ class Controller:
             if robotModel is None:
                 raise "Error in deleteRobots(). Robot is not in list"
             
-            # Stop the Threads
-            robotModel.thread.kill()
-            robotModel.thread.join()
+            for thread in self.__threadList:
+                if (thread.name() == robotModel.ip):
+                    # Stop the Threads
+                    thread.kill()
+                    thread.join()
+
+            # Remove from Robot Positions
+            self.__globals.robot_positions.pop(robotModel.ip)
 
             # Delete the Robot
             self.__model.robots.remove(robotModel)

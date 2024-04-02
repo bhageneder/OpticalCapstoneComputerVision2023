@@ -2,14 +2,18 @@ import threading
 import ctypes
 
 class KillableThread(threading.Thread):
-    def __init__(self, target, args):
+    def __init__(self, target, args, name):
         threading.Thread.__init__(self)
         self.__target = target
         self.__args = args
+        self.__name = name
              
     def run(self):
         self.__target(self.__args)
-          
+
+    def name(self):
+        return self.__name
+              
     def get_id(self):
         # Returns ID of the Thread
         if hasattr(self, '_thread_id'):
