@@ -22,8 +22,10 @@ class vDetector(Detector):
         while True:
             for robot in self.__model.robots:
                 if (robot.ip == self.__robotModel.ip):
-                    pass
+                    self.detected = False
                 else:
+                    if not (self.__robotModel.robotItem.isActive()):
+                        break
                     distance = self.__distance_between_points(
                                                             self.__robotModel.robotItem.pos().x(),
                                                             self.__robotModel.robotItem.pos().y(),
