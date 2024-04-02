@@ -12,22 +12,15 @@ class Controller:
         self.__usableIPs = self.__IPs.copy()
         self.__globals = globals
         self.__threadList = []
-        self.__robot_position_thread = threading.Thread(target=self.__updateRobotPositions, daemon=True, name="UpdateRobotPosition")
-
-        self.__robot_position_thread.start()
 
 
     def setView(self, view):
         self.__view = view
 
 
-    def __updateRobotPositions(self):
-        while True:
-            # continuously update robot positions
-            # TODO: Very rudimentary, would be much more efficient to set up a listener in the View
-            time.sleep(1)
-            for robotModel in self.__model.robots:
-                self.__globals.robot_positions.update({robotModel.ip: self.__view.getRobotPosition(robotModel)})
+    def updateRobotPositions(self, robotIP, x, y):
+        # Update robot positions from view
+        self.__globals.robot_positions.update({robotIP: (x, y)})
 
 
     def addNewRobot(self, x, y):
@@ -80,6 +73,7 @@ class Controller:
 
             # Remove from UI
             self.__view.eraseRobot(robotItem)
+    
     
     def cleanupThreads(self):
         for thread in self.__threadList:

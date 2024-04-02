@@ -91,8 +91,8 @@ class View():
         topLayout.setSpacing(5)
 
         # Create Graphics Widget
-        self.graphicsScene = QGraphicsScene()
-        #graphicsScene.addText("Graphics Go Here")
+        self.graphicsScene = CustomQGraphicsScene(self.__controller)
+
         graphicsView = QGraphicsView(self.graphicsScene)
         graphicsView.show()
 
@@ -177,15 +177,6 @@ class View():
         # Remove the robotItem
         self.graphicsScene.removeItem(robotItem)
 
-    def getRobotPosition(self, robotModel):
-        # return the items x,y coordinate of robotModel
-        for item in self.graphicsScene.items():
-            # Need check because items contains both Ellipse & Text but Ellipse does not contain objectName()
-            # Since they are in the same position, this works to get coordinates
-            if (item.__class__.__name__ == "NamedEllipseItem"):
-                if (item.getName() == robotModel.ip):
-                    return(item.x(), item.y())
-
 
 # Worker Thread Class
 class Worker(QRunnable):
@@ -209,3 +200,28 @@ class NamedEllipseItem(QGraphicsEllipseItem):
     def getName(self):
         return self.__name
     
+
+# TODO: I don't like having to pass the controller to this class, need to update to find a work around for that
+class CustomQGraphicsScene(QGraphicsScene):
+    def __init__(self, controller, parent=None):
+        super().__init__(parent)
+        self.__controller = controller
+
+    def mouseReleaseEvent(self, event):
+        # Call the base class method to handle normal mouse press events
+        super().mouseReleaseEvent(event)
+        
+        # Custom release handler
+        self.__CustomReleaseHandler(event)
+
+    # Custom release handler to call controller and update robot positions
+    def __CustomReleaseHandler(self, event):
+        if event.button() == Qt.LeftButton:
+            mousePos = event.scenePos()
+            items = self.items(mousePos)
+            for item in items:
+                # Need check because items contains both Ellipse & Text but Ellipse is the only one with updated coordinates
+                if (item.__class__.__name__ == "NamedEllipseItem"):
+                    # update the robots x,y coordinate in robot_positions
+                    self.__controller.updateRobotPositions(item.getName(), item.x(), item.y())
+                    

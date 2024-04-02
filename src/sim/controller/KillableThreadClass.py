@@ -2,7 +2,7 @@ import threading
 import ctypes
 
 class KillableThread(threading.Thread):
-    def __init__(self, target, args, name):
+    def __init__(self, target, args, name=""):
         threading.Thread.__init__(self)
         self.__target = target
         self.__args = args

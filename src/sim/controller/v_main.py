@@ -13,4 +13,6 @@ def v_main(params):
 
     # Initialize Detector Thread
     detector_thread = threading.Thread(target = detector.detect, daemon=True, name="Detect")
+
+    # Start Detector Thread
     detector_thread.start()

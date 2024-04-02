@@ -26,13 +26,15 @@ class vDetector(Detector):
                     pass
                 else:
                     try:
-                        distance = self.__distance_between_points(self.__globals.robot_positions[self.__ip][0], 
-                                                              self.__globals.robot_positions[self.__ip][1], 
-                                                              self.__globals.robot_positions[robotIP][0], 
-                                                              self.__globals.robot_positions[robotIP][1])
+                        distance = self.__distance_between_points(
+                                                                self.__globals.robot_positions[self.__ip][0], 
+                                                                self.__globals.robot_positions[self.__ip][1], 
+                                                                self.__globals.robot_positions[robotIP][0], 
+                                                                self.__globals.robot_positions[robotIP][1]
+                                                                )
                         if (distance <= self.__threshold):
                             self.detected = True
-                            print("INFO:    {} Detected {}".format(self.__ip, robotIP))
+                            print("INFO:    {} Detected {}".format(self.__ip, robotIP)) # Helpful print statement
                         else:
                             self.detected = False
                     except KeyError as ke:
