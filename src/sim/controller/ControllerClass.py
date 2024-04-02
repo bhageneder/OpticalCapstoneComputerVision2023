@@ -1,8 +1,6 @@
 from sim.model.ModelClass import RobotModel
 from sim.controller.KillableThreadClass import KillableThread
 from sim.controller.v_main import v_main
-import time
-import threading
 
 class Controller:
     def __init__(self, model, globals):
