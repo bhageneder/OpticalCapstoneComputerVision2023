@@ -20,6 +20,7 @@ class View():
         # Set Default States
         self.__xTextboxVal = 0
         self.__yTextboxVal = 0
+        self.__blockerVals = [0, 0, 10, 100]
 
         self.initUI()
 
@@ -76,7 +77,7 @@ class View():
         xBLayout.addWidget(xBLabel)
         xBTextbox = QLineEdit()
         xBTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        #xBTextbox.textChanged.connect(self.__xBTextboxHandler)
+        xBTextbox.textChanged.connect(self.__xBTextboxHandler)
         xBLayout.addWidget(xBTextbox)
         
         # New Blocker Y Coordinates
@@ -85,7 +86,7 @@ class View():
         yBLayout.addWidget(yBLabel)
         yBTextbox = QLineEdit()
         yBTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        #yBTextbox.textChanged.connect(self.__yBTextboxHandler)
+        yBTextbox.textChanged.connect(self.__yBTextboxHandler)
         yBLayout.addWidget(yBTextbox)
 
         # New Blocker Width
@@ -94,7 +95,7 @@ class View():
         widthLayout.addWidget(widthLabel)
         widthTextbox = QLineEdit()
         widthTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        #widthTextbox.textChanged.connect(self.__widthTextboxHandler)
+        widthTextbox.textChanged.connect(self.__widthTextboxHandler)
         widthLayout.addWidget(widthTextbox)
         
         # New Blocker Height
@@ -103,7 +104,7 @@ class View():
         heightLayout.addWidget(heightLabel)
         heightTextbox = QLineEdit()
         heightTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        #heightTextbox.textChanged.connect(self.__heightTextboxHandler)
+        heightTextbox.textChanged.connect(self.__heightTextboxHandler)
         heightLayout.addWidget(heightTextbox)
 
         # Add Coordinates and Size to New Blocker Layout
@@ -202,7 +203,31 @@ class View():
             self.__yTextboxVal = 0
 
     def __addBlockerButtonClicked(self):
-        self.__controller.addNewBlocker(0,0, 10, 100)
+        self.__controller.addNewBlocker(self.__blockerVals[0], self.__blockerVals[1], self.__blockerVals[2], self.__blockerVals[3])
+
+    def __xBTextboxHandler(self, text):
+        try:
+            self.__blockerVals[0] = int(text)
+        except:
+            self.__blockerVals[0] = 0
+
+    def __yBTextboxHandler(self, text):
+        try:
+            self.__blockerVals[1] = int(text)
+        except:
+            self.__blockerVals[1] = 0
+    
+    def __widthTextboxHandler(self, text):
+        try:
+            self.__blockerVals[2] = int(text)
+        except:
+            self.__blockerVals[2] = 0
+    
+    def __heightTextboxHandler(self, text):
+        try:
+            self.__blockerVals[3] = int(text)
+        except:
+            self.__blockerVals[3] = 0
 
     def __settingHandler(self):
         print("Setting1 Changed")
