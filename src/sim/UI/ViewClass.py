@@ -65,6 +65,58 @@ class View():
         # Bind New Robot Push Button to Event Handler
         newRobotButton.clicked.connect(self.__addRobotButtonClicked)
 
+        # New Blocker Layout
+        newBlockerLayout = QVBoxLayout()
+        newBlockerLabel = QLabel('Configure New Blocker')
+        newBlockerLayout.addWidget(newBlockerLabel)
+
+        # New Blocker X Coordinates
+        xBLayout = QHBoxLayout()
+        xBLabel = QLabel('X: ')
+        xBLayout.addWidget(xBLabel)
+        xBTextbox = QLineEdit()
+        xBTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        #xBTextbox.textChanged.connect(self.__xBTextboxHandler)
+        xBLayout.addWidget(xBTextbox)
+        
+        # New Blocker Y Coordinates
+        yBLayout = QHBoxLayout()
+        yBLabel = QLabel('Y: ')
+        yBLayout.addWidget(yBLabel)
+        yBTextbox = QLineEdit()
+        yBTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        #yBTextbox.textChanged.connect(self.__yBTextboxHandler)
+        yBLayout.addWidget(yBTextbox)
+
+        # New Blocker Width
+        widthLayout = QHBoxLayout()
+        widthLabel = QLabel('Width: ')
+        widthLayout.addWidget(widthLabel)
+        widthTextbox = QLineEdit()
+        widthTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        #widthTextbox.textChanged.connect(self.__widthTextboxHandler)
+        widthLayout.addWidget(widthTextbox)
+        
+        # New Blocker Height
+        heightLayout = QHBoxLayout()
+        heightLabel = QLabel('Height: ')
+        heightLayout.addWidget(heightLabel)
+        heightTextbox = QLineEdit()
+        heightTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        #heightTextbox.textChanged.connect(self.__heightTextboxHandler)
+        heightLayout.addWidget(heightTextbox)
+
+        # Add Coordinates and Size to New Blocker Layout
+        newBlockerLayout.addLayout(xBLayout)
+        newBlockerLayout.addLayout(yBLayout)
+        newBlockerLayout.addLayout(widthLayout)
+        newBlockerLayout.addLayout(heightLayout)
+
+        # Make New Blocker Push Button
+        newBlockerButton = QPushButton("Add Blocker")
+        newBlockerLayout.addWidget(newBlockerButton)
+        newBlockerButton.clicked.connect(self.__addBlockerButtonClicked)
+
         # Simulator Settings
         settingsLayout = QVBoxLayout()
         settingsLabel = QLabel('Simulator Settings')
@@ -84,8 +136,9 @@ class View():
         removeRobotsButton.clicked.connect(self.__deleteRobotsButtonClicked)
 
         # Add Settings and New Robot Sections to Top Layout
-        topLayout.addLayout(settingsLayout, 0, 0, 0, 2)
-        topLayout.addLayout(newRobotLayout, 0, 2, 0, 1)
+        topLayout.addLayout(settingsLayout, 0, 0, 0, 1)
+        topLayout.addLayout(newRobotLayout, 0, 1, 0, 1)
+        topLayout.addLayout(newBlockerLayout, 0, 2, 0, 1)
 
         # Set Top Layout Properties
         topLayout.setSpacing(5)
@@ -147,6 +200,9 @@ class View():
             self.__yTextboxVal = int(text)
         except:
             self.__yTextboxVal = 0
+
+    def __addBlockerButtonClicked(self):
+        self.__controller.addNewBlocker(0,0, 10, 100)
 
     def __settingHandler(self):
         print("Setting1 Changed")

@@ -13,10 +13,10 @@ class Model:
         self.__robots.remove(robot)
 
     def addBlocker(self, blocker):
-        self.robots.append(blocker)
+        self.blockers.append(blocker)
 
     def removeBlocker(self, blocker):
-        self.robots.append(blocker)
+        self.blockers.remove(blocker)
 
 
 class RobotModel:
