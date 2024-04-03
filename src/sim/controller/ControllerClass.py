@@ -1,4 +1,4 @@
-from sim.model.ModelClass import RobotModel
+from sim.model.ModelClass import RobotModel, BlockerModel
 
 class Controller:
     def __init__(self, model):
@@ -53,3 +53,13 @@ class Controller:
         for robotModel in self.__model.robots:
             robotModel.thread.kill()
             robotModel.thread.join()
+
+    def addNewBlocker(self, x, y, width, height):
+        # Update the View
+        blockerItem = self.__view.drawBlocker(x, y, width, height)   
+
+        # Make new BlockerModel
+        blockerModel = BlockerModel(blockerItem)
+
+        # Add blocker to model
+        self.__model.addBlocker(blockerModel)

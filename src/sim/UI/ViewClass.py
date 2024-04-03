@@ -177,6 +177,24 @@ class View():
         # Remove the robotItem
         self.graphicsScene.removeItem(robotItem)
 
+    def drawBlocker(self, x, y, width, height):
+        # Create a Rectangle
+        rect = QGraphicsRectItem(0, 0, width, height)
+        rect.setPos(x,y) # Must set position seperately (or the QPointF data gets screwed)
+
+        # Make Rectangle Moveable
+        rect.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
+
+        # Render
+        self.graphicsScene.addItem(rect)
+
+        # Return the rectangle
+        return rect
+    
+    def eraseBlocker(self, blockerItem):
+        # Remove the robotItem
+        self.graphicsScene.removeItem(blockerItem)
+
 
 # Worker Thread Class
 class Worker(QRunnable):

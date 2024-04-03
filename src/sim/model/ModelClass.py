@@ -4,12 +4,19 @@ from sim.controller.KillableThreadClass import KillableThread
 class Model:
     def __init__(self):
         self.robots = list()
+        self.blockers = list()
 
     def addRobot(self, robot):
         self.robots.append(robot)
 
     def removeRobot(self, robot):
         self.__robots.remove(robot)
+
+    def addBlocker(self, blocker):
+        self.robots.append(blocker)
+
+    def removeBlocker(self, blocker):
+        self.robots.append(blocker)
 
 
 class RobotModel:
@@ -19,3 +26,7 @@ class RobotModel:
         self.thread = KillableThread(v_main, (ip))
 
         self.thread.start()
+
+class BlockerModel:
+    def __init__(self, item):
+        self.blockerItem = item
