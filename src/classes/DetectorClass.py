@@ -7,12 +7,13 @@ from classes.RobotClass import Robot
 import config.global_vars as g
 import os
 import queue
+from interfaces.BaseDetectorClass import BaseDetector
 
-
-class Detector:
+class Detector(BaseDetector):
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, modelPath, cameras, render = False, debug = False):
+                super.__init__
                 self.initializing = True
                 self.visibleQ = queue.Queue()
                 self.lostQ = queue.Queue()

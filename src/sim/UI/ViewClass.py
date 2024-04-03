@@ -23,6 +23,7 @@ class View():
 
         self.initUI()
 
+
     def initUI(self):
         # create layouts for main window
         topLayout = QGridLayout()
@@ -92,7 +93,7 @@ class View():
 
         # Create Graphics Widget
         self.graphicsScene = QGraphicsScene()
-        #graphicsScene.addText("Graphics Go Here")
+
         graphicsView = QGraphicsView(self.graphicsScene)
         graphicsView.show()
 
@@ -106,9 +107,11 @@ class View():
         # Set the Window Layout to Main Layout
         self.__window.setLayout(mainLayout)
 
+
     def startWindow(self):
         self.__window.show()
         sys.exit(self.__appExec())
+
 
     def __appExec(self):
         # Run the app
@@ -117,24 +120,28 @@ class View():
         # Cleanup (executes when window closes)
         self.__controller.cleanupThreads()
 
+
     def updateUI(self):
         # Read from the model and update UI
         pass
-        
+
+
     def __getMainMonitor(self):
         for monitor in get_monitors():
             if monitor.is_primary:
                 return monitor
         return None
-    
+
     ### Event Handlers ###
     # Add Robot Button Click Event
     def __addRobotButtonClicked(self):
         self.__controller.addNewRobot(self.__xTextboxVal, self.__yTextboxVal)
 
+
     def __deleteRobotsButtonClicked(self):
         worker = Worker(self.__controller.deleteRobots, (self.graphicsScene.selectedItems()))
         self.__threadPool.start(worker)
+
 
     def __xTextboxHandler(self, text):
         try:
@@ -142,17 +149,21 @@ class View():
         except:
             self.__xTextboxVal = 0
 
+
     def __yTextboxHandler(self, text):
         try:
             self.__yTextboxVal = int(text)
         except:
             self.__yTextboxVal = 0
 
+
     def __settingHandler(self):
         print("Setting1 Changed")
 
+
     def __radioHandler(self):
         print("Radio1 Changed")
+
 
     ### Public Methods ###
     def drawRobot(self, robotModel, x, y):
@@ -173,6 +184,7 @@ class View():
         # Return the ellipse
         return ellipse
     
+
     def eraseRobot(self, robotItem):
         # Remove the robotItem
         self.graphicsScene.removeItem(robotItem)
@@ -186,6 +198,9 @@ class Worker(QRunnable):
 
         super().__init__()
 
+
     @pyqtSlot()
     def run(self):
         self.__target(self.__args)
+    
+                    
