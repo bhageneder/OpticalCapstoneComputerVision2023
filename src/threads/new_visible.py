@@ -9,13 +9,16 @@ def new_visible():
         # Blocking Call to the Visible Queue
         robot = g.detector.visibleQ.get()
 
-        g.LEDs.on("finding", robot.transceiver)
-        robot.state = 0
-
         # Aquire Visible Mutex
         with g.visible_mutex:
             # Add Robot to the Visible List
-            g.visible.append(robot)
+            if next((x for x in g.visible if x.trackID == robot.trackID), None) is None:            
+                g.visible.append(robot)
+            else:
+                continue
+            
+        g.LEDs.on("finding", robot.transceiver)
+        robot.state = 0
 
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)

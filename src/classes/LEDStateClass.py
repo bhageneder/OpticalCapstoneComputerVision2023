@@ -8,7 +8,9 @@ class LEDState:
 
     def on(self, state, transceiver):
         if state == "finding":
+            print("turning LED on")
             self.__LEDs[0][transceiver] += 1
+            print(self.__LEDs[0][transceiver])
         elif state == "connected":
             self.__LEDs[1][transceiver] += 1
         elif state == "lost":
@@ -16,7 +18,9 @@ class LEDState:
 
     def off(self, state, transceiver):
         if state == "finding":
-            self.__LEDs[0][transceiver] -= 1
+            print("turning LED off")
+            self.__LEDs[0][transceiver] = self.__LEDs[0][transceiver] - 1
+            print(self.__LEDs[0][transceiver])
         elif state == "connected":
             self.__LEDs[1][transceiver] -= 1
         elif state == "lost":
