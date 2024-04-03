@@ -29,12 +29,17 @@ class Controller:
         # Update the robotItem Field
         robotModel.robotItem = robotItem
 
-    def deleteRobots(self, robotItems):
-        for robotItem in robotItems:
-            robotModel = next((x for x in self.__model.robots if x.robotItem is robotItem), None)
+    def deleteItems(self, items):
+        for item in items:
+            robotModel = next((x for x in self.__model.robots if x.robotItem is item), None)
 
             if robotModel is None:
-                raise "Error in deleteRobots(). Robot is not in list"
+                # Blocker (Not a Robot)
+                self.__view.eraseBlocker(item)
+                continue
+
+            #if robotModel is None:
+            #    raise "Error in deleteRobots(). Robot is not in list"
             
             # Stop the Threads
             robotModel.thread.kill()
@@ -47,7 +52,7 @@ class Controller:
             self.__usableIPs.append(robotModel.ip)
 
             # Remove from UI
-            self.__view.eraseRobot(robotItem)
+            self.__view.eraseRobot(item)
     
     def cleanupThreads(self):
         for robotModel in self.__model.robots:

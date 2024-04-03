@@ -20,7 +20,7 @@ class View():
         # Set Default States
         self.__xTextboxVal = 0
         self.__yTextboxVal = 0
-        self.__blockerVals = [0, 0, 10, 100]
+        self.__blockerVals = [0, 0, 10, 100] # x, y, width, height
 
         self.initUI()
 
@@ -131,10 +131,10 @@ class View():
         settingsLayout.addWidget(setting1)
         setting1.clicked.connect(self.__settingHandler)
 
-        # Make Remove Robots Push Button
-        removeRobotsButton = QPushButton("Remove Robots")
-        settingsLayout.addWidget(removeRobotsButton)
-        removeRobotsButton.clicked.connect(self.__deleteRobotsButtonClicked)
+        # Make Remove Items Push Button
+        removeItemsButton = QPushButton("Remove Items")
+        settingsLayout.addWidget(removeItemsButton)
+        removeItemsButton.clicked.connect(self.__deleteItemsButtonClicked)
 
         # Add Settings and New Robot Sections to Top Layout
         topLayout.addLayout(settingsLayout, 0, 0, 0, 1)
@@ -186,8 +186,8 @@ class View():
     def __addRobotButtonClicked(self):
         self.__controller.addNewRobot(self.__xTextboxVal, self.__yTextboxVal)
 
-    def __deleteRobotsButtonClicked(self):
-        worker = Worker(self.__controller.deleteRobots, (self.graphicsScene.selectedItems()))
+    def __deleteItemsButtonClicked(self):
+        worker = Worker(self.__controller.deleteItems, (self.graphicsScene.selectedItems()))
         self.__threadPool.start(worker)
 
     def __xTextboxHandler(self, text):
