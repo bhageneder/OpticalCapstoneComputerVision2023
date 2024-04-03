@@ -1,17 +1,13 @@
 import time
 import math
-from classes.DetectorClass import Detector
+from interfaces.BaseDetectorClass import BaseDetector 
 
-class vDetector(Detector):
+class vDetector(BaseDetector):
     def __init__(self, robotModel, model):
-        self.detected = False
+        super.__init__
         self.__robotModel = robotModel
         self.__model = model
         self.__threshold = 300  # Arbitrary threshold of 300 pixels
-
-    def __del__(self):
-        # needed to overwrite deconstructor parent method
-        pass
 
 
     def __distance_between_points(self, x1, y1, x2, y2):
@@ -22,7 +18,7 @@ class vDetector(Detector):
         while True:
             for robot in self.__model.robots:
                 if (robot.ip == self.__robotModel.ip):
-                    self.detected = False
+                    pass
                 else:
                     if not (self.__robotModel.robotItem.isActive()):
                         break
@@ -33,9 +29,11 @@ class vDetector(Detector):
                                                             robot.robotItem.pos().y()
                                                             )
                     if (distance <= self.__threshold):
-                        self.detected = True
+                        if robot.ip not in self.__robotModel.detections:
+                            self.__robotModel.detections.append(robot.ip)
                         print("INFO:    {} Detected {}".format(self.__robotModel.ip, robot.ip)) # Helpful print statement
                     else:
-                        self.detected = False
+                        if robot.ip in self.__robotModel.detections:
+                            self.__robotModel.detections.remove(robot.ip)
 
             time.sleep(1)

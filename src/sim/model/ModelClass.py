@@ -15,4 +15,5 @@ class RobotModel:
     def __init__(self, ip, thread=None):
         self.ip = ip
         self.robotItem = None
+        self.detections = list()
         self.thread = thread

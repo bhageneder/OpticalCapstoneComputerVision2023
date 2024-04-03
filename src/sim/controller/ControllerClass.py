@@ -48,6 +48,11 @@ class Controller:
             robotModel.thread.kill()
             robotModel.thread.join()
 
+            # Clear robot from all detection lists
+            for robot in self.__model.robots:
+                if robotModel.ip in robot.detections:
+                    robot.detections.remove(robotModel.ip)
+
             # Delete the Robot
             self.__model.robots.remove(robotModel)
 
