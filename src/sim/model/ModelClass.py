@@ -1,4 +1,3 @@
-from sim.model.v_main_test import v_main
 from sim.controller.KillableThreadClass import KillableThread
 
 class Model:
@@ -20,12 +19,12 @@ class Model:
 
 
 class RobotModel:
-    def __init__(self, ip):
+    def __init__(self, ip, thread=None):
         self.ip = ip
         self.robotItem = None
-        self.thread = KillableThread(v_main, (ip))
-
-        self.thread.start()
+        self.detections = list()
+        self.thread = thread
+        
 
 class BlockerModel:
     def __init__(self, item):
