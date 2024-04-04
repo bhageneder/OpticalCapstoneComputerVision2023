@@ -37,7 +37,7 @@ class Controller:
         robotModel.thread.start()
 
 
-        def deleteItems(self, items):
+    def deleteItems(self, items):
         for item in items:
             robotModel = next((x for x in self.__model.robots if x.robotItem is item), None)
 
