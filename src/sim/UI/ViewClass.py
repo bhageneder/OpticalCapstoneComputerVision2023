@@ -18,8 +18,8 @@ class View():
         self.__window.setWindowTitle("Optical Wireless Communications Simulator")
 
         # Set Default States
-        self.__xTextboxVal = 0
-        self.__yTextboxVal = 0
+        self.__xRobotVal = 0
+        self.__yRobotVal = 0
         self.__blockerVals = [0, 0, 10, 100] # x, y, width, height
 
         self.initUI()
@@ -40,19 +40,19 @@ class View():
         xLayout = QHBoxLayout()
         xLabel = QLabel('X: ')
         xLayout.addWidget(xLabel)
-        xTextbox = QLineEdit()
-        xTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        xTextbox.textChanged.connect(self.__xTextboxHandler)
-        xLayout.addWidget(xTextbox)
+        xRobot = QLineEdit()
+        xRobot.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        xRobot.textChanged.connect(self.__xRobotHandler)
+        xLayout.addWidget(xRobot)
         
         # New Robot Y Coordinates
         yLayout = QHBoxLayout()
         yLabel = QLabel('Y: ')
         yLayout.addWidget(yLabel)
-        yTextbox = QLineEdit()
-        yTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        yTextbox.textChanged.connect(self.__yTextboxHandler)
-        yLayout.addWidget(yTextbox)
+        yRobot = QLineEdit()
+        yRobot.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        yRobot.textChanged.connect(self.__yRobotHandler)
+        yLayout.addWidget(yRobot)
 
         # Add Coordinates to New Robot Layout
         newRobotLayout.addLayout(xLayout)
@@ -96,7 +96,7 @@ class View():
         widthLayout.addWidget(widthLabel)
         widthTextbox = QLineEdit()
         widthTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        widthTextbox.textChanged.connect(self.__widthTextboxHandler)
+        widthTextbox.textChanged.connect(self.__widthBTextboxHandler)
         widthLayout.addWidget(widthTextbox)
         
         # New Blocker Height
@@ -105,7 +105,7 @@ class View():
         heightLayout.addWidget(heightLabel)
         heightTextbox = QLineEdit()
         heightTextbox.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        heightTextbox.textChanged.connect(self.__heightTextboxHandler)
+        heightTextbox.textChanged.connect(self.__heightBTextboxHandler)
         heightLayout.addWidget(heightTextbox)
 
         # Add Coordinates and Size to New Blocker Layout
@@ -189,7 +189,7 @@ class View():
     ### Event Handlers ###
     # Add Robot Button Click Event
     def __addRobotButtonClicked(self):
-        self.__controller.addNewRobot(self.__xTextboxVal, self.__yTextboxVal)
+        self.__controller.addNewRobot(self.__xRobotVal, self.__yRobotVal)
 
 
     def __deleteItemsButtonClicked(self):
@@ -197,18 +197,18 @@ class View():
         self.__threadPool.start(worker)
 
 
-    def __xTextboxHandler(self, text):
+    def __xRobotHandler(self, text):
         try:
-            self.__xTextboxVal = int(text)
+            self.__xRobotVal = int(text)
         except:
-            self.__xTextboxVal = 0
+            self.__xRobotVal = 0
 
 
-    def __yTextboxHandler(self, text):
+    def __yRobotHandler(self, text):
         try:
-            self.__yTextboxVal = int(text)
+            self.__yRobotVal = int(text)
         except:
-            self.__yTextboxVal = 0
+            self.__yRobotVal = 0
 
 
     def __addBlockerButtonClicked(self):
@@ -226,17 +226,21 @@ class View():
         except:
             self.__blockerVals[1] = 0
     
-    def __widthTextboxHandler(self, text):
+    def __widthBTextboxHandler(self, text):
         try:
-            self.__blockerVals[2] = int(text)
+            newVal = int(text)
+            if newVal > 0:
+                self.__blockerVals[2] = newVal
         except:
-            self.__blockerVals[2] = 0
+            self.__blockerVals[2] = 10
     
-    def __heightTextboxHandler(self, text):
+    def __heightBTextboxHandler(self, text):
         try:
-            self.__blockerVals[3] = int(text)
+            newVal = int(text)
+            if newVal > 0:
+                self.__blockerVals[3] = newVal
         except:
-            self.__blockerVals[3] = 0
+            self.__blockerVals[3] = 100
 
 
     def __settingHandler(self):
