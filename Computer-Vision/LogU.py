@@ -159,7 +159,6 @@ class LogU:
                     ID INTEGER PRIMARY KEY,
                     PID INTEGER,
                     gpuUsed VARCHAR(10),
-                    processType VARCHAR(10),
                     Priority INTEGER,
                     State VARCHAR(10),
                     Processes INTEGER,
