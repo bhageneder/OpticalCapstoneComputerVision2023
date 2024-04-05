@@ -43,6 +43,10 @@ class Controller:
 
             if robotModel is None:
                 # Blocker (Not a Robot)
+                blockerModel = next((x for x  in self.__model.blockers if x.blockerItem is item), None)
+                if blockerModel is None:
+                    raise "Error in deleteItems(), neither Robot nor Blocker in list"
+                self.__model.blockers.remove(blockerModel)
                 self.__view.eraseBlocker(item)
                 continue
 
