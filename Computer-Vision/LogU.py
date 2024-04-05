@@ -1,4 +1,3 @@
-from math import e
 import sqlite3
 import datetime
 import time
@@ -6,7 +5,9 @@ import os
 import csv
 import logging
 import psutil
+import jetson_stats
 from jetson_stats.stats import Stats
+from jetson_stats.monitor import Stats
 import socket
 
 
@@ -326,7 +327,7 @@ class LogU:
             fanData()
             time.sleep(30)
 
-    def diskData(self, total, avaialable, used):
+    def diskData(self, total, available, used):
         diskInfo = psutil.disk_usage('/')
         disk = (total, available, used)
         total = diskInfo.total
