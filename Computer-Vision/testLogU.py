@@ -3,7 +3,7 @@ from LogU import LogU
 
 logger = LogU()
 logger.addEvent('transceiverID', 'detector', '1', 'tester') 
-logger.cpuData ('onStatus', 'governor', 'minFreq', 'maxFreq', 'currFreq', 'infoFreq', 'idleState', 'user', 'nice', 'system', 'idle', 'model')
+logger.cpuData ('minFreq', 'maxFreq', 'currFreq', 'infoFreq', 'user', 'nice', 'system', 'idle')
 logger.gpuData('load', 'temp', 'type', 'memUsed', 'minFreq', 'maxFreq', 'currFreq', 'uptime')
 logger.memRAMData('total', 'used', 'free', 'buffers', 'cached', 'shared', 'freeBlock')
 logger.memSWAPData('total', 'used', 'cached', 'available')

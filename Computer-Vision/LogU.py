@@ -38,18 +38,14 @@ class LogU:
         self.cursor.execute(
             """ CREATE TABLE IF NOT EXISTS cpuTable (
                 ID INTEGER PRIMARY KEY,
-                onStatus BOOLEAN,
-                Governor VARCHAR(10),
                 minFreq INTEGER,
                 maxFreq   INTEGER,
                 currFreq   INTEGER,
                 infoFreq VARCHAR(10),
-                idleState VARCHAR(10),
                 User FLOAT,
                 Nice FLOAT,
                 System FLOAT,
-                Idle FLOAT,
-                Model VARCHAR(10)
+                Idle FLOAT
             )""" )
         
         # Try to access table
@@ -182,28 +178,27 @@ class LogU:
      self.cursor.execute('''INSERT INTO eventTable (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)''', (event))
      self.conn.commit()
 
-    def cpuData(self, onStatus, governor, minFreq, maxFreq, currFreq, infoFreq, idleState, user, nice, system, idle, model):
-        cpu = (onStatus, governor, minFreq, maxFreq, currFreq, infoFreq, idleState, user, nice, system, idle, model)
+    def cpuData(self, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle):
+        cpu = (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
         cpuInfo = psutil.cpu_freq()
-        #onStatus = psutil.cpu_stats().is_cpu_online(0)
-        governor = psutil.cpu_freq().current_governor
+        #onStatus = psutil.cpu_stats().
+        #governor = psutil.cpu_freq().
         minFreq = cpuInfo.min
         maxFreq = cpuInfo.max
-        currFreq = cpuInfo.curren
+        currFreq = cpuInfo.current
         infoFreq = str(cpuInfo.min) + '-' + str(cpuInfo.max)
-        idleState = psutil.cpu_stats().state
-        cpu_times = psutil.cpu_times()
-        user = cpu_times.user
-        nice = cpu_times.nice
-        system = cpu_times.system
-        idle = cpu_times.idle
-        model = cpuInfo.model
-        self.cursor.execute('''INSERT INTO cpuTable (onStatus, governor, minFreq, maxFreq, currFreq, infoFreq, idleState, user, nice, system, idle, model)) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?)''', (cpu))
+        cpuTimes = psutil.cpu_times()
+        user = cpuTimes.user
+        nice = cpuTimes.nice
+        system = cpuTimes.system
+        idle = cpuTimes.idle
+    
+        self.cursor.execute('''INSERT INTO cpuTable (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (cpu))
            
         self.conn.commit()
 
         while True:
-            cpuData()
+            cpuData(minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
             time.sleep(30)
 
     def gpuData(self, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime):
@@ -384,8 +379,8 @@ class LogU:
             csv_writer.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
             csv_writer.writerows(rows)  
 
-        tableNames = ['addEvent', 'cpuData', 'gpuData', 'memRAMData', 'memSWAPData', 
-               'memEMCData', 'memIRAMCData', 'engData', 'fanData', 'diskData', 'interfacesData', 'processesData']
+        tableNames = ['addEvent', 'cpuTable', 'gputale', 'memRAMTable', 'memSWAPTable', 
+               'memEMCTable', 'memIRAMCTable', 'engTable', 'fanTable', 'diskTable', 'interfaceTable', 'processesTable']
 
         for tableName in tableNames:
             self.cursor.execute("SELECT * FROM {tableName}")
