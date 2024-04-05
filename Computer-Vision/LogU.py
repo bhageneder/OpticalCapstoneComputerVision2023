@@ -69,7 +69,7 @@ class LogU:
                 ID INTEGER PRIMARY KEY,
                 Load FLOAT,
                 Temp FLOAT,           
-                Type VARCHAR(10),                        
+                gpuType VARCHAR(10),                        
                 memUsed DECIMAL(2),
                 minFreq INTEGER,
                 maxFreq INTEGER,
@@ -179,6 +179,7 @@ class LogU:
      self.conn.commit()
 
     def cpuData(self, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle):
+      while True:
         cpu = (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
         cpuInfo = psutil.cpu_freq()
         #onStatus = psutil.cpu_stats().
@@ -195,161 +196,154 @@ class LogU:
     
         self.cursor.execute('''INSERT INTO cpuTable (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (cpu))
            
+        #self.cpuData(minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
+        time.sleep(30)
         self.conn.commit()
 
-        while True:
-            cpuData(minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
-            time.sleep(30)
-
     def gpuData(self, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime):
+       while True:
         gpuInfo = self.__jetson.gpu_stats()
         gpu = (load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime)
         load = gpuInfo['GPU utilization [%]']
         temp = gpuInfo['GPU temperature [°C]']
-        type = gpuInfo['GPU type']
+        gpuType = gpuInfo['GPU type']
         memUsed = gpuInfo['GPU memory used [MB]']
         minFreq = gpuInfo['GPU frequency range [MHz]']['min']
         maxFreq = gpuInfo['GPU frequency range [MHz]']['max']
         currFreq = gpuInfo['GPU frequency [MHz]']
         uptime = gpuInfo['Uptime']
-        self.cursor.execute('''INSERT INTO gpuTable (Load, Temp, Type, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (gpu))
+        self.cursor.execute('''INSERT INTO gpuTable (Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (gpu))
 
+        #self.gpuData(load, temp, gpuType, memUsed, minFreq, maxFreq, currFreq, uptime)
+        time.sleep(30)
         self.conn.commit()
-
-        while True:
-            gpuData()
-            time.sleep(30)
 
     def memRAMData(self, total, used, free, buffers, cached, shared, freeBlock):
-        memInfo = psutil.virtual_memory()
-        ram = (total, used, free, buffers, cached, shared, freeBlock)
-        total = memInfo.total
-        used = memInfo.used
-        free = memInfo.free
-        buffers = memInfo.buffers
-        cached = memInfo.cached
-        shared = memInfo.shared
-        freeBlock = memInfo.inactive_file
-
-        self.cursor.execute('''INSERT INTO memRAMTable (Total, Used, Free, Buffers, Cached, Shared, freeBlock) VALUES (?, ?, ?, ?, ?, ?, ?)''', (ram))
-
-        self.conn.commit()
-
         while True:
-            memRAMData()
+            memInfo = psutil.virtual_memory()
+            ram = (total, used, free, buffers, cached, shared, freeBlock)
+            total = memInfo.total
+            used = memInfo.used
+            free = memInfo.free
+            buffers = memInfo.buffers
+            cached = memInfo.cached
+            shared = memInfo.shared
+            freeBlock = memInfo.inactive_file
+
+            self.cursor.execute('''INSERT INTO memRAMTable (Total, Used, Free, Buffers, Cached, Shared, freeBlock) VALUES (?, ?, ?, ?, ?, ?, ?)''', (ram))
+
+            #self.memRAMData(total, used, free, buffers, cached, shared, freeBlock)
             time.sleep(30)
+            self.conn.commit()
         
 
     def memSWAPData(self, total, used, cached, available):
-        swapInfo = psutil.swap_memory()
-        swap = (total, used, cached, available)
-        total = swapInfo.total
-        used = swapInfo.used
-        cached = swapInfo.sin
-        available = swapInfo.free
+        while True:
+            swapInfo = psutil.swap_memory()
+            swap = (total, used, cached, available)
+            total = swapInfo.total
+            used = swapInfo.used
+            cached = swapInfo.sin
+            available = swapInfo.free
 
-        self.cursor.execute('''INSERT INTO memSWAPTable (Total, Used, Cached, Available) VALUES (?, ?, ?, ?)''',
+            self.cursor.execute('''INSERT INTO memSWAPTable (Total, Used, Cached, Available) VALUES (?, ?, ?, ?)''',
                    (swap))
         
-        self.conn.commit()
-
-        while True:
-            memRSWAPData()
+        
+            #self.memRSWAPData(swap)
             time.sleep(30)
+            self.conn.commit()
 
     def memEMCData(self, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq):
-        emcInfo = self.__jetson.stats.mem.gpu.get() 
-        emc = (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) 
-        onStatus = emcInfo['online']
-        bandwidthUsed = emcInfo['bandwidth_used']
-        minFreq = emcInfo['min_frequency']
-        maxFreq = emcInfo['max_frequency']
-        currFreq = emcInfo['frequency']
+       while True:
+            emcInfo = self.__jetson.stats.mem.gpu.get() 
+            emc = (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) 
+            onStatus = emcInfo['online']
+            bandwidthUsed = emcInfo['bandwidth_used']
+            minFreq = emcInfo['min_frequency']
+            maxFreq = emcInfo['max_frequency']
+            currFreq = emcInfo['frequency']
 
-        self.cursor.execute("INSERT INTO memEMCTable (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?)", (emc))
-        
-        self.conn.commit()
+            self.cursor.execute("INSERT INTO memEMCTable (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?)", (emc))
 
-        while True:
-            memEMCData()
+            #self.memEMCData(onStatus, bandwidthUsed, minFreq, maxFreq, currFreq)
             time.sleep(30)
+            self.conn.commit()
 
     def memIRAMData(self, total, used, freeBlock):
-        iramInfo = self.__jetson.stats.mem.iram.get()
-        iram = (total, used, freeBlock)
-        total = iramInfo['total']
-        used = iramInfo['used']
-        freeBlock = iramInfo['free']
-
-        self.cursor.execute('''INSERT INTO memIRAMTable (TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?)''', (iram))
-        
-        self.conn.commit()
-
         while True:
-            memIRAMData()
+            iramInfo = self.__jetson.stats.mem.iram.get()
+            iram = (total, used, freeBlock)
+            total = iramInfo['total']
+            used = iramInfo['used']
+            freeBlock = iramInfo['free']
+
+            self.cursor.execute('''INSERT INTO memIRAMTable (TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?)''', (iram))
+        
+            self.conn.commit()
+
+            #self.memIRAMData(total, used, freeBlock)
             time.sleep(30)
+            self.conn.commit()
 
     def engData(self, onStatus, minFreq, maxFreq, currFreq):
-        engInfo = self.__jetson.stats.gpu.get()
-        eng = (onStatus, minFreq, maxFreq, currFreq)
-        onStatus = engInfo['online']
-        minFreq = engInfo['min_frequency']
-        maxFreq = engInfo['max_frequency']
-        currFreq = engInfo['frequency']
-
-        self.cursor.execute(''' INSERT INTO engineData (OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?)''', (eng))
-
-        self.conn.commit()
-
         while True:
-            engData()
+            engInfo = self.__jetson.stats.gpu.get()
+            eng = (onStatus, minFreq, maxFreq, currFreq)
+            onStatus = engInfo['online']
+            minFreq = engInfo['min_frequency']
+            maxFreq = engInfo['max_frequency']
+            currFreq = engInfo['frequency']
+
+            self.cursor.execute(''' INSERT INTO engineData (OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?)''', (eng))
+
+            #self.engData(onStatus, minFreq, maxFreq, currFreq)
             time.sleep(30)
+            self.conn.commit()
 
     def fanData(self, speed, rpm, profile, governor, control):
-        fanInfo = self.__jetson.stats.fan.get()
-        fan = (speed, rpm, profile, governor, control)
-        speed = fanInfo['speed']
-        rpm = fanInfo['rpm']
-        profile = fanInfo['profile']
-        governor = fanInfo['governor']
-        control = fanInfo['control']
-
-        self.cursor.execute('''INSERT INTO fanTable (Speed, RPM, Profile, Governor, Control) VALUES (?, ?, ?, ?, ?)''', (fan))   
-
-        self.conn.commit()
-
         while True:
-            fanData()
+            fanInfo = self.__jetson.stats.fan.get()
+            fan = (speed, rpm, profile, governor, control)
+            speed = fanInfo['speed']
+            rpm = fanInfo['rpm']
+            profile = fanInfo['profile']
+            governor = fanInfo['governor']
+            control = fanInfo['control']
+
+            self.cursor.execute('''INSERT INTO fanTable (Speed, RPM, Profile, Governor, Control) VALUES (?, ?, ?, ?, ?)''', (fan))   
+        
+            #self.fanData(speed, rpm, profile, governor, control)
             time.sleep(30)
+            self.conn.commit()
 
     def diskData(self, total, available, used):
-        diskInfo = psutil.disk_usage('/')
-        disk = (total, available, used)
-        total = diskInfo.total
-        available = diskInfo.free
-        used  = diskInfo.used
-
-        self.cursor.execute('''INSERT INTO diskTable (Total, Available, Used) VALUES (?, ?, ?)''', (disk))
-        
-        self.conn.commit()
-
         while True:
-            diskData()
+            diskInfo = psutil.disk_usage('/')
+            disk = (total, available, used)
+            total = diskInfo.total
+            available = diskInfo.free
+            used  = diskInfo.used
+
+            self.cursor.execute('''INSERT INTO diskTable (Total, Available, Used) VALUES (?, ?, ?)''', (disk))
+
+            #self.diskData(total, available, used)
             time.sleep(30)
+            self.conn.commit()
     
     def interfacesData(self, hostname, interfaces):
-        hostname = socket.gethostname()
-        interfaces = [iface[1]['addr'] for iface in socket.if_nameindex()]
+        while True:
+            hostname = socket.gethostname()
+            interfaces = [iface[1]['addr'] for iface in socket.if_nameindex()]
         
-        for interface in interfaces:
-            self.cursor.execute('''INSERT INTO localInterfaces (Hostname, Interface) VALUES (?, ?)''',
+            for interface in interfaces:
+                self.cursor.execute('''INSERT INTO localInterfaces (Hostname, Interface) VALUES (?, ?)''',
                        (hostname, interface))
 
-        self.conn.commit()
-
-        while True:
-            interfacesData()
+        
+            #self.interfacesData(hostname, interfaces)
             time.sleep(30)
+            self.conn.commit()
 
     def processesData(self, pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed):
         stats = Stats()
@@ -371,7 +365,7 @@ class LogU:
             self.cursor.execute('''INSERT INTO processes (PID, gpuUsed, Priority, State, Processes, cpuPercent, memUsed, gpuMemUsed, processName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                        (processes))
     
-        processesData()
+        #self.processesData(pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed)
 
     def exportCsv(self, tableName, rows):
         with open('{table_name}.csv', 'w', newline='', encoding='utf-8') as csv_file:
@@ -386,7 +380,7 @@ class LogU:
             self.cursor.execute("SELECT * FROM {tableName}")
             rows = self.cursor.fetchall()
             if rows:
-                exportCsv(tableName, rows)
+                self.exportCsv(tableName, rows)
 
     def __del__(self):
         print("Commiting changes to Database and Deconstructing Logger")
