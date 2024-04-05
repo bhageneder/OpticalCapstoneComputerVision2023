@@ -5,9 +5,7 @@ import os
 import csv
 import logging
 import psutil
-import jetson_stats
-from jetson_stats.stats import Stats
-from jetson_stats.monitor import Stats
+from jtop import jtop
 import socket
 
 
@@ -16,6 +14,10 @@ class LogU:
 
 
     def __init__(self, logFilePath = None):
+        self.__jetson = jtop()
+        self.__jetson.start()
+
+            
         if logFilePath == None:
            logFilePath = self.DEFAULT_DB
 
@@ -183,7 +185,7 @@ class LogU:
     def cpuData(self, onStatus, governor, minFreq, maxFreq, currFreq, infoFreq, idleState, user, nice, system, idle, model):
         cpu = (onStatus, governor, minFreq, maxFreq, currFreq, infoFreq, idleState, user, nice, system, idle, model)
         cpuInfo = psutil.cpu_freq()
-        onStatus = psutil.cpu_stats().is_cpu_online(0)
+        #onStatus = psutil.cpu_stats().is_cpu_online(0)
         governor = psutil.cpu_freq().current_governor
         minFreq = cpuInfo.min
         maxFreq = cpuInfo.max
@@ -205,8 +207,7 @@ class LogU:
             time.sleep(30)
 
     def gpuData(self, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime):
-        stats = Stats()
-        gpuInfo = stats.gpu_stats()
+        gpuInfo = self.__jetson.gpu_stats()
         gpu = (load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime)
         load = gpuInfo['GPU utilization [%]']
         temp = gpuInfo['GPU temperature [°C]']
@@ -262,7 +263,7 @@ class LogU:
             time.sleep(30)
 
     def memEMCData(self, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq):
-        emcInfo = jetson_stats.stats.mem.gpu.get() 
+        emcInfo = self.__jetson.stats.mem.gpu.get() 
         emc = (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) 
         onStatus = emcInfo['online']
         bandwidthUsed = emcInfo['bandwidth_used']
@@ -279,7 +280,7 @@ class LogU:
             time.sleep(30)
 
     def memIRAMData(self, total, used, freeBlock):
-        iramInfo = jetson_stats.stats.mem.iram.get()
+        iramInfo = self.__jetson.stats.mem.iram.get()
         iram = (total, used, freeBlock)
         total = iramInfo['total']
         used = iramInfo['used']
@@ -294,7 +295,7 @@ class LogU:
             time.sleep(30)
 
     def engData(self, onStatus, minFreq, maxFreq, currFreq):
-        engInfo = jetson_stats.stats.gpu.get()
+        engInfo = self.__jetson.stats.gpu.get()
         eng = (onStatus, minFreq, maxFreq, currFreq)
         onStatus = engInfo['online']
         minFreq = engInfo['min_frequency']
@@ -310,7 +311,7 @@ class LogU:
             time.sleep(30)
 
     def fanData(self, speed, rpm, profile, governor, control):
-        fanInfo = jetson_stats.stats.fan.get()
+        fanInfo = self.__jetson.stats.fan.get()
         fan = (speed, rpm, profile, governor, control)
         speed = fanInfo['speed']
         rpm = fanInfo['rpm']
@@ -391,3 +392,9 @@ class LogU:
             rows = self.cursor.fetchall()
             if rows:
                 exportCsv(tableName, rows)
+
+    def __del__(self):
+        print("Commiting changes to Database and Deconstructing Logger")
+        self.__jetson.close()
+        # Close sql connection 
+        self.conn.close()
