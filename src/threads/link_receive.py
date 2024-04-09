@@ -3,6 +3,7 @@ import threading
 from classes.RobotLink import RobotLink
 from classes.RobotClass import Robot
 import config.global_vars as g
+import socket
 
 def link_receive(generic):
     if g.LEGACY_MODE:
@@ -27,6 +28,13 @@ def robot_receive(robot):
             # but it will block until it receives any data, or the connection is closed
             data = robot.robotLink.socket.recv(65536)
             if g.debug_link_receive: print(f'{thread_name} Received: {data}')
+
+            # Socket was destroyed
+            if(data == b''):
+                robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                robot.robotLink.socket.close()
+                if g.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
+                return
 
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
