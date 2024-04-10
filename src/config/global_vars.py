@@ -1,8 +1,7 @@
 import queue
 import threading
-import board    # needed for neopixel
-import neopixel # needed for neopixel
 import configparser
+import board
 
 '''
 Contains global variables that will be used across all files
@@ -90,12 +89,28 @@ def init():
     global detector_thread
     discovery_thread = None
 
-    global detector_manager_thread
-    detector_manager_thread = None
+    # Visible Robots List (Active LOS)
+    global visible
+    visible = []
 
-    global best_transceiver
-    best_transceiver = -1
-    
+    # Visible Robots List Mutex
+    global visible_mutex
+    visible_mutex = threading.Lock()
+
+    # Lost Robots List (No Active LOS)
+    global lost
+    lost = []
+
+    # Lost Robots List Mutex
+    global lost_mutex
+    lost_mutex = threading.Lock()
+
+    global new_visible_thread
+    new_visible_thread = None
+
+    global new_lost_thread
+    new_lost_thread = None
+
     # Queue for data that is received by all transceivers
     global data_received
     data_received = queue.Queue()
@@ -108,9 +123,13 @@ def init():
     global discovery_data_received
     discovery_data_received = queue.Queue()
     
-    # Queue for other threads signify new robot links need to be maintained
+    # Queue for other threads signify new robot links need to be maintained. Legacy version of newRobotQ
     global robot_links_new
     robot_links_new = queue.Queue()
+
+    # Queue to create threads when new robots are created. 
+    global newRobotQ
+    newRobotQ = queue.Queue()
     
     # Queues for each of the Transceiver Send Threads (8 Transceivers)
     global transceiver_send_queues
@@ -132,16 +151,50 @@ def init():
     global cameras
     cameras = list()
     numCameras = int(config['Cameras']['numCameras'])
-    camConfig = config['Cameras']['camConfig'].split(",")
-    print(camConfig)
-    try:
-        for i in range(0, numCameras):       
-            if (camConfig[i] == "num"):
-                cameras.append(int(config['Cameras'][f'camera{i}']))
-            else:
-                cameras.append(config['Cameras'][f'camera{i}'])
-    except:
-        raise Exception("Incorrect camera configuration!")
+
+    # Robot Mode Based on Camera Numbers Config
+    global LEGACY_MODE
+    if numCameras <= 0:
+        LEGACY_MODE = True
+    else:
+        LEGACY_MODE = False
+
+    # Camera Configurations
+    if not LEGACY_MODE:
+        camConfig = config['Cameras']['camConfig'].split(",")
+        try:
+            for i in range(0, numCameras):       
+                if (camConfig[i] == "num"):
+                    cameras.append(int(config['Cameras'][f'camera{i}']))
+                else:
+                    cameras.append(config['Cameras'][f'camera{i}'])
+        except:
+            raise Exception("Incorrect camera configuration!")
+
+    global modelPath
+    global model
+    if not LEGACY_MODE:
+        modelPath = config['Model']['modelPath']
+        model = config['Model']['model']
+    else:
+        modelPath = None
+        model = None
+
+    # Detector Object - Runs CV Object Detection, Detects Robots
+    global detector
+    if not LEGACY_MODE:
+        # Only can import this if running on CV Enabled System
+        from classes.DetectorClass import Detector
+
+        resolutionX = int(config['Model']['resolutionX'])
+        resolutionY = int(config['Model']['resolutionY'])
+        render = config['Model']['render'] == "True"
+
+        # Initialize Detector
+        detector = Detector(resolutionX, resolutionY, model, modelPath, cameras, render = render)
+    
+    else:
+        detector = None
 
     global PING_COUNT
     PING_COUNT = 2
@@ -216,16 +269,29 @@ def init():
     global virtual_serial_port
     global robot_serial_port
 
-    #global pixels ### Not supported on Nano
-    # Board Setup
-    #pixels = neopixel.NeoPixel(
-    '''    board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
-        24,                             # Number of LEDs (Num of Pixels)
-        brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
-        pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
-    )
-    '''
+    global pixels
+    pixels = None
     
+    global LEDs
+    LEDs = None
     
-    
+    if robot == "pi":
+        import neopixel # needed for neopixel
+        pixels = neopixel.NeoPixel(
+            board.D18,                      # Pixel Pin (Raspberry Pi's GPIO_18 pin)
+            24,                             # Number of LEDs (Num of Pixels)
+            brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
+            pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
+        )
+    elif robot == "orin":
+        import neopixel_spi as neopixel
+        spi = board.SPI()   # MOSI pin 19
+        
+        # Board Setup
+        pixels = neopixel.NeoPixel_SPI(
+            spi,                            # SPI object
+            24,                             # Number of LEDs (Num of Pixels)
+            brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
+            pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
+        )
 
