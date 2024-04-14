@@ -27,7 +27,12 @@ def robot_send(robot):
         if robot.robotLink is not None:
             # Send Payload through Socket 
             if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-            robot.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+            try:
+                robot.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+            except OSError as e:
+                if (str(e) != "[Errno 9] Bad file descriptor"):
+                    raise(e)
+
             send_num += 1
 
             # Update last packet time
