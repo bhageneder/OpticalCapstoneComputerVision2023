@@ -52,6 +52,9 @@ def link_send_legacy(robot_link):
         if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
         robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
 
+        # Update last packet time
+        robot_link.lastPacketTime = time.time()
+
         send_num += 1
         time.sleep(g.PAYLOAD_INTERVAL_SLEEP)
 

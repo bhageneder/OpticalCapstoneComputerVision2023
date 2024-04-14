@@ -64,6 +64,22 @@ def link_receive_legacy(robot_link):
         data = robot_link.socket.recv(65536)
         if g.debug_link_receive: print(f'{thread_name} Received: {data}')
 
+        # Update last packet time
+        robot_link.lastPacketTime = time.time()
+
+        # Socket was destroyed
+        if(data == b''):
+            # Close socket
+            robot_link.socket.shutdown(socket.SHUT_RDWR)
+            robot_link.socket.close()
+
+            # Remove from the robot_links list
+            if (robot_link in g.robot_links):
+                g.robot_links.remove(robot_link)
+
+            if g.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
+            return
+
         # Terminate if robot_link no longer exists
         if robot_link not in g.robot_links:
             return
