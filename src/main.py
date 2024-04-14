@@ -152,6 +152,10 @@ def start_threads():
 
             maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
             maintenance_thread.start()
+
+            # Create and Start Connection Manager Thread
+            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
+            connection_manager_thread.start()
     else:
         # Store Thread Number
         thread_number = 0
