@@ -28,9 +28,14 @@ def robot_manager(robot):
 
         # Check if the robot has received data within the timeout period
         if (delta > timeout):
-            # Close connection
-            robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
-            robot.robotLink.socket.close()
+            # Check if link is active (ensures we don't try to close the socket twice)
+            if robot.robotLink.active:
+                # Make robotLink inactive
+                robot.robotLink.active = False
+
+                # Close connection
+                robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                robot.robotLink.socket.close()
 
             # Remove from robot lists
             with g.visible_mutex and g.lost_mutex:
@@ -62,9 +67,14 @@ def robot_link_manager(robotLink):
 
         # Check if the robot has received data within the timeout period
         if (delta > timeout):
-            # Close connection
-            robotLink.socket.shutdown(socket.SHUT_RDWR)
-            robotLink.socket.close()
+            # Check if link is active (ensures we don't try to close the socket twice)
+            if robotLink.active:
+                # Make robotLink inactive
+                robotLink.active = False
+
+                # Close connection
+                robotLink.socket.shutdown(socket.SHUT_RDWR)
+                robotLink.socket.close()
 
             # Remove from robot_links list
             if (robotLink in g.robot_links):

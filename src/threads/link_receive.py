@@ -34,9 +34,14 @@ def robot_receive(robot):
 
             # Socket was destroyed
             if(data == b''):
-                # Close socket
-                robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
-                robot.robotLink.socket.close()
+                # Check if link is active (ensures we don't try to close the socket twice)
+                if robot.robotLink.active:
+                    # Make robotLink inactive
+                    robot.robotLink.active = False
+
+                    # Close socket
+                    robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                    robot.robotLink.socket.close()
 
                 # Remove from robot lists
                 with g.visible_mutex and g.lost_mutex:
@@ -69,9 +74,14 @@ def link_receive_legacy(robot_link):
 
         # Socket was destroyed
         if(data == b''):
-            # Close socket
-            robot_link.socket.shutdown(socket.SHUT_RDWR)
-            robot_link.socket.close()
+            # Check if link is active (ensures we don't try to close the socket twice)
+            if robot_link.active:
+                # Make robotLink inactive
+                robot_link.active = False
+                
+                # Close socket
+                robot_link.socket.shutdown(socket.SHUT_RDWR)
+                robot_link.socket.close()
 
             # Remove from the robot_links list
             if (robot_link in g.robot_links):
