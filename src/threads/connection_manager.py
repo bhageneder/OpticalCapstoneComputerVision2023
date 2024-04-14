@@ -9,24 +9,32 @@ def connection_manager(robot):
     timeout = g.SOCKET_CONNECTION_TIMEOUT
 
     while True:
-        # Calculate delta for last packet
-        delta = time.time() - robot.tLastPacket
+        if robot.robotLink != None:
 
-        # Check if the robot has received data within the timeout period
-        if (delta > timeout):
-            # Close connection
-            robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
-            robot.robotLink.socket.close()
+            # Calculate delta for last packet
+            delta = time.time() - robot.robotLink.lastPacketTime
 
-            # Remove from robot lists
-            with g.visible_mutex and g.lost_mutex:
-                if (robot in g.visible):
-                    g.visible.remove(robot)
-                elif (robot in g.lost):
-                    g.lost.remove(robot)
+            # Check if the robot has received data within the timeout period
+            if (delta > timeout):
+                # Close connection
+                robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                robot.robotLink.socket.close()
 
-            if g.debug_connection_manager: print(f'{thread_name} Exiting. Robot with IP {robot.IP} timed out')
-            return
+                # Remove from robot lists
+                with g.visible_mutex and g.lost_mutex:
+                    if (robot in g.visible):
+                        g.visible.remove(robot)
+                    elif (robot in g.lost):
+                        g.lost.remove(robot)
+
+                if g.debug_connection_manager: print(f'{thread_name} Exiting. Robot with IP {robot.IP} timed out')
+                return
+            
+            # Sleep for remaining time in timeout
+            time.sleep(timeout - delta)
+        
+        else:
+            time.sleept(timeout)
 
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:

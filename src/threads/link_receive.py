@@ -29,10 +29,22 @@ def robot_receive(robot):
             data = robot.robotLink.socket.recv(65536)
             if g.debug_link_receive: print(f'{thread_name} Received: {data}')
 
+            # Update last packet time
+            robot.robotLink.lastPacketTime = time.time()
+
             # Socket was destroyed
             if(data == b''):
+                # Close socket
                 robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
                 robot.robotLink.socket.close()
+
+                # Remove from robot lists
+                with g.visible_mutex and g.lost_mutex:
+                    if (robot in g.visible):
+                        g.visible.remove(robot)
+                    elif (robot in g.lost):
+                        g.lost.remove(robot)
+
                 if g.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
                 return
 
