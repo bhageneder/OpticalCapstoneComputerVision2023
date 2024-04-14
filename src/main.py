@@ -14,6 +14,7 @@ from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
 from threads.new_visible import new_visible
 from threads.new_lost import new_lost
+from threads.connection_manager import connection_manager
 from threads.led_manager import led_manager
 import config.global_vars as g
 from control_robot.move_circle import move_circle
@@ -166,6 +167,10 @@ def start_threads():
             # Create and Start Link Receive Thread
             link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
             link_receive_thread.start()
+
+            # Create and Start Connection Manager Thread
+            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
+            connection_manager_thread.start()
 
             #connected LEDs
 
