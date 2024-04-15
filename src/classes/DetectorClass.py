@@ -33,6 +33,7 @@ class Detector(BaseDetector):
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=(modelPath + modelName + "/ssd-mobilenet.onnx"), labels=(modelPath + modelName + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                jetson_utils.Log.SetLevel('silent')
 
                 self.__net.SetTrackingEnabled(True)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
