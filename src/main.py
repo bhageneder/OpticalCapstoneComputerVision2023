@@ -138,6 +138,9 @@ def start_threads():
         # Start the New Lost Thread
         g.new_lost_thread.start()
 
+    # Store Thread Number
+    thread_number = 0
+
     # Running New Threads based on new Robot Links
     if g.LEGACY_MODE:
         while True:
@@ -156,10 +159,10 @@ def start_threads():
             # Create and Start Connection Manager Thread
             connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
             connection_manager_thread.start()
-    else:
-        # Store Thread Number
-        thread_number = 0
 
+            # Increase Thread Number
+            thread_number += 1
+    else:
         while True:
             # Blocking Call to Get New Robot
             robot = g.newRobotQ.get()
