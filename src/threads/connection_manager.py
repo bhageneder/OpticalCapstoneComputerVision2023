@@ -20,7 +20,7 @@ def connection_manager(generic):
 def robot_manager(robot):
     thread_name = threading.current_thread().name
 
-    timeout = g.SOCKET_CONNECTION_TIMEOUT
+    timeout = g.SOCKET_TRANSMISSION_TIMEOUT
 
     while True:
         # Calculate delta for last packet
@@ -59,7 +59,7 @@ def robot_manager(robot):
 def robot_link_manager(robotLink):
     thread_name = threading.current_thread().name
 
-    timeout = g.SOCKET_CONNECTION_TIMEOUT
+    timeout = g.SOCKET_TRANSMISSION_TIMEOUT
 
     while True:
         # Calculate delta for last packet
