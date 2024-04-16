@@ -41,7 +41,7 @@ The specific implementation employs TCP to establish reliable connections betwee
 - [NVIDIA Jetson Nano Setup Instructions](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit#setup)
 
 ## Dependencies
-- [Pip Packages](https://docs.google.com/document/d/19U83-BOBsWA5D3D2DjtCTBzkktnS8ETZsRZ8RgFJoPo/edit?usp=sharing)
+- [Pip Packages](https://github.com/bhageneder/OpticalCapstoneComputerVision2023/blob/main/requirements.txt)
 - The project is also dependent upon having trained an ONNX model on images of your robot. This model must be trained using the same configuration variables as the script in the Jetson-Inference library uses. See the model training section for more information.
 
 ## Config
