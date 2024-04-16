@@ -34,15 +34,26 @@ def robot_receive(robot):
 
             # Socket was destroyed
             if(data == b''):
-                # Check if link is active (ensures we don't try to close the socket twice)
-                if robot.robotLink.active:
-                    # Make robotLink inactive
-                    robot.robotLink.active = False
+                # Determine if the socket is in use by another robot
+                # This happens if the robot was deleted and a new one placed in its stead with same socket
+                with g.visible_mutex:
+                    otherInVisible = next((x for x in g.visible if ((x.robotLink is robot.robotLink) and (x is not robot))), None) is not None
+                with g.lost_mutex:
+                    otherInLost = next((x for x in g.lost if ((x.robotLink is robot.robotLink) and (x is not robot))), None) is not None
+                
+                socketInUse = otherInVisible or otherInLost
 
-                    # Close socket
-                    robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
-                    robot.robotLink.socket.close()
+                # If the socket is not in use anymore
+                if not socketInUse:
+                    # Check if link is active (ensures we don't try to close the socket twice)
+                    if robot.robotLink.active:
+                        # Make robotLink inactive
+                        robot.robotLink.active = False
 
+                        # Close socket
+                        robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                        robot.robotLink.socket.close()
+                
                 # Remove from robot lists
                 with g.visible_mutex and g.lost_mutex:
                     if (robot in g.visible):

@@ -30,7 +30,9 @@ def robot_send(robot):
             try:
                 robot.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
             except OSError as e:
-                if (str(e) != "[Errno 9] Bad file descriptor"):
+                if (str(e) == "[Errno 9] Bad file descriptor"):
+                    return
+                else:
                     raise(e)
 
             send_num += 1
@@ -55,7 +57,13 @@ def link_send_legacy(robot_link):
     while True:
         # Send Payload through Socket 
         if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-        robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+        try:
+            robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+        except OSError as e:
+            if (str(e) == "[Errno 9] Bad file descriptor"):
+                return
+            else:
+                raise(e)
 
         # Update last packet time
         robot_link.lastPacketTime = time.time()
