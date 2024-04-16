@@ -37,9 +37,6 @@ def robot_send(robot):
 
             send_num += 1
 
-            # Update last packet time
-            robot.robotLink.lastPacketTime = time.time()
-
         # Terminate if Robot no longer exists
         with g.visible_mutex and g.lost_mutex:
             if ((robot not in g.visible) and (robot not in g.lost)):
