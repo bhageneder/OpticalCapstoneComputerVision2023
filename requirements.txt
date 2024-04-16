@@ -1,7 +1,7 @@
 pip
 testresources
 setuptools
-numpy==1.19.4
+numpy<=1.24.4
 future
 mock
 keras_preprocessing
@@ -16,3 +16,6 @@ tensorflow
 pillow<9
 pyaudio
 neopixel
+adafruit_blinka
+jetson-stats
+shapely
