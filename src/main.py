@@ -178,9 +178,7 @@ def start_threads():
             # Create and Start Connection Manager Thread
             connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
             connection_manager_thread.start()
-
-            #connected LEDs
-
+      
             # Increase Thread Number
             thread_number += 1
 
