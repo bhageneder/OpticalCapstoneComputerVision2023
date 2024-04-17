@@ -11,7 +11,7 @@ while True:
 
     logger.memIRAMCData('total', 'used', 'freeBlock')
     logger.engData('onStatus', 'minFreq', 'maxFreq', 'currFreq')
-    logger.fanData('speed', 'rpm', 'profile', 'governor', 'control')
+    logger.sensorsData('speed', 'coreName', 'temperature')
     logger.diskData('total', 'available', 'used')
 
     logger.processesData('pid', 'procName', 'cpuPercent', 'memRss', 'memVms', 'memShared', 'priority', 'status', 'threads')

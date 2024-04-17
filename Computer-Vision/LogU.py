@@ -133,9 +133,11 @@ class LogU:
                 )''')
         
         self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS fanTable (
+            '''CREATE TABLE IF NOT EXISTS sensorsTable (
                     ID INTEGER PRIMARY KEY,
-                    Speed INTEGER
+                    Speed INTEGER,
+                    coreName VARCHAR(10),
+                    Temperature FLOAT
                 )''')
         
         self.cursor.execute(
@@ -299,17 +301,22 @@ class LogU:
                 time.sleep(30)
                 self.conn.commit()
 
-    def fanData(self, speed):
+    def sensorsData(self, speed, coreName, temperature):
             while True:
                 fanInfo = psutil.sensors_fans()
-                fan = (speed)
-                speed = fanInfo('cpu_fan')
-                #rpm = fanInfo['rpm']
-                #profile = fanInfo['profile']
-                #governor = fanInfo['governor']
-                #control = fanInfo['control']
+                tempInfo = psutil.sensors_temperatures()
+                sensors = (speed, coreName, temperature)
+                speed = fanInfo.get('cpu_fan')
+                
+                if 'coretemp' in tempInfo:
+                    coreTemps = tempInfo['coretemp']
 
-                self.cursor.execute('''INSERT INTO fanTable (Speed) VALUES (?)''', (fan))   
+                    for coreTemp in coreTemps:
+                        temperature = coreTemp.current
+                        coreName = coreTemp.label
+                
+
+                self.cursor.execute('''INSERT INTO sensorsTable (Speed, coreName, Temperature) VALUES (?, ?, ?)''', (sensors))   
                 
                 time.sleep(30)
                 self.conn.commit()
@@ -352,9 +359,9 @@ class LogU:
         while True:
             processes = (pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
             process = psutil.process_iter()
-            
+
             for proc in process:
-                pid = proc.pid()
+                #pid = proc.pid()
                 procName = proc.name()
                 #gpuUsed = stats.processes[pid]['GPU']['usage']
                 cpuPercent = proc.cpu_percent()
