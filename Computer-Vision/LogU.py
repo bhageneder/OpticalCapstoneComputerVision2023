@@ -329,12 +329,12 @@ class LogU:
         
     def interfacesData(self, addrFamily, addrType, localAddr, remAddr, tcpStatus):
             while True:
-                proc = psutil.Process()
-                addrFamily = proc.connections().family
-                addrType = proc.connections().type
-                localAddr = proc.connections().laddr
-                remAddr = proc.connections().raddr
-                tcpStatus  = proc.status()
+                netCon = psutil.net_connections()
+                addrFamily = netCon.connections().family
+                addrType = netCon.connections().type
+                localAddr = netCon.connections().laddr
+                remAddr = netCon.connections().raddr
+                tcpStatus  = netCon.status()
 
                 self.cursor.execute('''INSERT INTO interfacesTable addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?)''',
                         (addrFamily, addrType, localAddr, remAddr, tcpStatus))
