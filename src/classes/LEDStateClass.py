@@ -22,7 +22,7 @@ class LEDState:
         elif state == "lost":
             self.__LEDs[2][transceiver] -= 1
 
-    def reset():
+    def reset(self):
         for i in range(3):
             for j in range(8):
                 self.__LEDs[i][j] = 0
