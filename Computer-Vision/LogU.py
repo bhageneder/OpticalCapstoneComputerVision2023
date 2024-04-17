@@ -149,11 +149,11 @@ class LogU:
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS interfacesTable (
                     ID INTEGER PRIMARY KEY,
-                    Address Family VARCHAR(20),
-                    Address Type VARCHAR(20),
-                    Local Address VARCHAR(20), 
-                    Remote Address VARCHAR(20),
-                    TCP Status VARCHAR(20)
+                    addressFamily VARCHAR(20),
+                    addressType VARCHAR(20),
+                    localAddress VARCHAR(20), 
+                    remoteAddress VARCHAR(20),
+                    tcpStatus VARCHAR(20)
                     
                 )''')
 
@@ -336,7 +336,7 @@ class LogU:
                 remAddr = proc.connections().raddr
                 tcpStatus  = proc.status()
 
-                self.cursor.execute('''INSERT INTO localInterfaces (Address Family, Address Type, Local Address, Remote Address, TCP Status) VALUES (?, ?, ?, ?, ?)''',
+                self.cursor.execute('''INSERT INTO interfacesTable addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?)''',
                         (addrFamily, addrType, localAddr, remAddr, tcpStatus))
 
             
@@ -360,7 +360,7 @@ class LogU:
             threads = proc.num_threads()
             #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
             
-            self.cursor.execute('''INSERT INTO processes (PID, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            self.cursor.execute('''INSERT INTO processesTable (PID, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (processes))
             
             time.sleep(30)
