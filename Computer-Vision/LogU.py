@@ -195,10 +195,9 @@ class LogU:
         idle = cpuTimes.idle
     
         self.cursor.execute('''INSERT INTO cpuTable (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (cpu))
-           
-        #self.cpuData(minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
+          
         time.sleep(30)
-        self.conn.commit()
+        self.conn.commit() 
 
     def gpuData(self, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime):
        while True:
@@ -213,8 +212,7 @@ class LogU:
         currFreq = gpuInfo['GPU frequency [MHz]']
         uptime = gpuInfo['Uptime']
         self.cursor.execute('''INSERT INTO gpuTable (Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (gpu))
-
-        #self.gpuData(load, temp, gpuType, memUsed, minFreq, maxFreq, currFreq, uptime)
+        
         time.sleep(30)
         self.conn.commit()
 
@@ -228,11 +226,10 @@ class LogU:
             buffers = memInfo.buffers
             cached = memInfo.cached
             shared = memInfo.shared
-            freeBlock = memInfo.inactive_file
+            #freeBlock = memInfo.inactive_file
 
-            self.cursor.execute('''INSERT INTO memRAMTable (Total, Used, Free, Buffers, Cached, Shared, freeBlock) VALUES (?, ?, ?, ?, ?, ?, ?)''', (ram))
-
-            #self.memRAMData(total, used, free, buffers, cached, shared, freeBlock)
+            self.cursor.execute('''INSERT INTO memRAMTable (Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?)''', (ram))
+            
             time.sleep(30)
             self.conn.commit()
         
@@ -248,9 +245,7 @@ class LogU:
 
             self.cursor.execute('''INSERT INTO memSWAPTable (Total, Used, Cached, Available) VALUES (?, ?, ?, ?)''',
                    (swap))
-        
-        
-            #self.memRSWAPData(swap)
+            
             time.sleep(30)
             self.conn.commit()
 
@@ -265,8 +260,7 @@ class LogU:
             currFreq = emcInfo['frequency']
 
             self.cursor.execute("INSERT INTO memEMCTable (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?)", (emc))
-
-            #self.memEMCData(onStatus, bandwidthUsed, minFreq, maxFreq, currFreq)
+            
             time.sleep(30)
             self.conn.commit()
 
@@ -280,9 +274,7 @@ class LogU:
 
             self.cursor.execute('''INSERT INTO memIRAMTable (TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?)''', (iram))
         
-            self.conn.commit()
-
-            #self.memIRAMData(total, used, freeBlock)
+           
             time.sleep(30)
             self.conn.commit()
 
@@ -296,8 +288,7 @@ class LogU:
             currFreq = engInfo['frequency']
 
             self.cursor.execute(''' INSERT INTO engineData (OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?)''', (eng))
-
-            #self.engData(onStatus, minFreq, maxFreq, currFreq)
+            
             time.sleep(30)
             self.conn.commit()
 
@@ -312,8 +303,7 @@ class LogU:
             control = fanInfo['control']
 
             self.cursor.execute('''INSERT INTO fanTable (Speed, RPM, Profile, Governor, Control) VALUES (?, ?, ?, ?, ?)''', (fan))   
-        
-            #self.fanData(speed, rpm, profile, governor, control)
+            
             time.sleep(30)
             self.conn.commit()
 
@@ -326,8 +316,7 @@ class LogU:
             used  = diskInfo.used
 
             self.cursor.execute('''INSERT INTO diskTable (Total, Available, Used) VALUES (?, ?, ?)''', (disk))
-
-            #self.diskData(total, available, used)
+            
             time.sleep(30)
             self.conn.commit()
     
@@ -341,7 +330,6 @@ class LogU:
                        (hostname, interface))
 
         
-            #self.interfacesData(hostname, interfaces)
             time.sleep(30)
             self.conn.commit()
 
@@ -365,7 +353,6 @@ class LogU:
             self.cursor.execute('''INSERT INTO processes (PID, gpuUsed, Priority, State, Processes, cpuPercent, memUsed, gpuMemUsed, processName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                        (processes))
     
-        #self.processesData(pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed)
 
     def exportCsv(self, tableName, rows):
         with open('{table_name}.csv', 'w', newline='', encoding='utf-8') as csv_file:
