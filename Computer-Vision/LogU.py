@@ -149,10 +149,10 @@ class LogU:
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS interfacesTable (
                     ID INTEGER PRIMARY KEY,
-                    addressFamily VARCHAR(20),
-                    addressType VARCHAR(20),
-                    localAddress VARCHAR(20), 
-                    remoteAddress VARCHAR(20),
+                    addressFamily VARCHAR(10),
+                    addressType INTEGER,
+                    localAddress VARCHAR(50), 
+                    remoteAddress VARCHAR(50),
                     tcpStatus VARCHAR(20)
                     
                 )''')
@@ -327,15 +327,18 @@ class LogU:
                 time.sleep(30)
                 self.conn.commit()
         
-    def interfacesData(self, addrFamily, addrType, localAddr, remAddr, tcpStatus):
+    def interfacesData(self, addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus):
         while True:
             netCons = psutil.net_connections(kind='inet')
-            network = (addrFamily, addrType, localAddr, remAddr, tcpStatus)
+            network = (addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus)
             for conn in netCons:
                 addrFamily = conn.family
-                addrType = conn.type
                 localAddr = conn.laddr
                 remAddr = conn.raddr
+                addrType = conn.type
+                localAddrStr = ':'.join(str(x) for x in localAddr)
+                remAddrStr = ':'.join(str(x) for x in remAddr)
+                
                 tcpStatus = conn.status
 
                 self.cursor.execute('''INSERT INTO interfacesTable (addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?)''',
