@@ -386,8 +386,8 @@ class LogU:
                 csv_writer.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
                 csv_writer.writerows(rows)  
 
-            tableNames = ['addEvent', 'cpuTable', 'gputale', 'memRAMTable', 'memSWAPTable', 
-                'memEMCTable', 'memIRAMCTable', 'engTable', 'fanTable', 'diskTable', 'interfaceTable', 'processesTable']
+            tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
+                'memEMCTable', 'memIRAMCTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
 
             for tableName in tableNames:
                 self.cursor.execute("SELECT * FROM {tableName}")
