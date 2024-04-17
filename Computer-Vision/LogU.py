@@ -136,10 +136,6 @@ class LogU:
             '''CREATE TABLE IF NOT EXISTS fanTable (
                     ID INTEGER PRIMARY KEY,
                     Speed INTEGER,
-                    RPM INTEGER,
-                    Profile VARCHAR(10),
-                    Governor VARCHAR(10),
-                    Control VARCHAR(10)
                 )''')
         
         self.cursor.execute(
@@ -166,7 +162,6 @@ class LogU:
                     ID INTEGER PRIMARY KEY,
                     PID INTEGER,
                     processName VARCHAR(10)
-                    gpuUsed VARCHAR(10),
                     cpuPercent FLOAT,
                     memRss INTEGER,
                     memVms INTEGER,
@@ -174,7 +169,6 @@ class LogU:
                     Priority INTEGER,
                     Status VARCHAR(10),
                     Threads INTEGER,
-                    gpuMemUsed INTEGER,
                     
                 )''')
         
