@@ -168,7 +168,7 @@ class LogU:
                     memShared INTEGER,
                     Priority INTEGER,
                     Status VARCHAR(10),
-                    Threads INTEGER,
+                    Threads INTEGER
                     
                 )''')
         
