@@ -17,7 +17,7 @@ def led_manager():
 
         if g.LEGACY_MODE:
             for link in g.robot_links:
-                g.LEDs.on("connected", link.port)
+                g.LEDs.on("connected", g.serial_ports.index(link.serial_port))
         else:
             for robot in g.lost:
                 if robot.transceiver > -1:
