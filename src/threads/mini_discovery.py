@@ -2,6 +2,7 @@ import threading
 import socket
 import config.global_vars as g
 from classes.RobotLink import RobotLink
+import time
 
 # For n Robots:
 # n - 1 possible IP addresses (not including our own), and 8 possible ports. (n - 1) * 8 threads need to be ran
@@ -42,6 +43,8 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
 
         # Default the serial port to transceiver 0, Maintenance will set the best one.
         link = RobotLink(None, g.serial_ports[0], client_socket, robot_receiving_ip_address, dst_port)
+        link.lastPacketTime = time.time()
+
         if g.debug_mini_discovery: print(f'{thread_name} New Robot Link Found On: ', (robot_receiving_ip_address, int(dst_port)))
         with g.robot_links_mutex:
             g.robot_links.append(link)

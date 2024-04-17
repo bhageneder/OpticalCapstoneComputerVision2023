@@ -7,12 +7,13 @@ from classes.RobotClass import Robot
 import config.global_vars as g
 import os
 import queue
+from interfaces.BaseDetectorClass import BaseDetector
 
-
-class Detector:
+class Detector(BaseDetector):
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, modelPath, cameras, render = False, debug = False):
+                super.__init__
                 self.initializing = True
                 self.visibleQ = queue.Queue()
                 self.lostQ = queue.Queue()
@@ -32,6 +33,10 @@ class Detector:
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=(modelPath + modelName + "/ssd-mobilenet.onnx"), labels=(modelPath + modelName + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                jetson_utils.Log.SetLevel('silent')
+
+                # Turn off annoying tracking messages (seriously, you don't want these turned on)
+                jetson_utils.Log.SetLevel('silent')
 
                 self.__net.SetTrackingEnabled(True)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)

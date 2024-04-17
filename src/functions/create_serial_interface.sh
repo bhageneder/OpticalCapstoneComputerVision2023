@@ -32,3 +32,5 @@ sleep 0.35
 
 # Add the Serial Line Interface to the routing table
 sudo route add ${local_ip} sl0 
+
+stty sane
