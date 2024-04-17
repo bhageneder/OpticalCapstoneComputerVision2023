@@ -14,6 +14,7 @@ from threads.transceiver_send import transceiver_send
 from threads.transceiver_receive import transceiver_receive
 from threads.new_visible import new_visible
 from threads.new_lost import new_lost
+from threads.connection_manager import connection_manager
 from threads.led_manager import led_manager
 import config.global_vars as g
 from control_robot.move_circle import move_circle
@@ -137,6 +138,9 @@ def start_threads():
         # Start the New Lost Thread
         g.new_lost_thread.start()
 
+    # Store Thread Number
+    thread_number = 0
+
     # Running New Threads based on new Robot Links
     if g.LEGACY_MODE:
         while True:
@@ -151,10 +155,14 @@ def start_threads():
 
             maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
             maintenance_thread.start()
-    else:
-        # Store Thread Number
-        thread_number = 0
 
+            # Create and Start Connection Manager Thread
+            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
+            connection_manager_thread.start()
+
+            # Increase Thread Number
+            thread_number += 1
+    else:
         while True:
             # Blocking Call to Get New Robot
             robot = g.newRobotQ.get()
@@ -166,6 +174,10 @@ def start_threads():
             # Create and Start Link Receive Thread
             link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
             link_receive_thread.start()
+
+            # Create and Start Connection Manager Thread
+            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
+            connection_manager_thread.start()
 
             #connected LEDs
 

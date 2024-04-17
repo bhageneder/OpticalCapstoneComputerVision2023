@@ -4,6 +4,7 @@ import psutil
 import config.global_vars as g
 from classes.RobotLink import RobotLink
 from classes.RobotClass import Robot
+import time
 
 # Listen for connection on all 8 possible ports (1 port per thread)
 def listen_for_connection(port):
@@ -46,6 +47,7 @@ def listen_for_connection(port):
             if g.LEGACY_MODE:
                 # Default the serial port to transceiver 0, Maintenance will set the best one.
                 link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                link.lastPacketTime = time.time()
                 with g.robot_links_mutex:
                     g.robot_links.append(link)
                 if g.debug_listen_for_connection: print(f'{thread_name} New Robot Link Connected On: ', (robot_sending_ip_address, robot_sending_port))
@@ -54,6 +56,7 @@ def listen_for_connection(port):
             else:
                 # Default the serial port to 0. Detector will set the best one when it finds it. Transceiver on robot object is used instead of port
                 link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                link.lastPacketTime = time.time()
 
                 # Create Robot
                 robot = Robot(-1, -1, link) # check if there is a way to get the transceiver here...

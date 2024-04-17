@@ -27,7 +27,15 @@ def robot_send(robot):
         if robot.robotLink is not None:
             # Send Payload through Socket 
             if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-            robot.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+            try:
+                robot.robotLink.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+            except OSError as e:
+                if (str(e) == "[Errno 9] Bad file descriptor"):
+                    return
+                else:
+                    print(f"Handled excpetion in {thread_name} on socket.sendall(...). Exception: {e}")
+                    return
+
             send_num += 1
 
         # Terminate if Robot no longer exists
@@ -47,7 +55,14 @@ def link_send_legacy(robot_link):
     while True:
         # Send Payload through Socket 
         if g.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-        robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+        try:
+            robot_link.socket.sendall(payload + send_num.to_bytes(4, byteorder="little"))
+        except OSError as e:
+            if (str(e) == "[Errno 9] Bad file descriptor"):
+                return
+            else:
+                print(f"Handled excpetion in {thread_name} on socket.sendall(...). Exception: {e}")
+                return
 
         send_num += 1
         time.sleep(g.PAYLOAD_INTERVAL_SLEEP)

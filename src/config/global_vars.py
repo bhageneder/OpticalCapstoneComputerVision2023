@@ -17,16 +17,19 @@ def init():
     debug_discovery = True
 
     global debug_link_send
-    debug_link_send = False
+    debug_link_send = True
 
     global debug_link_receive
     debug_link_receive = True
+
+    global debug_connection_manager
+    debug_connection_manager = True
 
     global debug_listen_for_connection
     debug_listen_for_connection = True
 
     global debug_maintenance
-    debug_maintenance = True
+    debug_maintenance = False
 
     global debug_mini_discovery
     debug_mini_discovery = False
@@ -217,6 +220,9 @@ def init():
     
     global SOCKET_CONNECTION_TIMEOUT
     SOCKET_CONNECTION_TIMEOUT = 0.25
+
+    global SOCKET_TRANSMISSION_TIMEOUT
+    SOCKET_TRANSMISSION_TIMEOUT = 5
     
     # At the start of every packet, these bytes will appear - in Wireshark
     global START_OF_PACKET
