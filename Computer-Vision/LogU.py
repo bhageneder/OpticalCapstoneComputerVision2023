@@ -135,7 +135,7 @@ class LogU:
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS fanTable (
                     ID INTEGER PRIMARY KEY,
-                    Speed INTEGER,
+                    Speed INTEGER
                 )''')
         
         self.cursor.execute(
