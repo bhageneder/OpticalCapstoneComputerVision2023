@@ -23,6 +23,31 @@ class LogU:
 
         self.conn = sqlite3.connect(logFilePath)    
         self.cursor = self.conn.cursor()
+
+        self.conn.commit() 
+
+        self.logger = logging.getLogger(__name__) 
+        self.logSetup()
+        self.logger.addEvent('transceiverID', 'detector', '1', 'tester') 
+        self.logger.cpuData ('minFreq', 'maxFreq', 'currFreq', 'infoFreq', 'user', 'nice', 'system', 'idle')
+        self.logger.interfacesData('hostname', 'interfaces')
+        self.logger.memRAMData('total', 'used', 'free', 'buffers', 'cached', 'shared')
+        self.logger.memSWAPData('total', 'used', 'cached', 'available')
+        self.logger.diskData('total', 'available', 'used')
+        self.logger.memEMCData('onStatus', 'bandwidthUsed', 'minFreq', 'maxFreq', 'currFreq')
+        self.logger.memIRAMCData('total', 'used', 'freeBlock')
+        self.logger.engData('onStatus', 'minFreq', 'maxFreq', 'currFreq')
+        self.logger.fanData('speed', 'rpm', 'profile', 'governor', 'control')
+        self.logger.processesData('pid', 'procName', 'gpuUsed', 'cpuPercent', 'memory', 'priority', 'state', 'threads', 'gpuMemUsed')
+        self.logger.gpuData('load', 'temp', 'type', 'memUsed', 'minFreq', 'maxFreq', 'currFreq', 'uptime')
+
+        def __del__(self):
+            print("Commiting changes to Database and Deconstructing Logger")
+            self.__jetson.close()
+            # Close sql connection 
+            self.conn.close()
+
+    def logSetup(self):
         self.cursor.execute(
             """ CREATE TABLE IF NOT EXISTS eventTable (
                 ID INTEGER PRIMARY KEY,
@@ -165,10 +190,10 @@ class LogU:
                     gpuMemUsed INTEGER,
                     processName VARCHAR(10)
                 )''')
-                                                                           
+        
         self.conn.commit() 
-
-        self.logger = logging.getLogger(__name__) # maybe change to .addEvent for ease
+                                                                           
+   
         
     def addEvent(self, tag, module, levelNum, message):
        # instantiantion method detection = logging.getLogger(Detect)
@@ -369,8 +394,4 @@ class LogU:
             if rows:
                 self.exportCsv(tableName, rows)
 
-    def __del__(self):
-        print("Commiting changes to Database and Deconstructing Logger")
-        self.__jetson.close()
-        # Close sql connection 
-        self.conn.close()
+   
