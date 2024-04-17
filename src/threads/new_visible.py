@@ -11,11 +11,8 @@ def new_visible():
 
         # Aquire Visible Mutex
         with g.visible_mutex:
-            # Add Robot to the Visible List
-            if next((x for x in g.visible if x.trackID == robot.trackID), None) is None:            
-                g.visible.append(robot)
-            else:
-                continue
+            # Add Robot to the Visible List     
+            g.visible.append(robot)
 
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)

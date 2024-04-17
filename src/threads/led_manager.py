@@ -15,8 +15,6 @@ def led_manager():
         #background process to loop through LED arrays and set LEDs
         LEDs = g.LEDs.getLEDs()
 
-        print(g.lost)
-
         for robot in g.lost:
             if transceiver > -1:
                 g.LEDs.on("lost", robot.transceiver)
