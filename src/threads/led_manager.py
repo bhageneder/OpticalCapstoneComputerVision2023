@@ -15,6 +15,12 @@ def led_manager():
         #background process to loop through LED arrays and set LEDs
         LEDs = g.LEDs.getLEDs()
 
+        for robot in g.lost:
+            LEDs.on("lost", robot.transceiver)
+
+        for robot in g.visible:
+            LEDs.on("connected", robot.transceiver)
+
         for transceiver in range(8):
             if LEDs[0][transceiver] > 0:
                 led_funcs.illuminate_for_finding(transceiver)
@@ -28,5 +34,7 @@ def led_manager():
                 led_funcs.illuminate_for_lost(transceiver)
             else:
                 led_funcs.turn_off_for_lost(transceiver)
+
+        LEDs.reset()
 
         time.sleep(0.25)

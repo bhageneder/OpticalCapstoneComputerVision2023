@@ -16,9 +16,6 @@ def new_visible():
                 g.visible.append(robot)
             else:
                 continue
-            
-        g.LEDs.on("finding", robot.transceiver)
-        robot.state = 0
 
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)
@@ -30,9 +27,6 @@ def new_visible():
             with g.visible_mutex and g.lost_mutex:
                 # Remove from Global Lost List
                 g.lost.remove(foundRobot)
-
-            g.LEDs.off("finding", robot.transceiver)
-            g.LEDs.off("lost", robot.transceiver)
 
             # Queue to New Robot Queue
             g.newRobotQ.put(robot)

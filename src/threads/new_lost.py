@@ -4,16 +4,10 @@ import config.global_vars as g
 def new_lost():
     while True:
         # Blocking Call to Detector's Lost Queue
-        robot = g.detector.lostQ.get()
-        
-        print("LED off")
-        g.LEDs.off("finding", robot.transceiver)        
+        robot = g.detector.lostQ.get()      
 
         # Check for Robot Link
         if (robot.robotLink != None):
-            g.LEDs.on("lost", robot.transceiver)
-            if robot.state == 1:    # finding state
-                g.LEDs.off("connected", robot.transceiver)
             # Acquire Visible Robot List Mutex
             with g.lost_mutex:
                 # Append to Global Lost List
