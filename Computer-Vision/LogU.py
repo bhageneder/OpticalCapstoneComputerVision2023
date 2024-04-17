@@ -6,6 +6,7 @@ import csv
 import logging
 import psutil
 from jtop import jtop
+
 import socket
 
 
@@ -339,7 +340,7 @@ class LogU:
                 self.conn.commit()
 
     def processesData(self, pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed):
-            stats = Stats()
+            stats = self.__jetson.stats
             processesInfo = psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_info', 'num_threads', 'nice', 'memory_percent', 'status'])
             processes = (pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed)
             for process in processesInfo:
