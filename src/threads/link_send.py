@@ -33,7 +33,8 @@ def robot_send(robot):
                 if (str(e) == "[Errno 9] Bad file descriptor"):
                     return
                 else:
-                    raise(e)
+                    print(f"Handled excpetion in {thread_name} on socket.sendall(...). Exception: {e}")
+                    return
 
             send_num += 1
 
@@ -60,10 +61,8 @@ def link_send_legacy(robot_link):
             if (str(e) == "[Errno 9] Bad file descriptor"):
                 return
             else:
-                raise(e)
-
-        # Update last packet time
-        robot_link.lastPacketTime = time.time()
+                print(f"Handled excpetion in {thread_name} on socket.sendall(...). Exception: {e}")
+                return
 
         send_num += 1
         time.sleep(g.PAYLOAD_INTERVAL_SLEEP)

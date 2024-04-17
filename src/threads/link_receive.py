@@ -51,8 +51,11 @@ def robot_receive(robot):
                         robot.robotLink.active = False
 
                         # Close socket
-                        robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
-                        robot.robotLink.socket.close()
+                        try:
+                            robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                            robot.robotLink.socket.close()
+                        except Exception as e:
+                            print(f"Handled excpetion in {thread_name} on socket shutdown/close. Exception: {e}")
                 
                 # Remove from robot lists
                 with g.visible_mutex and g.lost_mutex:
@@ -91,8 +94,11 @@ def link_receive_legacy(robot_link):
                 robot_link.active = False
                 
                 # Close socket
-                robot_link.socket.shutdown(socket.SHUT_RDWR)
-                robot_link.socket.close()
+                try:
+                    robot_link.socket.shutdown(socket.SHUT_RDWR)
+                    robot_link.socket.close()
+                except Exception as e:
+                    print(f"Handled excpetion in {thread_name} on socket shutdown/close. Exception: {e}")
 
             # Remove from the robot_links list
             if (robot_link in g.robot_links):

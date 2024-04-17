@@ -34,8 +34,11 @@ def robot_manager(robot):
                 robot.robotLink.active = False
 
                 # Close connection
-                robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
-                robot.robotLink.socket.close()
+                try:
+                    robot.robotLink.socket.shutdown(socket.SHUT_RDWR)
+                    robot.robotLink.socket.close()
+                except Exception as e:
+                    print(f"Handled excpetion in {thread_name} on socket shutdown/close. Exception: {e}")
 
             # Remove from robot lists
             with g.visible_mutex and g.lost_mutex:
@@ -73,8 +76,11 @@ def robot_link_manager(robotLink):
                 robotLink.active = False
 
                 # Close connection
-                robotLink.socket.shutdown(socket.SHUT_RDWR)
-                robotLink.socket.close()
+                try:
+                    robotLink.socket.shutdown(socket.SHUT_RDWR)
+                    robotLink.socket.close()
+                except Exception as e:
+                    print(f"Handled excpetion in {thread_name} on socket shutdown/close. Exception: {e}")
 
             # Remove from robot_links list
             if (robotLink in g.robot_links):
