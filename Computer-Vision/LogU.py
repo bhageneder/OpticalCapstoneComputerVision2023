@@ -350,22 +350,23 @@ class LogU:
 
     def processesData(self, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads):
         while True:
-            #stats = self.__jetson.stats
-            proc = psutil.Process()
             processes = (pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
-            pid = proc.pid()
-            procName = proc.name()
-            #gpuUsed = stats.processes[pid]['GPU']['usage']
-            cpuPercent = proc.cpu_percent()
-            memRss = proc.memory_info().rss / (1024 * 1024)  # Convert to MB
-            memVms = proc.memory_info().vms
-            memShared = proc.memory_info().shared
-            priority = proc.nice()
-            status = proc.status()
-            threads = proc.num_threads()
+            process = psutil.process_iter()
+            
+            for proc in process:
+                pid = proc.pid()
+                procName = proc.name()
+                #gpuUsed = stats.processes[pid]['GPU']['usage']
+                cpuPercent = proc.cpu_percent()
+                memRss = proc.memory_info().rss / (1024 * 1024)  # Convert to MB
+                memVms = proc.memory_info().vms
+                memShared = proc.memory_info().shared
+                priority = proc.nice()
+                status = proc.status()
+                threads = proc.num_threads()
             #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
             
-            self.cursor.execute('''INSERT INTO processesTable (PID, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                self.cursor.execute('''INSERT INTO processesTable (PID, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (processes))
             
             time.sleep(30)
