@@ -387,7 +387,7 @@ class LogU:
                 csv_writer.writerows(rows)  
 
             tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
-                'memEMCTable', 'memIRAMCTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
+                'memEMCTable', 'memIRAMTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
 
             for tableName in tableNames:
                 self.cursor.execute("SELECT * FROM {tableName}")
