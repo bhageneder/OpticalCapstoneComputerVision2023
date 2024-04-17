@@ -3,7 +3,7 @@ from LogU import LogU
 while True:
     logger = LogU()
     logger.addEvent('transceiverID', 'detector', '1', 'tester') 
-    logger.interfacesData('hostname', 'interfaces')
+    logger.interfacesData('addrFamily', 'addrType', 'localAddr', 'remAddr', 'tcpStatus')
     logger.memEMCData('onStatus', 'bandwidthUsed', 'minFreq', 'maxFreq', 'currFreq')
     logger.gpuData('load', 'temp', 'type', 'memUsed', 'minFreq', 'maxFreq', 'currFreq', 'uptime')
 
@@ -14,7 +14,7 @@ while True:
     logger.fanData('speed', 'rpm', 'profile', 'governor', 'control')
     logger.diskData('total', 'available', 'used')
 
-    logger.processesData('pid', 'procName', 'gpuUsed', 'cpuPercent', 'memory', 'priority', 'state', 'threads', 'gpuMemUsed')
+    logger.processesData('pid', 'procName', 'cpuPercent', 'memRss', 'memVms', 'memShared', 'priority', 'status', 'threads')
     logger.cpuData ('minFreq', 'maxFreq', 'currFreq', 'infoFreq', 'user', 'nice', 'system', 'idle')
     logger.memRAMData('total', 'used', 'free', 'buffers', 'cached', 'shared')
     logger.memSWAPData('total', 'used', 'cached', 'available')

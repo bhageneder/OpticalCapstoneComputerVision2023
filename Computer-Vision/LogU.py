@@ -153,22 +153,29 @@ class LogU:
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS interfacesTable (
                     ID INTEGER PRIMARY KEY,
-                    Hostname VARCHAR(10),
-                    Interface VARCHAR(20)
+                    Address Family VARCHAR(20),
+                    Address Type VARCHAR(20),
+                    Local Address VARCHAR(20), 
+                    Remote Address VARCHAR(20),
+                    TCP Status VARCHAR(20)
+                    
                 )''')
 
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS processesTable (
                     ID INTEGER PRIMARY KEY,
                     PID INTEGER,
-                    gpuUsed VARCHAR(10),
-                    Priority INTEGER,
-                    State VARCHAR(10),
-                    Processes INTEGER,
-                    cpuPercent FLOAT,
-                    memUsed INTEGER,
-                    gpuMemUsed INTEGER,
                     processName VARCHAR(10)
+                    gpuUsed VARCHAR(10),
+                    cpuPercent FLOAT,
+                    memRss INTEGER,
+                    memVms INTEGER,
+                    memShared INTEGER,
+                    Priority INTEGER,
+                    Status VARCHAR(10),
+                    Threads INTEGER,
+                    gpuMemUsed INTEGER,
+                    
                 )''')
         
         self.conn.commit()
@@ -298,17 +305,17 @@ class LogU:
                 time.sleep(30)
                 self.conn.commit()
 
-    def fanData(self, speed, rpm, profile, governor, control):
+    def fanData(self, speed):
             while True:
-                fanInfo = self.__jetson.stats.fan.get()
-                fan = (speed, rpm, profile, governor, control)
-                speed = fanInfo['speed']
-                rpm = fanInfo['rpm']
-                profile = fanInfo['profile']
-                governor = fanInfo['governor']
-                control = fanInfo['control']
+                fanInfo = psutil.sensors_fans()
+                fan = (speed)
+                speed = fanInfo('cpu_fan')
+                #rpm = fanInfo['rpm']
+                #profile = fanInfo['profile']
+                #governor = fanInfo['governor']
+                #control = fanInfo['control']
 
-                self.cursor.execute('''INSERT INTO fanTable (Speed, RPM, Profile, Governor, Control) VALUES (?, ?, ?, ?, ?)''', (fan))   
+                self.cursor.execute('''INSERT INTO fanTable (Speed) VALUES (?)''', (fan))   
                 
                 time.sleep(30)
                 self.conn.commit()
@@ -326,38 +333,44 @@ class LogU:
                 time.sleep(30)
                 self.conn.commit()
         
-    def interfacesData(self, hostname, interfaces):
+    def interfacesData(self, addrFamily, addrType, localAddr, remAddr, tcpStatus):
             while True:
-                hostname = socket.gethostname()
-                interfaces = [iface[1]['addr'] for iface in socket.if_nameindex()]
-            
-                for interface in interfaces:
-                    self.cursor.execute('''INSERT INTO localInterfaces (Hostname, Interface) VALUES (?, ?)''',
-                        (hostname, interface))
+                proc = psutil.Process()
+                addrFamily = proc.connections().family
+                addrType = proc.connections().type
+                localAddr = proc.connections().laddr
+                remAddr = proc.connections().raddr
+                tcpStatus  = proc.status()
+
+                self.cursor.execute('''INSERT INTO localInterfaces (Address Family, Address Type, Local Address, Remote Address, TCP Status) VALUES (?, ?, ?, ?, ?)''',
+                        (addrFamily, addrType, localAddr, remAddr, tcpStatus))
 
             
                 time.sleep(30)
                 self.conn.commit()
 
-    def processesData(self, pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed):
-            stats = self.__jetson.stats
-            processesInfo = psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_info', 'num_threads', 'nice', 'memory_percent', 'status'])
-            processes = (pid, procName, gpuUsed, cpuPercent, memory, priority, state, threads, gpuMemUsed)
-            for process in processesInfo:
-                pid = process.info['pid']
-                procName = process.info['name']
-                gpuUsed = stats.processes[pid]['GPU']['usage']
-                cpuPercent = process.info['cpu_percent']
-                memory_info = process.info['memory_info']
-                memory = memory_info.rss / (1024 * 1024)  # Convert to MB
-                priority = process.info['nice']
-                state = process.info['status']
-                threads = process.info['num_threads']
-                gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
+    def processesData(self, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads):
+        while True:
+            #stats = self.__jetson.stats
+            proc = psutil.Process()
+            processes = (pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
+            pid = proc.pid()
+            procName = proc.name()
+            #gpuUsed = stats.processes[pid]['GPU']['usage']
+            cpuPercent = proc.cpu_percent()
+            memRss = proc.memory_info().rss / (1024 * 1024)  # Convert to MB
+            memVms = proc.memory_info().vms
+            memShared = proc.memory_info().shared
+            priority = proc.nice()
+            status = proc.status()
+            threads = proc.num_threads()
+            #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
             
-
-                self.cursor.execute('''INSERT INTO processes (PID, gpuUsed, Priority, State, Processes, cpuPercent, memUsed, gpuMemUsed, processName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            self.cursor.execute('''INSERT INTO processes (PID, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (processes))
+            
+            time.sleep(30)
+            self.conn.commit()
         
 
     def exportCsv(self, tableName, rows):
