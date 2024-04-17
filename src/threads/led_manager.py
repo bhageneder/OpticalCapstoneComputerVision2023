@@ -16,7 +16,7 @@ def led_manager():
         LEDs = g.LEDs.getLEDs()
 
         for robot in g.lost:
-            if transceiver > -1:
+            if robot.transceiver > -1:
                 g.LEDs.on("lost", robot.transceiver)
 
         for robot in g.visible:
