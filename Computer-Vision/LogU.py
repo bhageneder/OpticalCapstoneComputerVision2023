@@ -161,7 +161,7 @@ class LogU:
             '''CREATE TABLE IF NOT EXISTS processesTable (
                     ID INTEGER PRIMARY KEY,
                     PID INTEGER,
-                    processName VARCHAR(10)
+                    processName VARCHAR(10),
                     cpuPercent FLOAT,
                     memRss INTEGER,
                     memVms INTEGER,
