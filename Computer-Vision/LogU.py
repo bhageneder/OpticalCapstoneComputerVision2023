@@ -328,20 +328,20 @@ class LogU:
                 self.conn.commit()
         
     def interfacesData(self, addrFamily, addrType, localAddr, remAddr, tcpStatus):
-            while True:
-                netCon = psutil.net_connections()
-                addrFamily = netCon.connections().family
-                addrType = netCon.connections().type
-                localAddr = netCon.connections().laddr
-                remAddr = netCon.connections().raddr
-                tcpStatus  = netCon.status()
+        netCons = psutil.net_connections()
+        
+        for conn in netCons:
+            addrFamily = conn.family
+            addrType = conn.type
+            localAddr = conn.laddr
+            remAddr = conn.raddr
 
-                self.cursor.execute('''INSERT INTO interfacesTable addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?)''',
+            self.cursor.execute('''INSERT INTO interfacesTable addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?)''',
                         (addrFamily, addrType, localAddr, remAddr, tcpStatus))
 
             
-                time.sleep(30)
-                self.conn.commit()
+        time.sleep(30)
+        self.conn.commit()
 
     def processesData(self, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads):
         while True:
