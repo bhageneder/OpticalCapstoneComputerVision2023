@@ -1,7 +1,8 @@
 pip
 testresources
 setuptools
-numpy<=1.24.4
+numpy==1.19.4 ; python_version < '3.10'
+numpy==1.24.4 ; python_version > '3.6'
 future
 mock
 keras_preprocessing
@@ -15,7 +16,7 @@ packaging
 tensorflow
 pillow<9
 pyaudio
-neopixel
-adafruit_blinka
+neopixel ; python_version < '3.10'
+adafruit_blinka ; python_version > '3.6'
+adafruit-circuitpython-neopixel-spi ; python_version > '3.6'
 jetson-stats
-shapely
