@@ -2,9 +2,6 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 import subprocess
-import board
-import neopixel
-import sys
 import configparser
 
 SMTP_SERVER = "smtp.mail.yahoo.com"
@@ -15,7 +12,7 @@ EMAIL_FROM = "opticalcomms23@yahoo.com"
 
 # Get robot name from config file
 config = configparser.ConfigParser()
-config.read("../src/config/config.cfg")
+config.read("../../src/config/config.cfg")
 ROBOT = config['Name']['robotName']
 
 def send_email(EMAIL_TO):
