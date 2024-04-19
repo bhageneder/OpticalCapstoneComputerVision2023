@@ -7,7 +7,7 @@ from jtop import jtop
 
 
 class Logger:
-    DEFAULT_DB = 'logger.db'
+    DEFAULT_DB = 'log.db'
 
 
     def __init__(self, logFilePath = None):
