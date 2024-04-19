@@ -1,74 +1,34 @@
-
-from loguru import logger
 import sqlite3
 import datetime
-import os
 import csv
 import logging
 import psutil
+from jtop import jtop
 
-
-LOGLEVELS = [
-    ('DEBUG', 0),
-    ('INFO', 1),
-    ('WARNING', 2),
-    ('ERROR', 3),
-    ('CRITICAL', 4)
-]
 
 class Logger:
-    DEFAULT_LOG_FILE = 'logger.db'
-    DEFAULT_CSV_FOLDER = 'csvLogFolder'
+    DEFAULT_DB = 'logger.db'
+
 
     def __init__(self, logFilePath = None):
-        self.logFilePath = 'logger.db' or self.DEFAULT_LOG_FILE
-        self.logger = logging.getLogger(__name__) # maybe change to .addEvent for ease
-        
-        # Obtain sql database connection
-        self.conn = self.createDatabaseConnection()
-        print(self.conn)
+        self.__jetson = jtop()
+        self.__jetson.start()
 
-        # Add cursor to retrieve data from database using queries
-        self.cursor = self.conn.cursor()
-    
-        self.logSetup()
-        
-        
-    # Logger Class Deconstructor
-    def __del__(self):
-        print("Commiting changes to Database and Deconstructing Logger")
-        
-        # Close sql connection 
-        self.conn.close()
-
-    # Create / open database existing on disk and return database connection
-    def createDatabaseConnection(self):
-        try:
-            self.conn = sqlite3.connect(self.logFilePath)
-            return self.conn
             
-        except sqlite3.Error as sqliteError:
-            print("Error connecting to SQLite database at path: {}".format(self.logFilePath))
-            print(sqliteError)
-            return None
-        except Exception as e:
-            print(e)
-            print("FATAL ERROR connecting to database: {e}")
-            return None
-        
-    def createTable(self, tableDefinition):
-        try:
-            self.cursor()
-            self.cursor.execute(tableDefinition)
-            self.conn.commit() 
+        if logFilePath == None:
+           logFilePath = self.DEFAULT_DB
 
-        except sqlite3.Error as sqliteError:
-            print(sqliteError)
-            print("Error creating table: {sqliteError}")
- 
-    def tableDefinition(self):
-        # Define the tables
-        self.eventTable =  """ CREATE TABLE IF NOT EXISTS eventTable (
+        self.logger = logging.getLogger(__name__)
+
+
+        self.conn = sqlite3.connect(logFilePath)    
+        self.cursor = self.conn.cursor()
+
+        self.conn.commit() 
+
+    
+        self.cursor.execute(
+            """ CREATE TABLE IF NOT EXISTS eventTable (
                 ID INTEGER PRIMARY KEY,
                 Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                 ProcessID INTEGER,
@@ -77,137 +37,346 @@ class Logger:
                 LevelNum INTEGER,
                 Message VARCHAR(255)
             )"""
+        )
 
-        self.levelTable = """ CREATE TABLE IF NOT EXISTS levelTable (
-                Level VARCHAR(10) PRIMARY KEY,
-                LevelNum INTEGER 
-                
-            )"""
-        
-        #Maybe a float instead for utilization
-        self.cpuData =  """ CREATE TABLE IF NOT EXISTS cpuData (
+        self.cursor.execute(
+            """ CREATE TABLE IF NOT EXISTS cpuTable (
                 ID INTEGER PRIMARY KEY,
-                Utilization DECIMAL(2), 
-                Speed DECIMAL(2),
-                Processes INTEGER,
-                Threads   INTEGER,
-                Uptime    TIME(6)
+                minFreq INTEGER,
+                maxFreq   INTEGER,
+                currFreq   INTEGER,
+                infoFreq VARCHAR(10),
+                User FLOAT,
+                Nice FLOAT,
+                System FLOAT,
+                Idle FLOAT
+            )""" )
         
-            )"""
-        
-         
-    def populateLevelTable(self):
-        self.tableDefinition()
-        for Level in LOGLEVELS:
-            try:
+        # Try to access table
+        try:
+            # Table already exists
+            self.cursor.execute ('''SELECT LevelType FROM levelTable ''')
+        except:
+            # Table doesn't exist, create and insert data
+            self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
+                LevelType  VARCHAR(10),
+                            LevelNum INTEGER
+                )""" )
             
-                self.cursor.execute("INSERT OR IGNORE INTO levelTable (Level, LevelNum) VALUES (?, ?)",
-                                    (LOGLEVELS))
-                self.conn.commit()
-            
-            except sqlite3.Error as sqliteError:
-                print(sqliteError)
-                print("Error populating levelTable: {sqliteError}")       
-    
-    def logSetup(self):
-        # Get the process ID and module name
-        #pid = os.getpid()
-        # Used to store the full path of the script file in the eventTable as a way to identify which script or module inserted a particular log entry
-        #modname = __file__ 
-        
-        # Export logs to CSV  (previous log?)
-        csvFilePath = self.exportCsv()
-        self.logger.info('Logs exported to CSV: {csvFilePath}')
+            self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0')
+                            ''')
+            self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('INFO', '1'), ('WARNING', '2'), 
+                            ('ERROR', '3'), ('CRITICAL', '4')''') 
 
-        # Execute the tables
-        # Use cursor execute to populate all desired data into table
-        print("Current Tables: ") # --> not really necessary
-        # To select specific column replace * with the column name(s) ('''SELECT * FROM eventTable''')
+        self.cursor.execute(
+            """ CREATE TABLE IF NOT EXISTS gpuTable (
+                ID INTEGER PRIMARY KEY,
+                Load FLOAT,
+                Temp FLOAT,           
+                gpuType VARCHAR(10),                        
+                memUsed DECIMAL(2),
+                minFreq INTEGER,
+                maxFreq INTEGER,
+                currFreq INTEGER,            
+                Uptime VARCHAR(10)
         
-        # Set loguru to use SQLite sink
-        logger.add(self.logFilePath, serialize=True,
-                   format = " <ID: {record[id]}> | <Timestamp: {record[timestamp]}> | <Process ID: {record[processID]}> | "
-                        "<Tag:{record[tag]}> | <Module: {record[module]}> | <Level:{record[level]}>   |" 
-                        " |<Message: {record[message]}> ", 
-                    enqueue=True)
+            )""" )   
+
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS memRAMTable (
+                    ID INTEGER PRIMARY KEY,
+                    Total INTEGER,
+                    Used INTEGER,
+                    Free INTEGER,
+                    Buffers INTEGER,
+                    Cached INTEGER,
+                    Shared INTEGER,
+                    freeBlock INTEGER
+                )''')  
+
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS memSWAPTable (
+                    ID INTEGER PRIMARY KEY,
+                    Total INTEGER,
+                    Used INTEGER,
+                    Cached INTEGER,
+                    Available INTEGER
+                )''')
+
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS memEMCTable (
+                    ID INTEGER PRIMARY KEY,
+                    onStatus BOOLEAN,
+                    bandwidthUsed INTEGER,
+                    minFreq INTEGER,
+                    maxFreq INTEGER,
+                    currFreq INTEGER
+                    
+                )''') 
         
-        self.setFilePermissions()
-        self.tableDefinition()
-        #self.createTable(self.eventTable)
-        #self.createTable(self.levelTable)
-        self.populateLevelTable()
-        self.addData()
-        #self.createTable(self.cpuData)
-        # Commit Changes to Database
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS memIRAMTable (
+                    ID INTEGER PRIMARY KEY,
+                    Total INTEGER,
+                    Used INTEGER,
+                    freeBlock INTEGER
+                )''')
+        
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS engineTable (
+                    ID INTEGER PRIMARY KEY,
+                    onStatus BOOLEAN,
+                    minFreq INTEGER,
+                    maxFreq INTEGER,
+                    currentFreq INTEGER
+                )''')
+        
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS sensorsTable (
+                    ID INTEGER PRIMARY KEY,
+                    Speed INTEGER,
+                    coreName VARCHAR(10),
+                    Temperature FLOAT
+                )''')
+        
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS diskTable (
+                    ID INTEGER PRIMARY KEY,
+                    Total INTEGER,
+                    Available INTEGER,
+                    Used INTEGER
+                )''')
+        
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS interfacesTable (
+                    ID INTEGER PRIMARY KEY,
+                    addressFamily VARCHAR(10),
+                    addressType INTEGER,
+                    localAddress VARCHAR(50), 
+                    remoteAddress VARCHAR(50),
+                    tcpStatus VARCHAR(20)
+                    
+                )''')
+
+        self.cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS processesTable (
+                    ID INTEGER PRIMARY KEY,
+                    PID INTEGER,
+                    processName VARCHAR(10),
+                    cpuPercent FLOAT,
+                    memRss INTEGER,
+                    memVms INTEGER,
+                    memShared INTEGER,
+                    Priority INTEGER,
+                    Status VARCHAR(10),
+                    Threads INTEGER
+                    
+                )''')
+        
         self.conn.commit()
 
-    def addEvent(self, tag, module, LevelNum, message):
-       # instantiantion method detection = logging.getLogger(Detect)
+ 
+
+    def addEvent(self, tag, module, levelNum, message):
+        # instantiantion method detection = logging.getLogger(Detect)
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+        event = (timestamp, tag, module, levelNum, message)
+        self.cursor.execute('''INSERT INTO eventTable (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)''', (event))
+        self.conn.commit()
+
+    def cpuData(self, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle):
+        cpu = (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
+        cpuInfo = psutil.cpu_freq()
+        #onStatus = psutil.cpu_stats().
+        #governor = psutil.cpu_freq().
+        minFreq = cpuInfo.min
+        maxFreq = cpuInfo.max
+        currFreq = cpuInfo.current
+        infoFreq = str(cpuInfo.min) + '-' + str(cpuInfo.max)
+        cpuTimes = psutil.cpu_times()
+        user = cpuTimes.user
+        nice = cpuTimes.nice
+        system = cpuTimes.system
+        idle = cpuTimes.idle
+
+        self.cursor.execute('''INSERT INTO cpuTable (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (cpu))
+    
+        self.conn.commit() 
+
+    def gpuData(self, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime):
+        gpuInfo = self.__jetson.gpu_stats()
+        gpu = (load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime)
+        load = gpuInfo['GPU utilization [%]']
+        temp = gpuInfo['GPU temperature [°C]']
+        gpuType = gpuInfo['GPU type']
+        memUsed = gpuInfo['GPU memory used [MB]']
+        minFreq = gpuInfo['GPU frequency range [MHz]']['min']
+        maxFreq = gpuInfo['GPU frequency range [MHz]']['max']
+        currFreq = gpuInfo['GPU frequency [MHz]']
+        uptime = gpuInfo['Uptime']
+        self.cursor.execute('''INSERT INTO gpuTable (Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (gpu))
         
-       try:
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-            sqlite3.connect(self.DEFAULT_LOG_FILE)
-            self.cursor.execute("INSERT INTO eventLog (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)", (timestamp, tag, module, LevelNum, message))
-            self.conn.commit()
+        self.conn.commit()
 
-       except Exception as e:
-            print(e)
-            print("Error inserting log to eventTable: {e}")
-      
-    def addData(self):
-        utilization = psutil.cpu_percent()
-        speed = psutil.cpu_freq().current
-        processes= 0
-        for _ in psutil.process_iter():
-            processes+= 1
+    def memRAMData(self, total, used, free, buffers, cached, shared, freeBlock):
+        memInfo = psutil.virtual_memory()
+        ram = (total, used, free, buffers, cached, shared, freeBlock)
+        total = memInfo.total
+        used = memInfo.used
+        free = memInfo.free
+        buffers = memInfo.buffers
+        cached = memInfo.cached
+        shared = memInfo.shared
+        #freeBlock = memInfo.inactive_file
 
-        #avgLoad = psutil.getloadavg() [0]
-        threads = psutil.cpu_count(logical=True)
-        uptime = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%H:%M:%S")
+        self.cursor.execute('''INSERT INTO memRAMTable (Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?)''', (ram))
         
-    def recordData(self, utilization, speed, processes, threads, uptime): 
-        try:
-            #CPU percent for each core
-            self.addData()
-            sqlite3.connect(self.DEFAULT_LOG_FILE)
-            self.cursor.execute("INSERT INTO cpuData (Utilization, Speed, Processes, Threads, Uptime) VALUES (?, ?, ?, ?, ?)", (utilization, speed, processes, threads, uptime))
-            self.conn.commit()   
-
-        except Exception as e: 
-            print(e)
-            print("Error inserting log to dataTable: {e}")     
+        self.conn.commit()
             
-  
 
-    def exportCsv(self, csvFilePath = 'eventLogs.csv'):
-        try:
-            # Retrieve all logs from the database
-            self.cursor.execute("SELECT * FROM eventLog")
-            self.conn.commit()
+    def memSWAPData(self, total, used, cached, available):
+        swapInfo = psutil.swap_memory()
+        swap = (total, used, cached, available)
+        total = swapInfo.total
+        used = swapInfo.used
+        cached = swapInfo.sin
+        available = swapInfo.free
+
+        self.cursor.execute('''INSERT INTO memSWAPTable (Total, Used, Cached, Available) VALUES (?, ?, ?, ?)''',
+            (swap))
+        
+        self.conn.commit()
+
+    def memEMCData(self, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq):
+        emcInfo = self.__jetson.stats.mem.gpu.get() 
+        emc = (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) 
+        onStatus = emcInfo['online']
+        bandwidthUsed = emcInfo['bandwidth_used']
+        minFreq = emcInfo['min_frequency']
+        maxFreq = emcInfo['max_frequency']
+        currFreq = emcInfo['frequency']
+
+        self.cursor.execute("INSERT INTO memEMCTable (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?)", (emc))
+        
+        self.conn.commit()
+
+    def memIRAMData(self, total, used, freeBlock):
+        iramInfo = self.__jetson.stats.mem.iram.get()
+        iram = (total, used, freeBlock)
+        total = iramInfo['total']
+        used = iramInfo['used']
+        freeBlock = iramInfo['free']
+
+        self.cursor.execute('''INSERT INTO memIRAMTable (TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?)''', (iram))
+    
+        self.conn.commit()
+
+    def engData(self, onStatus, minFreq, maxFreq, currFreq):
+        engInfo = self.__jetson.stats.gpu.get()
+        eng = (onStatus, minFreq, maxFreq, currFreq)
+        onStatus = engInfo['online']
+        minFreq = engInfo['min_frequency']
+        maxFreq = engInfo['max_frequency']
+        currFreq = engInfo['frequency']
+
+        self.cursor.execute(''' INSERT INTO engineData (OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?)''', (eng))
+        
+        self.conn.commit()
+
+    def sensorsData(self, speed, coreName, temperature):
+        fanInfo = psutil.sensors_fans()
+        tempInfo = psutil.sensors_temperatures()
+        sensors = (speed, coreName, temperature)
+        speed = fanInfo.get('cpu_fan')
+        
+        if 'coretemp' in tempInfo:
+            coreTemps = tempInfo['coretemp']
+
+            for coreTemp in coreTemps:
+                temperature = coreTemp.current
+                coreName = coreTemp.label
+        
+
+        self.cursor.execute('''INSERT INTO sensorsTable (Speed, coreName, Temperature) VALUES (?, ?, ?)''', (sensors))   
+        
+        self.conn.commit()
+
+    def diskData(self, total, available, used):
+        diskInfo = psutil.disk_usage('/')
+        disk = (total, available, used)
+        total = diskInfo.total
+        available = diskInfo.free
+        used  = diskInfo.used
+
+        self.cursor.execute('''INSERT INTO diskTable (Total, Available, Used) VALUES (?, ?, ?)''', (disk))
+        
+        self.conn.commit()
+        
+    def interfacesData(self, addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus):
+        netCons = psutil.net_connections(kind='inet')
+        network = (addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus)
+        for conn in netCons:
+            addrFamily = conn.family
+            localAddr = conn.laddr
+            remAddr = conn.raddr
+            addrType = conn.type
+            localAddrStr = ':'.join(str(x) for x in localAddr)
+            remAddrStr = ':'.join(str(x) for x in remAddr)
+            
+            tcpStatus = conn.status
+
+            self.cursor.execute('''INSERT INTO interfacesTable (addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?)''',
+                        (network))
+
+            
+        self.conn.commit()
+
+    def processesData(self, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads):
+        processes = (pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
+        process = psutil.process_iter()
+
+        for proc in process:
+            #pid = proc.pid()
+            procName = proc.name()
+            #gpuUsed = stats.processes[pid]['GPU']['usage']
+            cpuPercent = proc.cpu_percent()
+            memRss = proc.memory_info().rss / (1024 * 1024)  # Convert to MB
+            memVms = proc.memory_info().vms
+            memShared = proc.memory_info().shared
+            priority = proc.nice()
+            status = proc.status()
+            threads = proc.num_threads()
+        #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
+        
+        self.cursor.execute('''INSERT INTO processesTable (PID, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                (processes))
+        
+        self.conn.commit()
+        
+
+    def exportCsv(self, tableName, rows):
+        with open('{table_name}.csv', 'w', newline='', encoding='utf-8') as csv_file:
+            csvWriter = csv.writer(csv_file)
+            csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
+            csvWriter.writerows(rows)  
+
+        tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
+            'memEMCTable', 'memIRAMTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
+
+        for tableName in tableNames:
+            self.cursor.execute("SELECT * FROM {tableName}")
             rows = self.cursor.fetchall()
+            if rows:
+                self.exportCsv(tableName, rows)
+
+        self.conn.commit()
+
+    def __del__(self):
+        print("Commiting changes to Database and Deconstructing Logger")
+        self.__jetson.close()
+        # Close sql connection 
+        self.conn.close() 
+                                                                            
+    
             
-            # Create a folder for storing CSV files if it doesn't exist
-            csvFolder = os.path.join(os.path.dirname(self.logFilePath), self.DEFAULT_CSV_FOLDER)
-            os.makedirs(csvFolder, exist_ok=True)
-
-            # Write logs to a CSV file
-            with open(csvFilePath, 'w', newline='') as csvFilePath:
-                csvWriter = csv.writer(csvFilePath)
-                header = ["ID", "Timestamp", "Process ID", "Tag", "Module", "Level", "Message"]
-                csvWriter.writerow(header)
-                csvWriter.writerows(rows) 
-        
-            # Update the database
-            self.conn.commit()
-
-            print("Logs exported to CSV: {csvFilePath}")
-
-            return csvFilePath
-
-        except Exception as e:
-            print(e)
-            print("Error exporting logs to CSV: {e}") #eventually change to self.logger.error
-
-    def setFilePermissions(self):
-        # Grant all privileges to all users on the file
-        os.chmod(self.logFilePath, 0o777)
+            
