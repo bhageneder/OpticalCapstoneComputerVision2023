@@ -20,7 +20,7 @@ def send_email(EMAIL_TO):
     co_msg = f"""
     {output}
     """
-    EMAIL_SUBJECT = "IP ADDRESS RASPBERY PI " + ROBOT 
+    EMAIL_SUBJECT = "IP ADDRESS ROBOT: " + ROBOT 
     msg = MIMEText(co_msg)
     msg['Subject'] = EMAIL_SUBJECT
     msg['From'] = EMAIL_FROM 
