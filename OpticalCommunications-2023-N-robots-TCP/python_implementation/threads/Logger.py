@@ -3,12 +3,13 @@ import datetime
 import csv
 import logging
 import psutil
+import os
 from jtop import jtop
 
 
 class Logger:
     DEFAULT_DB = 'logger.db'
-
+    
 
     def __init__(self, logFilePath = None):
         self.__jetson = jtop()
@@ -18,40 +19,44 @@ class Logger:
         if logFilePath == None:
            logFilePath = self.DEFAULT_DB
 
-        self.logger = logging.getLogger(__name__)
-
 
         self.conn = sqlite3.connect(logFilePath)    
         self.cursor = self.conn.cursor()
 
         self.conn.commit() 
 
-    
-        self.cursor.execute(
-            """ CREATE TABLE IF NOT EXISTS eventTable (
-                ID INTEGER PRIMARY KEY,
-                Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-                ProcessID INTEGER,
-                Tag VARCHAR(10), 
-                Module  VARCHAR(10),
-                LevelNum INTEGER,
-                Message VARCHAR(255)
-            )"""
-        )
+        try:
+            self.cursor.execute ('''SELECT Module FROM eventTable ''')
+        except:
+            self.cursor.execute(
+                """ CREATE TABLE IF NOT EXISTS eventTable (
+                    ID INTEGER PRIMARY KEY,
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+                    ProcessID INTEGER,
+                    Tag VARCHAR(10), 
+                    Module  VARCHAR(10),
+                    LevelNum INTEGER,
+                    Message VARCHAR(255)
+                )"""
+            )
 
-        self.cursor.execute(
-            """ CREATE TABLE IF NOT EXISTS cpuTable (
-                ID INTEGER PRIMARY KEY,
-                minFreq INTEGER,
-                maxFreq   INTEGER,
-                currFreq   INTEGER,
-                infoFreq VARCHAR(10),
-                User FLOAT,
-                Nice FLOAT,
-                System FLOAT,
-                Idle FLOAT
-            )""" )
-        
+        try:
+            self.cursor.execute ('''SELECT maxFreq FROM cpuTable ''')
+        except: 
+
+            self.cursor.execute(
+                """ CREATE TABLE IF NOT EXISTS cpuTable (
+                    ID INTEGER PRIMARY KEY,
+                    minFreq INTEGER,
+                    maxFreq   INTEGER,
+                    currFreq   INTEGER,
+                    infoFreq VARCHAR(10),
+                    User FLOAT,
+                    Nice FLOAT,
+                    System FLOAT,
+                    Idle FLOAT
+                )""" )
+            
         # Try to access table
         try:
             # Table already exists
@@ -68,112 +73,140 @@ class Logger:
             self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('INFO', '1'), ('WARNING', '2'), 
                             ('ERROR', '3'), ('CRITICAL', '4')''') 
 
-        self.cursor.execute(
-            """ CREATE TABLE IF NOT EXISTS gpuTable (
-                ID INTEGER PRIMARY KEY,
-                Load FLOAT,
-                Temp FLOAT,           
-                gpuType VARCHAR(10),                        
-                memUsed DECIMAL(2),
-                minFreq INTEGER,
-                maxFreq INTEGER,
-                currFreq INTEGER,            
-                Uptime VARCHAR(10)
-        
-            )""" )   
-
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS memRAMTable (
+        try:
+            self.cursor.execute ('''SELECT maxFreq FROM gpuTable ''')
+        except:
+            self.cursor.execute(
+                """ CREATE TABLE IF NOT EXISTS gpuTable (
                     ID INTEGER PRIMARY KEY,
-                    Total INTEGER,
-                    Used INTEGER,
-                    Free INTEGER,
-                    Buffers INTEGER,
-                    Cached INTEGER,
-                    Shared INTEGER,
-                    freeBlock INTEGER
-                )''')  
-
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS memSWAPTable (
-                    ID INTEGER PRIMARY KEY,
-                    Total INTEGER,
-                    Used INTEGER,
-                    Cached INTEGER,
-                    Available INTEGER
-                )''')
-
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS memEMCTable (
-                    ID INTEGER PRIMARY KEY,
-                    onStatus BOOLEAN,
-                    bandwidthUsed INTEGER,
+                    Load FLOAT,
+                    Temp FLOAT,           
+                    gpuType VARCHAR(10),                        
+                    memUsed DECIMAL(2),
                     minFreq INTEGER,
                     maxFreq INTEGER,
-                    currFreq INTEGER
-                    
-                )''') 
+                    currFreq INTEGER,            
+                    Uptime VARCHAR(10)
+            
+                )""" )   
         
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS memIRAMTable (
-                    ID INTEGER PRIMARY KEY,
-                    Total INTEGER,
-                    Used INTEGER,
-                    freeBlock INTEGER
-                )''')
-        
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS engineTable (
-                    ID INTEGER PRIMARY KEY,
-                    onStatus BOOLEAN,
-                    minFreq INTEGER,
-                    maxFreq INTEGER,
-                    currentFreq INTEGER
-                )''')
-        
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS sensorsTable (
-                    ID INTEGER PRIMARY KEY,
-                    Speed INTEGER,
-                    coreName VARCHAR(10),
-                    Temperature FLOAT
-                )''')
-        
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS diskTable (
-                    ID INTEGER PRIMARY KEY,
-                    Total INTEGER,
-                    Available INTEGER,
-                    Used INTEGER
-                )''')
-        
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS interfacesTable (
-                    ID INTEGER PRIMARY KEY,
-                    addressFamily VARCHAR(10),
-                    addressType INTEGER,
-                    localAddress VARCHAR(50), 
-                    remoteAddress VARCHAR(50),
-                    tcpStatus VARCHAR(20)
-                    
-                )''')
+        try:
+            self.cursor.execute ('''SELECT Used FROM memRAMTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS memRAMTable (
+                        ID INTEGER PRIMARY KEY,
+                        Total INTEGER,
+                        Used INTEGER,
+                        Free INTEGER,
+                        Buffers INTEGER,
+                        Cached INTEGER,
+                        Shared INTEGER
+                    )''') 
 
-        self.cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS processesTable (
-                    ID INTEGER PRIMARY KEY,
-                    PID INTEGER,
-                    processName VARCHAR(10),
-                    cpuPercent FLOAT,
-                    memRss INTEGER,
-                    memVms INTEGER,
-                    memShared INTEGER,
-                    Priority INTEGER,
-                    Status VARCHAR(10),
-                    Threads INTEGER
-                    
-                )''')
-        
+        try:
+            self.cursor.execute ('''SELECT Used FROM memSWAPTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS memSWAPTable (
+                        ID INTEGER PRIMARY KEY,
+                        Total INTEGER,
+                        Used INTEGER,
+                        Cached INTEGER,
+                        Available INTEGER
+                    )''')
+
+        try:
+            self.cursor.execute ('''SELECT onStatus FROM memEMCTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS memEMCTable (
+                        ID INTEGER PRIMARY KEY,
+                        onStatus BOOLEAN,
+                        bandwidthUsed INTEGER,
+                        minFreq INTEGER,
+                        maxFreq INTEGER,
+                        currFreq INTEGER
+                        
+                    )''') 
+        try:
+            self.cursor.execute ('''SELECT Used FROM memIRAMTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS memIRAMTable (
+                        ID INTEGER PRIMARY KEY,
+                        Total INTEGER,
+                        Used INTEGER,
+                        freeBlock INTEGER
+                    )''')
+        try:
+            self.cursor.execute ('''SELECT maxFreq FROM engineTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS engineTable (
+                        ID INTEGER PRIMARY KEY,
+                        onStatus BOOLEAN,
+                        minFreq INTEGER,
+                        maxFreq INTEGER,
+                        currentFreq INTEGER
+                    )''')
+
+        try:
+            self.cursor.execute ('''SELECT Speed FROM sensorsTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS sensorsTable (
+                        ID INTEGER PRIMARY KEY,
+                        Speed INTEGER,
+                        coreName VARCHAR(10),
+                        Temperature FLOAT
+                    )''')
+
+        try:
+            self.cursor.execute ('''SELECT Total FROM diskTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS diskTable (
+                        ID INTEGER PRIMARY KEY,
+                        Total INTEGER,
+                        Available INTEGER,
+                        Used INTEGER
+                    )''')
+
+        try:
+            self.cursor.execute ('''SELECT localAddress FROM interfacesTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS interfacesTable (
+                        ID INTEGER PRIMARY KEY,
+                        addressFamily VARCHAR(10),
+                        addressType INTEGER,
+                        localAddress VARCHAR(50), 
+                        remoteAddress VARCHAR(50),
+                        tcpStatus VARCHAR(20)
+                        
+                    )''')
+
+
+        try:
+            self.cursor.execute ('''SELECT memRss FROM processesTable ''')
+        except:
+            self.cursor.execute(
+                '''CREATE TABLE IF NOT EXISTS processesTable (
+                        ID INTEGER PRIMARY KEY,
+                        PID INTEGER,
+                        processName VARCHAR(10),
+                        cpuPercent FLOAT,
+                        memRss INTEGER,
+                        memVms INTEGER,
+                        memShared INTEGER,
+                        Priority INTEGER,
+                        Status VARCHAR(10),
+                        Threads INTEGER
+                        
+                    )''')
         self.conn.commit()
+        self.logger = logging.getLogger(__name__)
 
  
 
@@ -218,9 +251,10 @@ class Logger:
         
         self.conn.commit()
 
-    def memRAMData(self, total, used, free, buffers, cached, shared, freeBlock):
+    def memRAMData(self, total, used, free, buffers, cached, shared):
         memInfo = psutil.virtual_memory()
-        ram = (total, used, free, buffers, cached, shared, freeBlock)
+        ram = (total, used, free, buffers, cached, shared)
+        print("ram")
         total = memInfo.total
         used = memInfo.used
         free = memInfo.free
