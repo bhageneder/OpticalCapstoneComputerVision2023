@@ -26,7 +26,11 @@ def robot_receive(robot):
             # Receive Data From Socket
             # socket.recv(65536) will receive at most 65536 bytes from the socket at once,
             # but it will block until it receives any data, or the connection is closed
-            data = robot.robotLink.socket.recv(65536)
+            try:
+                data = robot.robotLink.socket.recv(65536)
+            except Exception as e:
+                if g.debug_link_receive: print(f"{thread_name} Caught Error: {e}")
+                return
             if g.debug_link_receive: print(f'{thread_name} Received: {data}')
 
             # Update last packet time
@@ -80,7 +84,11 @@ def link_receive_legacy(robot_link):
         # Receive Data From Socket
         # socket.recv(65536) will receive at most 65536 bytes from the socket at once,
         # but it will block until it receives any data, or the connection is closed
-        data = robot_link.socket.recv(65536)
+        try:
+            data = robot_link.socket.recv(65536)
+        except Exception as e:
+                if g.debug_link_receive: print(f"{thread_name} Caught Error: {e}")
+                return
         if g.debug_link_receive: print(f'{thread_name} Received: {data}')
 
         # Update last packet time
