@@ -241,7 +241,7 @@ def init():
     # Set the expected number of robots 
     # (determines how many threads will be run, modifies discovery behavior greatly)
     global EXPECTED_NUMBER_OF_ROBOTS
-    EXPECTED_NUMBER_OF_ROBOTS = 3
+    EXPECTED_NUMBER_OF_ROBOTS = 4
     
     global POSSIBLE_ROBOT_IP_ADDRESSES
     POSSIBLE_ROBOT_IP_ADDRESSES = []
@@ -259,6 +259,8 @@ def init():
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
     elif (robot == "nano"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[2]
+    elif (robot == "orin2"):
+        ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[3]
 
     global POSSIBLE_RECEIVING_ROBOT_PORTS
     POSSIBLE_RECEIVING_ROBOT_PORTS = []
@@ -289,7 +291,7 @@ def init():
             brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
             pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
         )
-    elif robot == "orin":
+    elif robot == "orin" or robot == "orin2":
         import neopixel_spi as neopixel
         spi = board.SPI()   # MOSI pin 19
         
