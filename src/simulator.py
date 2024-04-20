@@ -1,19 +1,14 @@
-import sim.controller.config.v_global_vars as vg
 from sim.UI.ViewClass import View
-from sim.model.ModelClass import Model
+from sim.model.ModelClass import SystemModel
 from sim.controller.ControllerClass import Controller
 
 
 def main():
-
-    # initialize virtual globals
-    vg.init() 
-
     # Create Model
-    model = Model()
+    systemModel = SystemModel()
 
     # Create Controller
-    controller = Controller(model, vg)
+    controller = Controller(systemModel)
 
     # Create View
     view = View(controller)

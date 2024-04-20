@@ -4,14 +4,14 @@ from shapely.geometry import LineString, Polygon
 from interfaces.BaseDetectorClass import BaseDetector 
 
 class vDetector(BaseDetector):
-    def __init__(self, robotModel, model):
+    def __init__(self, robotModel, systemModel):
         super.__init__
         self.__robotModel = robotModel # Current Robot Model
-        self.__model = model # Complete MVC Model
+        self.__systemModel = systemModel # Complete MVC Model
         self.__threshold = 300  # Arbitrary threshold of 300 pixels
 
 
-    def __distance_between_points(self, x1, y1, x2, y2):
+    def __distanceBetweenPoints(self, x1, y1, x2, y2):
         # Return the distance between points
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     
@@ -35,15 +35,17 @@ class vDetector(BaseDetector):
         return line.intersects(blocker)
 
 
-    def detect(self):
+    def detect(self, vg):
         # Start detection loop
         while True:
             # Stop detection loop if robot is deleted
             if not (self.__robotModel.robotItem.isActive()):
                 break
+
+            foundRobotindeces = list()
             
             # iterate through all known robots
-            for robot in self.__model.robots:
+            for robot in self.__systemModel.robots:
                 
                 # Don't care about current robot
                 if (robot.ip == self.__robotModel.ip):
@@ -61,7 +63,7 @@ class vDetector(BaseDetector):
                                    targetRobotPos.y())
                     
                     # obtain the distance between two robots
-                    distance = self.__distance_between_points(
+                    distance = self.__distanceBetweenPoints(
                                                             currentRobot[0],
                                                             currentRobot[1],
                                                             targetRobot[0],
@@ -81,7 +83,7 @@ class vDetector(BaseDetector):
                         blocking = False
                         
                         # iterate through all known blockers
-                        for blockerObj in self.__model.blockers:
+                        for blockerObj in self.__systemModel.blockers:
 
                             blockerItem = blockerObj.blockerItem
                             blockerRect = blockerItem.rect()

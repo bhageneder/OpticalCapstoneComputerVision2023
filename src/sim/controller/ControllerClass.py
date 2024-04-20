@@ -3,12 +3,11 @@ from sim.controller.KillableThreadClass import KillableThread
 from sim.controller.v_main import v_main
 
 class Controller:
-    def __init__(self, model, vg):
-        self.__model = model
+    def __init__(self, systemModel):
+        self.__systemModel = systemModel
         self.__view = None
         self.__IPs = [x for x in range(0,245)]
         self.__usableIPs = self.__IPs.copy()
-        self.__vg = vg
 
 
     def setView(self, view):
@@ -24,7 +23,7 @@ class Controller:
         robotModel = RobotModel(ip)
 
         # Add robot to model
-        self.__model.addRobot(robotModel)
+        self.__systemModel.addRobot(robotModel)
         
         # Update the View
         robotItem = self.__view.drawRobot(robotModel, x, y)   
@@ -33,20 +32,20 @@ class Controller:
         robotModel.robotItem = robotItem
 
         # Start Threads for Robot (v_main for robot with ip)
-        robotModel.thread = KillableThread(v_main, (robotModel, self.__vg, self.__model), name=robotModel.ip)
+        robotModel.thread = KillableThread(v_main, (robotModel, self.__systemModel), name=robotModel.ip)
         robotModel.thread.start()
 
 
     def deleteItems(self, items):
         for item in items:
-            robotModel = next((x for x in self.__model.robots if x.robotItem is item), None)
+            robotModel = next((x for x in self.__systemModel.robots if x.robotItem is item), None)
 
             if robotModel is None:
                 # Blocker (Not a Robot)
-                blockerModel = next((x for x  in self.__model.blockers if x.blockerItem is item), None)
+                blockerModel = next((x for x  in self.__systemModel.blockers if x.blockerItem is item), None)
                 if blockerModel is None:
                     raise "Error in deleteItems(), neither Robot nor Blocker in list"
-                self.__model.blockers.remove(blockerModel)
+                self.__systemModel.blockers.remove(blockerModel)
                 self.__view.eraseBlocker(item)
                 continue
 
@@ -58,12 +57,12 @@ class Controller:
             robotModel.thread.join()
 
             # Clear robot from all detection lists
-            for robot in self.__model.robots:
+            for robot in self.__systemModel.robots:
                 if robotModel.ip in robot.detections:
                     robot.detections.remove(robotModel.ip)
 
             # Delete the Robot
-            self.__model.robots.remove(robotModel)
+            self.__systemModel.robots.remove(robotModel)
 
             # Update Available IPs
             self.__usableIPs.append(robotModel.ip)
@@ -73,7 +72,7 @@ class Controller:
     
 
     def cleanupThreads(self):
-        for robotModel in self.__model.robots:
+        for robotModel in self.__systemModel.robots:
             robotModel.thread.kill()
             robotModel.thread.join()
 
@@ -85,4 +84,4 @@ class Controller:
         blockerModel = BlockerModel(blockerItem)
 
         # Add blocker to model
-        self.__model.addBlocker(blockerModel)
+        self.__systemModel.addBlocker(blockerModel)
