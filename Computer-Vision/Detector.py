@@ -5,7 +5,6 @@ import math
 from Stream import Stream
 from Robot import Robot
 
-
 class Detector:
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
@@ -37,9 +36,7 @@ class Detector:
 
                 # List of all robots that we have lost tracking for
                 self.__lostRobotList = list()
-
-                self.logger = Logger()
-
+                
         # Destructor
         # Releases camera captures and destroys windows
         def __del__(self):
