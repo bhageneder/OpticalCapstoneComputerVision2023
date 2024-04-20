@@ -1,11 +1,10 @@
-from sqlite3 import Timestamp
 import cv2
 import jetson_inference
 import jetson_utils
 import math
 from Stream import Stream
 from Robot import Robot
-from Logger import Logger
+
 
 class Detector:
         # Constructor
@@ -54,8 +53,6 @@ class Detector:
         # Transceiver Getter
         def getTransceiver(self):
                return self.__current_transceiver
-        def Logger(self):
-                self.logger.addEvent('get transceiver', 'detector', 1, 'A test to see if get transceiver reports')
         
         # robotList Getter
         def getRobotLlist(self):
