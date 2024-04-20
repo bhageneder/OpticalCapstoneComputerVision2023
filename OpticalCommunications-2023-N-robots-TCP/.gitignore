@@ -4,4 +4,3 @@ transceiver/obj/Debug
 src/sharedMemory/*.o
 src/*.o
 src/main
-python_implemntation/threads/logger.db
