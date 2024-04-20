@@ -55,6 +55,9 @@ def init():
     global debug_log_packets
     debug_log_packets = False
 
+    global debug_logger
+    debug_logger = False
+
     # From testing, duplicate maintenance packets are very useful
     # in determining the best transceiver. The more duplicate packets
     # received, the better the communication of that transceiver with the other robot.

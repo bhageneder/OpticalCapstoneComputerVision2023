@@ -2,8 +2,10 @@ import math
 import cv2
 import jetson_inference
 import jetson_utils
+import threading
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
+from threads.logger_manager import logger_manager
 import config.global_vars as g
 import os
 import queue
@@ -63,6 +65,10 @@ class Detector(BaseDetector):
         # Detect Method: Call this method in its own thread
         def detect(self):
                 # while not stopFlag
+                
+                # detector_logger_thread = threading.Thread(target=logger_manager, daemon=True, name=f"Detector Logger")
+                # detector_logger_thread.start()
+
                 while True:
                         # List of current frames
                         frames = list(map(lambda x: x.getFrame(), self.__captures))
