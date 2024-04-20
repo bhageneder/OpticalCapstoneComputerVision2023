@@ -36,7 +36,8 @@ class Detector:
 
                 # List of all robots that we have lost tracking for
                 self.__lostRobotList = list()
-                
+
+        
         # Destructor
         # Releases camera captures and destroys windows
         def __del__(self):
