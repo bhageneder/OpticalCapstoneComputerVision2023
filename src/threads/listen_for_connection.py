@@ -64,7 +64,7 @@ def listen_for_connection(port):
             
             # Check if the robot link already exists
             for robot in robotLists:
-                if robot.robotLink.ip_address == robot_sending_ip_address:
+                if (robot.robotLink is not None) and robot.robotLink.ip_address == robot_sending_ip_address:
                     client_socket.close()
                     break
             else:
