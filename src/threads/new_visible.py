@@ -21,7 +21,7 @@ def new_visible():
             robot.robotLink = foundRobot.robotLink
 
             # Acquire Global Lost List Mutex
-            with g.visible_mutex and g.lost_mutex:
+            with g.lost_mutex:
                 # Remove from Global Lost List
                 g.lost.remove(foundRobot)
 
