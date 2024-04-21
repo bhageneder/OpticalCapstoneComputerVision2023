@@ -11,6 +11,9 @@ class VirtualGlobals():
         self.commsThreshold = 300
 
         self.ip = robotIP
+        self.availableIPs = [x for x in range(10,245)] 
+        self.trackIDs = [x for x in range(1, 65535)] 
+        self.trackingIDSet = {}
 
         self.detector = None
 

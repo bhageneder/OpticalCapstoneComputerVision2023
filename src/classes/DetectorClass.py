@@ -13,7 +13,7 @@ class Detector(BaseDetector):
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, modelPath, cameras, render = False, debug = False):
-                super.__init__
+                BaseDetector.__init__(self)
                 self.initializing = True
                 self.__width = width
                 self.__height = height
