@@ -6,6 +6,7 @@ import threading
 # Virtually Handles Newly Visible Robots
 def v_new_visible(vg):
     print("Virtualized new_visible")
+    return
 
     while True:
         # Blocking Call to the Visible Queue
@@ -23,7 +24,7 @@ def v_new_visible(vg):
             robot.robotLink = foundRobot.robotLink
 
             # Acquire Global Lost List Mutex
-            with vg.visible_mutex and vg.lost_mutex:
+            with vg.lost_mutex:
                 # Remove from Global Lost List
                 vg.lost.remove(foundRobot)
 
@@ -40,10 +41,12 @@ def v_new_visible(vg):
 def findRobot(robot, vg):
     # Acquire Lost Robot Mutex
     with vg.lost_mutex:
+
         # Try to Communicate on Open Robot Links Using New Robot Transceiver
         for lostRobot in vg.lost:
-            # Send an Associate Ping to Reassociate
-            response = v_associate(lostRobot.robotLink.ip_address, robot.trackID)
+            
+            # Send a v_associate to Reassociate
+            response = v_associate(lostRobot.robotLink.ip_address, vg)
 
             # If it Got a Response
             if response:

@@ -2,13 +2,15 @@ import time
 import math
 from shapely.geometry import LineString, Polygon
 from interfaces.BaseDetectorClass import BaseDetector 
+import sim.sim_global_vars as sg
 
 class vDetector(BaseDetector):
     def __init__(self, robotModel, systemModel):
         super.__init__
         self.__robotModel = robotModel # Current Robot Model
         self.__systemModel = systemModel # Complete MVC Model
-        self.__threshold = 300  # Arbitrary threshold of 300 pixels
+        self.detections = list()
+        self.commsAvailable = list()
 
 
     def __distanceBetweenPoints(self, x1, y1, x2, y2):
@@ -78,7 +80,7 @@ class vDetector(BaseDetector):
                                         targetRobot[1]
                                         )
 
-                    if (distance <= self.__threshold):
+                    if (distance <= vg.detectionThreshold):
                         # if distance is within threshold; if blockers, not detectect : otherwise, detected
                         blocking = False
                         
@@ -105,17 +107,25 @@ class vDetector(BaseDetector):
 
                         if blocking:
                             # Remove robot from detections list when blocked
-                            self.__robotModel.detections.remove(robot.ip) if robot.ip in self.__robotModel.detections else None                                
+                            self.detections.remove(robot.ip) if robot.ip in self.detections else None
+
                         else:
                             # Add robot to detections list of not blocked
-                            self.__robotModel.detections.append(robot.ip) if robot.ip not in self.__robotModel.detections else None
-                                
-                        #print("INFO:    {} Detected {}".format(self.__robotModel.ip, robot.ip)) # Helpful print statement
+                            self.detections.append(robot.ip) if robot.ip not in self.detections else None
                     else:
-                        self.__robotModel.detections.remove(robot.ip) if robot.ip in self.__robotModel.detections else None
+                        self.detections.remove(robot.ip) if robot.ip in self.detections else None
                 
                 if (self.__robotModel.ip == robot.ip):
                     # Helpful print statement
-                    print("List of Detected Robots for {}:  {}".format(self.__robotModel.ip, self.__robotModel.detections))
+                    print("List of Detected Robots for {}:  {}".format(self.__robotModel.ip, self.detections))
+                    print("List of Communicable Robots for {}: {}".format(self.__robotModel.ip, self.commsAvailable))
+                    print("\n")
+                
+                # clean up state lists
+                for ip in self.detections:
+                    self.detections.remove(ip) if ip not in sg.usedIPs else None
+                for ip in self.commsAvailable:
+                    self.commsAvailable.remove(ip) if ip not in sg.usedIPs else None 
 
+            
             time.sleep(1)

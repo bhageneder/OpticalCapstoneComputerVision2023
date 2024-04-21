@@ -7,23 +7,24 @@ Each robot maintains their own virtual globals state
 '''
 class VirtualGlobals():
     def init(self, robotIP):
-        threshold = 300
+        self.detectionThreshold = 500
+        self.commsThreshold = 300
 
-        ip = robotIP
+        self.ip = robotIP
 
-        detector = None
+        self.detector = None
 
-        detector_thread = None
-        new_visible_thread = None
-        new_lost_thread = None
+        self.detector_thread = None
+        self.new_visible_thread = None
+        self.new_lost_thread = None
 
-        visible = []
-        lost = []
+        self.visible = []
+        self.lost = []
 
-        visible_mutex = threading.Lock()
-        lost_mutex = threading.Lock()
+        self.visible_mutex = threading.Lock()
+        self.lost_mutex = threading.Lock()
 
-        newRobotQ = queue.Queue()
+        self.newRobotQ = queue.Queue()
 
         
     

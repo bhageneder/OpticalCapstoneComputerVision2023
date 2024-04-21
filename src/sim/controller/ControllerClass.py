@@ -1,13 +1,12 @@
 from sim.model.ModelClass import RobotModel, BlockerModel
 from sim.controller.KillableThreadClass import KillableThread
 from sim.controller.v_main import v_main
+import sim.sim_global_vars as sg
 
 class Controller:
     def __init__(self, systemModel):
         self.__systemModel = systemModel
         self.__view = None
-        self.__IPs = [x for x in range(0,245)]
-        self.__usableIPs = self.__IPs.copy()
 
 
     def setView(self, view):
@@ -16,24 +15,29 @@ class Controller:
 
     def addNewRobot(self, x, y):
         # Get next robot IP
-        ip = f"10.0.0.1{self.__usableIPs[0]}"
-        self.__usableIPs.remove(self.__usableIPs[0])
+        try:
+            ip = f"10.0.0.{sg.usableIPs[0]}"
+            sg.usedIPs.append(ip)
+            sg.usableIPs.remove(sg.usableIPs[0])
 
-        # Make new RobotModel
-        robotModel = RobotModel(ip)
+            # Make new RobotModel
+            robotModel = RobotModel(ip)
 
-        # Add robot to model
-        self.__systemModel.addRobot(robotModel)
-        
-        # Update the View
-        robotItem = self.__view.drawRobot(robotModel, x, y)   
+            # Add robot to model
+            self.__systemModel.addRobot(robotModel)
+            
+            # Update the View
+            robotItem = self.__view.drawRobot(robotModel, x, y)   
 
-        # Update the robotItem Field
-        robotModel.robotItem = robotItem
+            # Update the robotItem Field
+            robotModel.robotItem = robotItem
 
-        # Start Threads for Robot (v_main for robot with ip)
-        robotModel.thread = KillableThread(v_main, (robotModel, self.__systemModel), name=robotModel.ip)
-        robotModel.thread.start()
+            # Start Threads for Robot (v_main for robot with ip)
+            robotModel.thread = KillableThread(v_main, (robotModel, self.__systemModel), name=robotModel.ip)
+            robotModel.thread.start()
+
+        except IndexError:
+            print("No More Usable Robots, please delete robots before adding more")
 
 
     def deleteItems(self, items):
@@ -56,16 +60,12 @@ class Controller:
             robotModel.thread.kill()
             robotModel.thread.join()
 
-            # Clear robot from all detection lists
-            for robot in self.__systemModel.robots:
-                if robotModel.ip in robot.detections:
-                    robot.detections.remove(robotModel.ip)
-
             # Delete the Robot
             self.__systemModel.robots.remove(robotModel)
 
             # Update Available IPs
-            self.__usableIPs.append(robotModel.ip)
+            sg.usedIPs.remove(robotModel.ip)
+            sg.usableIPs.append(robotModel.ip.split(".")[-1])
 
             # Remove from UI
             self.__view.eraseRobot(item)

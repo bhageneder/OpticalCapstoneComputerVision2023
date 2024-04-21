@@ -1,9 +1,13 @@
 from sim.UI.ViewClass import View
 from sim.model.ModelClass import SystemModel
 from sim.controller.ControllerClass import Controller
+import sim.sim_global_vars as sg
 
 
 def main():
+    # Intialize simulator global variables
+    sg.init()
+
     # Create Model
     systemModel = SystemModel()
 
