@@ -18,7 +18,7 @@ def v_new_visible(vg):
             vg.visible.append(robot)
 
         # Check if Robot is in Lost List
-        foundRobot = findRobot(robot, vg)
+        foundRobot = findRobot(vg)
         if (foundRobot is not None):
             # Update Robot Link
             robot.robotLink = foundRobot.robotLink
@@ -38,7 +38,7 @@ def v_new_visible(vg):
             node_discovery_thread.start()
 
 # Searchest Lost List for Parameter Robot
-def findRobot(robot, vg):
+def findRobot(vg):
     # Acquire Lost Robot Mutex
     with vg.lost_mutex:
 

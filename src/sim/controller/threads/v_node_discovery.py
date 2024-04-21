@@ -6,6 +6,7 @@ from sim.controller.threads.v_mini_node_discovery import v_mini_node_discovery
 # Attempt to Discover a TCP Connection (Robot Link) to a Newly Visible Robot
 def v_node_discovery(robot, vg):
     print("Virtualized node_discovery")
+    return
     
     # 1 Second Timeout
     timeout = 1

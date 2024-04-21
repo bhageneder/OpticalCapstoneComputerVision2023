@@ -35,6 +35,24 @@ class vDetector(BaseDetector):
 
         # Check if the line intersects with blocker
         return line.intersects(blocker)
+    
+    def __updateDetectionList(self, blocking, robot):
+        print("update detection")
+        if blocking:
+            # Remove robot from detections list when blocked
+            self.detections.remove(robot.ip) if robot.ip in self.detections else None
+        else:
+            # Robot not blocked, add to detections list
+            self.detections.append(robot.ip) if robot.ip not in self.detections else None
+        
+
+    def __updateCommsAvailableList(self, blocking, robot):
+        if blocking:
+            # Remove robot from commsAvailable list when blocked
+            self.commsAvailable.remove(robot.ip) if robot.ip in self.commsAvailable else None
+        else:
+            # Robot not blocked, add to commsAvailable list
+            self.commsAvailable.append(robot.ip) if robot.ip not in self.commsAvailable else None
 
 
     def detect(self, vg):
@@ -80,8 +98,9 @@ class vDetector(BaseDetector):
                                         targetRobot[1]
                                         )
 
-                    if (distance <= vg.detectionThreshold):
-                        # if distance is within threshold; if blockers, not detectect : otherwise, detected
+                    if distance <= vg.detectionThreshold:
+                        # if distance is within the larger threshold; 
+                        # if blockers, not detectect : otherwise, detected
                         blocking = False
                         
                         # iterate through all known blockers
@@ -105,22 +124,25 @@ class vDetector(BaseDetector):
                                 # blocker found, DNC if more than one blocker between two robots, end search
                                 break
 
-                        if blocking:
-                            # Remove robot from detections list when blocked
-                            self.detections.remove(robot.ip) if robot.ip in self.detections else None
-
+                        # Update the state lists for detection and commsAvaiable
+                        self.__updateDetectionList(blocking, robot)
+                        if distance <= vg.commsThreshold:
+                            self.__updateCommsAvailableList(blocking, robot)
                         else:
-                            # Add robot to detections list of not blocked
-                            self.detections.append(robot.ip) if robot.ip not in self.detections else None
+                            # robot outside comms threshold but inside detection threshold
+                            self.commsAvailable.remove(robot.ip) if robot.ip in self.commsAvailable else None
+
                     else:
                         self.detections.remove(robot.ip) if robot.ip in self.detections else None
-                
+                        self.commsAvailable.remove(robot.ip) if robot.ip in self.commsAvailable else None
+            
                 if (self.__robotModel.ip == robot.ip):
                     # Helpful print statement
                     print("List of Detected Robots for {}:  {}".format(self.__robotModel.ip, self.detections))
                     print("List of Communicable Robots for {}: {}".format(self.__robotModel.ip, self.commsAvailable))
                     print("\n")
                 
+
                 # clean up state lists
                 for ip in self.detections:
                     self.detections.remove(ip) if ip not in sg.usedIPs else None
