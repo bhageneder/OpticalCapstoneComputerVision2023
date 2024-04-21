@@ -1,7 +1,7 @@
 import time
 import math
 from shapely.geometry import LineString, Polygon
-from classes.RobotClass import Robot
+from controller.classes.vRobotClass import vRobot
 from interfaces.BaseDetectorClass import BaseDetector 
 import sim.sim_global_vars as sg
 
@@ -172,7 +172,6 @@ class vDetector(BaseDetector):
 
                         # Flag for when the loop identified the robot
                         foundRobotFlag = False
-                        transceiver = 1
 
                         # Find tracking ID in robot list
                         for i in range(0, len(vg.visible)):
@@ -181,16 +180,13 @@ class vDetector(BaseDetector):
                                 foundRobotFlag = True
                                 foundRobotindeces.append(i)
 
-                                # Update Transceiver
-                                vg.visible[i].transceiver = transceiver
-
                                 # Exit inner loop
                                 break
                         
                         # Verify loop
                         # create new robot object and store as necessary
                         if not foundRobotFlag:
-                            self.visibleQ.put(Robot(trackID, transceiver))
+                            self.visibleQ.put(vRobot(trackID))
 
                         if (self.__debug):
                             print("Current Tracking ID for ip {} is: {}".format(detection, trackID))

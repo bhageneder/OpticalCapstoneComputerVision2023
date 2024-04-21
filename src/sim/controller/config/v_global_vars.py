@@ -10,8 +10,14 @@ class VirtualGlobals():
         self.detectionThreshold = 500
         self.commsThreshold = 300
 
+        self.debug_mini_discovery = True
+
+
         self.ip = robotIP
-        self.availableIPs = [x for x in range(10,245)] 
+        self.POSSIBLE_ROBOT_IP_ADDRESSES = [x for x in range(10,245)] 
+        self.EXPECTED_NUMBER_OF_ROBOTS = len(self.POSSIBLE_ROBOT_IP_ADDRESSES)
+        self.DISCOVERY_INTERVAL_SLEEP = 0.1 
+
         self.trackIDs = [x for x in range(1, 65535)] 
         self.trackingIDSet = {}
 
