@@ -11,6 +11,8 @@ class VirtualGlobals():
         self.commsThreshold = 300
 
         self.debug_mini_discovery = True
+        self.debug_new_visible = True
+        self.debug_new_lost = True
 
 
         self.ip = robotIP

@@ -5,7 +5,8 @@ import threading
 
 # Virtually Handles Newly Visible Robots
 def v_new_visible(vg):
-    print("Virtualized new_visible")
+    thread_name = threading.current_thread().name
+    if vg.debug_new_visible: print(f'{thread_name} Created')
 
     while True:
         # Blocking Call to the Visible Queue
