@@ -1,7 +1,7 @@
 import socket
 import threading
 import time
-from controller.classes.vRobotLink import vRobotLink
+from sim.controller.classes.vRobotLink import vRobotLink
 
 def v_mini_node_discovery(robot_receiving_ip_address, vg):
     robot = None

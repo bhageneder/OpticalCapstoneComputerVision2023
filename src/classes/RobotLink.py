@@ -1,4 +1,4 @@
-from src.interfaces.BaseRobotLink import BaseRobotLink
+from interfaces.BaseRobotLink import BaseRobotLink
 
 class RobotLink(BaseRobotLink):
     def __init__(self, name, serial_port, socket, ip_address, port):

@@ -1,7 +1,7 @@
 import time
 import math
 from shapely.geometry import LineString, Polygon
-from controller.classes.vRobotClass import vRobot
+from sim.controller.classes.vRobotClass import vRobot
 from interfaces.BaseDetectorClass import BaseDetector 
 import sim.sim_global_vars as sg
 

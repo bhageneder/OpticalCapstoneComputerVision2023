@@ -1,4 +1,4 @@
-from src.interfaces.BaseRobotClass import BaseRobot
+from interfaces.BaseRobotClass import BaseRobot
 
 class Robot(BaseRobot):
     def __init__(self, trackID, transceiver, robotLink = None):

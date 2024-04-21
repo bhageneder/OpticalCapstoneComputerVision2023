@@ -26,7 +26,7 @@ def v_node_discovery(robot, vg):
                 continue
 
             # Associative Ping:
-            response = v_associate(vg.POSSIBLE_ROBOT_IP_ADDRESSES[i], robot.trackID)
+            response = v_associate(vg.POSSIBLE_ROBOT_IP_ADDRESSES[i], vg)
             
             # If we get a response
             if response:
