@@ -54,11 +54,14 @@ class Logger:
         
         
 
-            
-        self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
-            LevelType  VARCHAR(10),
-                        LevelNum INTEGER
-            );""" )
+        try:
+            # Table already exists
+            self.cursor.execute ('''SELECT LevelType FROM levelTable ''')
+        except:    
+            self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
+                LevelType  VARCHAR(10),
+                            LevelNum INTEGER
+                );""" )
         
         self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0');
                         ''')
@@ -330,8 +333,8 @@ class Logger:
         
 
     def exportCsv(self, tableName, rows):
-        with open('{table_name}.xlsx', 'w', newline='', encoding='utf-8') as csv_file:
-            csvWriter = csv.writer(csv_file)
+        with open('{tableName}.csv', 'w', newline='') as csvFile:
+            csvWriter = csv.writer(csvFile)
             csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
             csvWriter.writerows(rows)  
 
@@ -342,9 +345,11 @@ class Logger:
             self.cursor.execute("SELECT * FROM {tableName}")
             rows = self.cursor.fetchall()
             if rows:
-                self.exportCsv(tableName, rows)
+                self.exportCsv(self.tableName, self.rows)
 
         self.conn.commit()
+
+        
 
     def __del__(self):
         
