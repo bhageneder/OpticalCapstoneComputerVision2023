@@ -5,7 +5,6 @@ import jetson_utils
 import threading
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
-from threads.logger_manager import logger_manager
 import config.global_vars as g
 import os
 import queue
@@ -65,9 +64,6 @@ class Detector(BaseDetector):
         # Detect Method: Call this method in its own thread
         def detect(self):
                 # while not stopFlag
-                
-                # detector_logger_thread = threading.Thread(target=logger_manager, daemon=True, name=f"Detector Logger")
-                # detector_logger_thread.start()
 
                 while True:
                         # List of current frames
@@ -118,6 +114,9 @@ class Detector(BaseDetector):
                         
                         self.initializing = False
 
+                        # Example Log: Log the current framerate
+                       # g.logger.addEvent("tag", "Detector", 1, f"Framerate: {self.__net.GetNetworkFPS()}")
+
         #### Private Helper Methods ####
 
         # Helper method to update the robot list
@@ -126,6 +125,7 @@ class Detector(BaseDetector):
                         # Use integer division to obtain a section the object is detected in
                         #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
                         normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
+                        
                         
                         # Edge Cases
                         if (normalized_x == 0):
@@ -138,7 +138,7 @@ class Detector(BaseDetector):
                         
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
-
+                        g.logger.addEvent("Transceiver", "Detector", 1, f"Detection by transceiver: {section}")
                         return section
 
                 # Create a list to store found robot indeces
@@ -156,7 +156,6 @@ class Detector(BaseDetector):
                                         # Cannot start trackID at 0, or the associative ping will fail
                                         trackID = detection.TrackID + 1
                                         trackingStatus = detection.TrackStatus
-
                                         # Flag for when the loop identifies the robot
                                         foundRobotFlag = False
 
@@ -177,10 +176,11 @@ class Detector(BaseDetector):
                                         # If not, create a new robot object and store in the visibleQ
                                         if not foundRobotFlag:
                                                 self.visibleQ.put(Robot(trackID, transceiver))
-                                        
+                                                g.logger.addEvent("TRUE", "Detector", 1, f"Robot Found: {self.visibleQ.put(Robot(trackID, transceiver))}")
                                         # Debug statement
                                         if (self.__debug):
                                                 print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackID, trackingStatus, transceiver))
+                                                g.logger.addEvent("Transceiver", "Detector", 1, f"Robot tracking status: {trackingStatus}")
 
                         # Make a copy of the robot list
                         robotListCopy = g.visible[:]

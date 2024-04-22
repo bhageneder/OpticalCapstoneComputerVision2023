@@ -1,7 +1,9 @@
 import queue
 import threading
 import configparser
+from venv import logger
 import board
+from classes.LoggerClass import Logger
 
 '''
 Contains global variables that will be used across all files
@@ -57,6 +59,9 @@ def init():
 
     global debug_logger
     debug_logger = False
+
+    global logger
+    logger = Logger()
 
     # From testing, duplicate maintenance packets are very useful
     # in determining the best transceiver. The more duplicate packets

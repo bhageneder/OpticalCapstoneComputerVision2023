@@ -1,9 +1,9 @@
-from classes.Logger import Logger
 import time
 import threading
+import config.global_vars as g
 
 def logger_manager(): 
-    logger = Logger()
+    logger = g.logger
     thread_name = threading.current_thread().name
     if g.debug_logger: print(f'{thread_name}: Starting Logger')
     while True:
