@@ -50,6 +50,7 @@ def node_discovery(robot):
                         robotIP,
                         g.POSSIBLE_RECEIVING_ROBOT_PORTS[i],
                         g.POSSIBLE_SENDING_ROBOT_PORTS[i],
+                        robot
                     ),
                     daemon=True,
                     name=f"Mini_Node_Discovery__{i}"

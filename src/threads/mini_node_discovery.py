@@ -4,7 +4,7 @@ import config.global_vars as g
 from classes.RobotLink import RobotLink
 import time
 
-def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port):
+def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot):
     thread_name = threading.current_thread().name
     # Open a TCP socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,11 +33,8 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port):
     
     if g.debug_mini_discovery: print(f'{thread_name} Connected')
 
-    # Define a robot object
-    robot = None
     for r in (g.visible + g.lost):
             if ((r.robotLink is not None) and (r.robotLink.ip_address == robot_receiving_ip_address)):
-                robot = r
                 break
     else:
         # To make the socket never timed out now when sending or receiving data
