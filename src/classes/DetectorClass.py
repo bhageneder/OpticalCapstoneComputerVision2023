@@ -138,10 +138,6 @@ class Detector(BaseDetector):
                         
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
-                        if g.enable_logger:
-                            with g.logger_mutex:
-                                g.logger.addEvent("Transceiver", "Detector", 1, f"Detection by transceiver: {section}")
-                        return section
 
                 # Create a list to store found robot indeces
                 foundRobotIndeces = list()
