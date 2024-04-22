@@ -60,8 +60,14 @@ def init():
     global debug_logger
     debug_logger = False
 
+    global enable_logger
+    enable_logger = True
+
     global logger
     logger = Logger()
+
+    global logger_thread
+    logger_thread = None
 
     # From testing, duplicate maintenance packets are very useful
     # in determining the best transceiver. The more duplicate packets

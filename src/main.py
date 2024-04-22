@@ -16,6 +16,7 @@ from threads.new_visible import new_visible
 from threads.new_lost import new_lost
 from threads.connection_manager import connection_manager
 from threads.led_manager import led_manager
+from threads.logger_manager import logger_manager
 import config.global_vars as g
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
@@ -86,6 +87,9 @@ def main():
     # Creating Receive Manager Thread
     g.receive_manager_thread = threading.Thread(target=receive_manager, daemon=True, name=f"Receive_Manager")
 
+    if g.enable_logger:
+        g.logger_thread = threading.Thread(target=logger_manager, daemon=True, name=f"Logger Manager")
+
     # Create Threads Specific to CV Enabled Bots
     if not g.LEGACY_MODE:
         # Initialize Detector Thread
@@ -113,6 +117,8 @@ def start_threads():
     for listen_for_connection_thread in g.listen_for_connection_threads:
         listen_for_connection_thread.start()
 
+    if g.enable_logger:
+        g.logger_thread.start()
 
     # TODO: Fix Current Bug: For Sending a Payload, If both Robots Run the Discovery Thread, then
     # the socket is closed / destroyed SOMETIMES by one of the robots, causing payload tranmsissions to fail.
