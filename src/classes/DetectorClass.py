@@ -138,8 +138,9 @@ class Detector(BaseDetector):
                         
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
-                        with g.logger_mutex:
-                            g.logger.addEvent("Transceiver", "Detector", 1, f"Detection by transceiver: {section}")
+                        if g.enable_logger:
+                            with g.logger_mutex:
+                                g.logger.addEvent("Transceiver", "Detector", 1, f"Detection by transceiver: {section}")
                         return section
 
                 # Create a list to store found robot indeces
@@ -167,6 +168,13 @@ class Detector(BaseDetector):
                                                         foundRobotFlag = True
                                                         foundRobotIndeces.append(i)
 
+                                                        # If transceiver changed, log
+                                                        if g.enable_logger:
+                                                                if(g.visible[i].transceiver != transceiver):
+                                                                        with g.logger_mutex:
+                                                                                g.logger.addEvent("Transceiver", "Detector", 1, f"Robot with ID {trackID} is on transceiver {transceiver}")
+
+
                                                         # Update Transceiver
                                                         g.visible[i].transceiver = transceiver
 
@@ -177,13 +185,12 @@ class Detector(BaseDetector):
                                         # If not, create a new robot object and store in the visibleQ
                                         if not foundRobotFlag:
                                                 self.visibleQ.put(Robot(trackID, transceiver))
-                                                with g.logger_mutex:
-                                                    g.logger.addEvent("TRUE", "Detector", 1, f"Robot Found: {self.visibleQ.put(Robot(trackID, transceiver))}")
+                                                if g.enable_logger:
+                                                    with g.logger_mutex:
+                                                        g.logger.addEvent("TRUE", "Detector", 1, f"Robot Found: {self.visibleQ.put(Robot(trackID, transceiver))}")
                                         # Debug statement
                                         if (self.__debug):
                                                 print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackID, trackingStatus, transceiver))
-                                                with g.logger_mutex:
-                                                    g.logger.addEvent("Transceiver", "Detector", 1, f"Robot tracking status: {trackingStatus}")
 
                         # Make a copy of the robot list
                         robotListCopy = g.visible[:]
