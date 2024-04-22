@@ -347,9 +347,10 @@ class Logger:
         self.conn.commit()
 
     def __del__(self):
-        self.exportCsv(self.tableName, self.rows)
+        
         print("Commiting changes to Database and Deconstructing Logger")
         try:
+            self.exportCsv(self.tableName, self.rows)
             self.__jetson.close()
             # Close sql connection 
             self.conn.close()
