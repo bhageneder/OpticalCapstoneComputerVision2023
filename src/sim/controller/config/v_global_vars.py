@@ -1,5 +1,6 @@
 import threading
 import queue
+import sim.sim_global_vars as sg
 
 '''
 Contains virtual global variables that will be used across sim files
@@ -7,8 +8,8 @@ Each robot maintains their own virtual globals state
 '''
 class VirtualGlobals():
     def init(self, robotIP):
-        self.detectionThreshold = 500
-        self.commsThreshold = 300
+        self.detectionThreshold = sg.detectionThreshold
+        self.commsThreshold = sg.commsThreshold
 
         self.debug_mini_discovery = True
         self.debug_new_visible = True

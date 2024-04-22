@@ -10,3 +10,9 @@ def init():
 
     global usedIPs
     usedIPs = list()
+
+    global detectionThreshold
+    detectionThreshold = 500
+
+    global commsThreshold
+    commsThreshold = 300
