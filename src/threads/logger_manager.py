@@ -15,7 +15,6 @@ def logger_manager():
             logger.diskData()
             logger.interfacesData()
             logger.processesData()
-            logger.exportCsv()
        
             # Not logging ( method call issues)
             #logger.gpuData()
