@@ -330,7 +330,7 @@ class Logger:
         
 
     def exportCsv(self, tableName, rows):
-        with open('{table_name}.csv', 'w', newline='', encoding='utf-8') as csv_file:
+        with open('{table_name}.xlsx', 'w', newline='', encoding='utf-8') as csv_file:
             csvWriter = csv.writer(csv_file)
             csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
             csvWriter.writerows(rows)  
@@ -347,7 +347,7 @@ class Logger:
         self.conn.commit()
 
     def __del__(self):
-        self.exportCsv()
+        self.exportCsv(self.tableName, self.rows)
         print("Commiting changes to Database and Deconstructing Logger")
         try:
             self.__jetson.close()
