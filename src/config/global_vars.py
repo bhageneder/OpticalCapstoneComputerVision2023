@@ -69,6 +69,10 @@ def init():
     global logger_thread
     logger_thread = None
 
+    # Prevent multiple threads modifying logger.db simultaneously    
+    global logger_mutex
+    logger_mutex = threading.Lock()
+
     # From testing, duplicate maintenance packets are very useful
     # in determining the best transceiver. The more duplicate packets
     # received, the better the communication of that transceiver with the other robot.

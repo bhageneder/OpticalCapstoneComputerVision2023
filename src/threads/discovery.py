@@ -13,7 +13,8 @@ def discovery():
         if len(g.robot_links) >= g.EXPECTED_NUMBER_OF_ROBOTS - 1:
             if g.debug_discovery: print(f'{thread_name}: All robots have been discovered. Returning...')
             return
-        g.logger.addEvent("Robot", "Discovery", 1, "All robots have been discovered")
+        with g.logger_mutex:
+            g.logger.addEvent("Robot", "Discovery", 1, "All robots have been discovered")
 
         # Creating Mini-Discovery Threads (n - 1 will run simultaneously at a time, not looking for own IP address)
         # (needs to be done each time because threads cannot be restarted)

@@ -21,7 +21,7 @@ class Logger:
            logFilePath = self.DEFAULT_DB
 
 
-        self.conn = sqlite3.connect(logFilePath)    
+        self.conn = sqlite3.connect(logFilePath, check_same_thread = False)    
         self.cursor = self.conn.cursor()
 
         self.conn.commit() 

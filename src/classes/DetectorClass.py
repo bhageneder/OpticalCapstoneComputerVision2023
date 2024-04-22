@@ -138,7 +138,8 @@ class Detector(BaseDetector):
                         
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
-                        g.logger.addEvent("Transceiver", "Detector", 1, f"Detection by transceiver: {section}")
+                        with g.logger_mutex:
+                            g.logger.addEvent("Transceiver", "Detector", 1, f"Detection by transceiver: {section}")
                         return section
 
                 # Create a list to store found robot indeces
@@ -176,11 +177,13 @@ class Detector(BaseDetector):
                                         # If not, create a new robot object and store in the visibleQ
                                         if not foundRobotFlag:
                                                 self.visibleQ.put(Robot(trackID, transceiver))
-                                                g.logger.addEvent("TRUE", "Detector", 1, f"Robot Found: {self.visibleQ.put(Robot(trackID, transceiver))}")
+                                                with g.logger_mutex:
+                                                    g.logger.addEvent("TRUE", "Detector", 1, f"Robot Found: {self.visibleQ.put(Robot(trackID, transceiver))}")
                                         # Debug statement
                                         if (self.__debug):
                                                 print("Current Tracking Status for ID {} is: {} using transceiver {}".format(trackID, trackingStatus, transceiver))
-                                                g.logger.addEvent("Transceiver", "Detector", 1, f"Robot tracking status: {trackingStatus}")
+                                                with g.logger_mutex:
+                                                    g.logger.addEvent("Transceiver", "Detector", 1, f"Robot tracking status: {trackingStatus}")
 
                         # Make a copy of the robot list
                         robotListCopy = g.visible[:]
