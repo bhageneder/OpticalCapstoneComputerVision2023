@@ -15,10 +15,7 @@ def logger_manager():
             logger.diskData()
             logger.interfacesData()
             logger.processesData()
-<<<<<<< HEAD
-=======
-            
->>>>>>> 6a753f448722c7a48191ea6cbbfd9b5a6185905f
+
        
             # Not logging ( method call issues)
             #logger.gpuData()
