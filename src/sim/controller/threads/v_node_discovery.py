@@ -5,6 +5,8 @@ from sim.controller.threads.v_mini_node_discovery import v_mini_node_discovery
 
 # Attempt to Discover a TCP Connection (Robot Link) to a Newly Visible Robot
 def v_node_discovery(robot, vg):
+    thread_name = threading.current_thread().name
+    if vg.debug_node_discovery: print(f'{thread_name} Created')
     
     # 1 Second Timeout
     timeout = 1
@@ -21,16 +23,17 @@ def v_node_discovery(robot, vg):
 
         # Identify Which IP the Robot Has
         for i in range(len(vg.POSSIBLE_ROBOT_IP_ADDRESSES)):
+            searchAddr = f"10.0.0.{vg.POSSIBLE_ROBOT_IP_ADDRESSES[i]}"
             # Skip over our own IP (we should really not have any used IPs in this list tbh, should change this)
-            if vg.POSSIBLE_ROBOT_IP_ADDRESSES[i] == vg.ip:
+            if searchAddr == vg.ip:
                 continue
-
+            
             # Associative Ping:
-            response = v_associate(vg.POSSIBLE_ROBOT_IP_ADDRESSES[i], vg)
+            response = v_associate(searchAddr, vg)
             
             # If we get a response
             if response:
-                robotIP = vg.POSSIBLE_ROBOT_IP_ADDRESSES[i]
+                robotIP = searchAddr
                 break
 
         # Only try to discover if we know the IP
@@ -48,6 +51,7 @@ def v_node_discovery(robot, vg):
                     target=v_mini_node_discovery,
                     args=(
                         robotIP,
+                        robot,
                         vg
                     ),
                     daemon=True,

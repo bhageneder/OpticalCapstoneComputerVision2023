@@ -211,8 +211,6 @@ class View():
 
 
     def __handleSelectionChanged(self):
-        # parse thread args
-        
         selectedItemsList = self.graphicsScene.selectedItems()
         itemsList = self.graphicsScene.items()
         remainingItemList = [x for x in itemsList if x not in set(selectedItemsList)]
@@ -223,12 +221,12 @@ class View():
             if len(item.childItems()) > 1:
                 pass
             else:
+                # draw radii for robots
                 self.__drawRadius(item) if type(item) is QGraphicsEllipseItem else None
         
+        # For all remaining robots (that have radii), clear radii
         worker = Worker(self.__clearRadius, (remainingItemList))
         self.__threadPool.start(worker)
-        # For all remaining robots (if permitting) clear radii
-        remainingItemList = [x for x in itemsList if x not in set(selectedItemsList)]
 
 
     def __xRobotHandler(self, text):
@@ -296,12 +294,12 @@ class View():
 
     def __drawRadius(self, selectedItem):
         # Create Comms Ring
-        commsEllipse = QGraphicsEllipseItem((selectedItem.boundingRect().center().x()-(sg.commsThreshold/2)), (selectedItem.boundingRect().center().y()-(sg.commsThreshold/2)), sg.commsThreshold, sg.commsThreshold, parent=selectedItem)
+        commsEllipse = QGraphicsEllipseItem((selectedItem.boundingRect().center().x()-(sg.commsThreshold)), (selectedItem.boundingRect().center().y()-(sg.commsThreshold)), sg.commsThreshold*2, sg.commsThreshold*2, parent=selectedItem)
         commsEllipse.setZValue(-10) # set this to be behind robot item
         commsEllipse.setBrush(QBrush(QColor(128, 128, 128, 77))) # gray at 30% opacity (r, g, b, opacity % (#/255))
 
         # Create Detection Rings
-        detectionEllipse = QGraphicsEllipseItem((selectedItem.boundingRect().center().x()-(sg.detectionThreshold/2)), (selectedItem.boundingRect().center().y()-(sg.detectionThreshold/2)), sg.detectionThreshold, sg.detectionThreshold, parent=selectedItem)
+        detectionEllipse = QGraphicsEllipseItem((selectedItem.boundingRect().center().x()-(sg.detectionThreshold)), (selectedItem.boundingRect().center().y()-(sg.detectionThreshold)), sg.detectionThreshold*2, sg.detectionThreshold*2, parent=selectedItem)
         detectionEllipse.setZValue(-20) # set this to be behind first two ellipse items
         detectionEllipse.setBrush(QBrush(QColor(144, 238, 144, 77))) # Light green at 30% opacity (r, g, b, opacity % (#/255))
 
