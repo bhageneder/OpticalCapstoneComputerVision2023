@@ -91,12 +91,12 @@ class Detector(BaseDetector):
                             starting_section = 3 # Section modified after first line is drawn
                             incrementer = 2 # Increment to control the increase at which sections are chosen (i.e. 1/10 -> 3/10 -> 5/10)
                             
-                            # Create the initial line segment ot use in the iterative loop
-                            previous_line = cv2.line(img_2, (int(self.__width/self.__division), 0), (int(self.__width/self.__division), self.__height), (0,0,0), 5)
+                            # Create the initial line segment to use in the iterative loop
+                            previous_line = cv2.line(img_2, (int(self.__width/self.__division) + 150, 0), (int(self.__width/self.__division) + 150, self.__height), (0,0,0), 5)
 
                             # Loop to append previous frame with new segment line until entire frame is covered
                             while(starting_section < self.__division):
-                                    cv2.line(previous_line, ((starting_section*int(self.__width/self.__division)), 0), ((starting_section*int(self.__width/self.__division)), self.__height), (0,0,0), 5)
+                                    cv2.line(previous_line, ((starting_section*int(self.__width/self.__division) + 150), 0), ((starting_section*int(self.__width/self.__division) + 150), self.__height), (0,0,0), 5)
                                     starting_section = starting_section + incrementer
 
                             # Convert the image to correct color format
@@ -123,10 +123,9 @@ class Detector(BaseDetector):
         # Helper method to update the robot list
         def __updateRobotList(self):
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
-                        # Use integer division to obtain a section the object is detected in
-                        #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
-                        normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
-                        
+                        # Use integer division to obtain a section the object is detected in         
+                        normalized_x = ((Center_Of_Object - 150) // (width_of_frame / self.__division))
+
                         # Edge Cases
                         if (normalized_x == 0):
                                 normalized_x = self.__sections
@@ -138,7 +137,7 @@ class Detector(BaseDetector):
                         
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
-
+                        
                         return section
 
                 # Create a list to store found robot indeces
