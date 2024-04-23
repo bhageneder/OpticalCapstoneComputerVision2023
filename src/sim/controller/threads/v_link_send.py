@@ -25,7 +25,7 @@ def v_link_send(robot, vg):
                         dataQ = sg.listOfDataQ[int(sendingTo.split(".")[-1])-10]
                         # Send data with tag
                         if vg.debug_link_send: print(f'{thread_name} Sending payload through dataQ {payload}, iteration {send_num}')
-                        dataQ.put(payload[0] + " " + tag, timeout=3)
+                        dataQ.put(payload[0] + " " + tag, timeout=3)    
                         payload.remove(payload[0])
                         
                         # increment send number
@@ -39,3 +39,4 @@ def v_link_send(robot, vg):
 
         # Sleep the Virtual Link Send Thread
         time.sleep(vg.PAYLOAD_INTERVAL_SLEEP)
+    return
