@@ -299,7 +299,7 @@ class Logger:
         total = diskInfo.total
         available = diskInfo.free
         used  = diskInfo.used
-        disk = (total, available, used)
+        disk = (timestamp, total, available, used)
 
         self.cursor.execute('''INSERT INTO diskTable (Timestamp, Total, Available, Used) VALUES (?, ?, ?, ?);''', (disk))
         
