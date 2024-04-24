@@ -61,7 +61,7 @@ class Logger:
         except:    
             self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
                 LevelType  VARCHAR(10),
-                            LevelNum INTEGER
+                LevelNum INTEGER
                 );""" )
         
         self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0');
