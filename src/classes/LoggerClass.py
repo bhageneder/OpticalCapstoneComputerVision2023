@@ -64,9 +64,8 @@ class Logger:
                 LevelNum INTEGER
                 );""" )
         
-        self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0');
-                        ''')
-        self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('INFO', '1'), ('WARNING', '2'), 
+
+        self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0'), ('INFO', '1'), ('WARNING', '2'), 
                         ('ERROR', '3'), ('CRITICAL', '4');''') 
 
     
