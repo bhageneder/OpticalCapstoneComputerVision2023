@@ -12,8 +12,6 @@ class View():
         self.__window = QWidget()
         self.__controller = controller
         self.__threadPool = QThreadPool()
-        self.__commsRadiusList = list()
-        self.__detectionRadiusList = list()
 
         #self.__window.setStyleSheet("background-color: black; border: 5px solid green; color: white;")
         #self.__window.setStyleSheet("background-color: black; border: 2px solid white; color: white;")
