@@ -164,6 +164,7 @@ class Logger:
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS processesTable (
                     Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+                    pid INTEGER,
                     processName VARCHAR(10),
                     cpuPercent FLOAT,
                     memRss INTEGER,
@@ -332,24 +333,27 @@ class Logger:
         process = psutil.process_iter()
 
         for proc in process:
-            #pid = proc.pid()
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-            procName = proc.name()
-            #gpuUsed = stats.processes[pid]['GPU']['usage']
-            cpuPercent = proc.cpu_percent()
-            memRss = proc.memory_info().rss / (1024 * 1024)  # Convert to MB
-            memVms = proc.memory_info().vms
-            memShared = proc.memory_info().shared
-            priority = proc.nice()
-            status = proc.status()
-            threads = proc.num_threads()
-        #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
-        processes = (timestamp, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
+            try:
+                pid = proc.pid
+                procName = proc.name()
+                #gpuUsed = stats.processes[pid]['GPU']['usage']
+                cpuPercent = proc.cpu_percent()
+                memRss = proc.memory_info().rss / (1024 * 1024)  # Convert to MB
+                memVms = proc.memory_info().vms
+                memShared = proc.memory_info().shared
+                priority = proc.nice()
+                status = proc.status()
+                threads = proc.num_threads()
+            #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
+                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                processes = (timestamp, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
 
-        self.cursor.execute('''INSERT INTO processesTable (Timestamp, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);''',
-                (processes))
+                self.cursor.execute('''INSERT INTO processesTable (Timestamp, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
+                        (processes))
         
-        self.conn.commit()
+                self.conn.commit()
+            except psutil.NoSuchProcess:
+                pass
         
 
     def exportCsv(self):
