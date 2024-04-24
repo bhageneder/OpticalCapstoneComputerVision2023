@@ -357,8 +357,9 @@ class Logger:
         
 
     def exportCsv(self):
-        tableNames = ['eventTable', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
-            'memEMCTable', 'memIRAMTable', 'engTable', 'diskTable', 'interfaceTable', 'processesTable']
+       # tableNames = ['eventTable', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
+        #    'memEMCTable', 'memIRAMTable', 'engTable', 'diskTable', 'interfaceTable', 'processesTable']
+        tableNames = ['eventTable', 'cpuTable', 'memRAMTable', 'memSWAPTable', 'diskTable', 'interfaceTable', 'processesTable']
         
         for tableName in tableNames:
             self.cursor.execute(f"SELECT * FROM {tableName}")
