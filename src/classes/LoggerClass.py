@@ -349,21 +349,19 @@ class Logger:
         self.conn.commit()
         
 
-    def exportCsv(self, tableNames, rows):
-        with open(f'{tableName}.csv', 'w', newline='') as csvFile:
-            csvWriter = csv.writer(csvFile)
-            csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
-            csvWriter.writerows(rows)  
-
+    def exportCsv(self):
         tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
             'memEMCTable', 'memIRAMTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
-
+        
         for tableName in tableNames:
             self.cursor.execute("SELECT * FROM {tableName}")
             rows = self.cursor.fetchall()
             if rows:
-                self.exportCsv(tableName, rows)
-
+                with open(f'{tableName}.csv', 'w', newline='') as csvFile:
+                    csvWriter = csv.writer(csvFile)
+                    csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
+                    csvWriter.writerows(rows) 
+                
         self.conn.commit()
 
         
