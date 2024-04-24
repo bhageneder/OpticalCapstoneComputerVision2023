@@ -350,7 +350,7 @@ class Logger:
         
 
     def exportCsv(self, tableNames, rows):
-        with open('{tableNames}.csv', 'w', newline='') as csvFile:
+        with open(f'{tableName}.csv', 'w', newline='') as csvFile:
             csvWriter = csv.writer(csvFile)
             csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
             csvWriter.writerows(rows)  
@@ -358,11 +358,11 @@ class Logger:
         tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
             'memEMCTable', 'memIRAMTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
 
-        for tableNames in tableNames:
-            self.cursor.execute("SELECT * FROM {tableNames}")
+        for tableName in tableNames:
+            self.cursor.execute("SELECT * FROM {tableName}")
             rows = self.cursor.fetchall()
             if rows:
-                self.exportCsv(self.tableNames, self.rows)
+                self.exportCsv(tableName, rows)
 
         self.conn.commit()
 
