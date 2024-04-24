@@ -232,7 +232,7 @@ class Logger:
         cached = memInfo.cached
         shared = memInfo.shared
         #freeBlock = memInfo.inactive_file
-        ram = (total, used, free, buffers, cached, shared)
+        ram = (timestamp, total, used, free, buffers, cached, shared)
         self.cursor.execute('''INSERT INTO memRAMTable (Timestamp, Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?, ?);''', (ram))
         
         self.conn.commit()
@@ -370,10 +370,10 @@ class Logger:
         
 
     def __del__(self):
-        
+        self.exportCsv(self.tableName, self.rows)
+        self.conn.commit()
         print("Commiting changes to Database and Deconstructing Logger")
-        try:
-            self.exportCsv(self.tableName, self.rows)
+        try: 
             self.__jetson.close()
             # Close sql connection 
             self.conn.close()
