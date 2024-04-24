@@ -357,7 +357,7 @@ class Logger:
         
 
     def exportCsv(self):
-        tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
+        tableNames = ['eventTable', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
             'memEMCTable', 'memIRAMTable', 'engTable', 'diskTable', 'interfaceTable', 'processesTable']
         
         for tableName in tableNames:
