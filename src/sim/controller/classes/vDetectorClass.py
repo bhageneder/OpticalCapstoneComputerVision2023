@@ -51,13 +51,57 @@ class vDetector(BaseDetector):
                 vg.trackIDs.remove(vg.trackIDs[0])
 
         
-    def __updateCommsAvailableList(self, blocking, robot, vg):
+    def __updateCommsAvailableList(self, blocking, robot):
         if blocking:
             # Remove robot from commsAvailable list when blocked
             self.commsAvailable.remove(robot.ip) if robot.ip in self.commsAvailable else None
         else:
             # Robot not blocked, add to commsAvailable list
             self.commsAvailable.append(robot.ip) if robot.ip not in self.commsAvailable else None
+
+    def __updateRobotList(self, vg):
+            # list to store found robot indeces
+            foundRobotindeces = list()
+
+            # Acquire Visible Robot List Mutex
+            with vg.visible_mutex:
+
+                # Loop through all detections, create robots
+                for detection in self.detections:
+
+                    trackID = vg.trackingIDSet[detection]
+
+                    # Flag for when the loop identified the robot
+                    foundRobotFlag = False
+
+                    # Find tracking ID in robot list
+                    for i in range(0, len(vg.visible)):
+                        # If we are on the correct robot, update the tracking information
+                        if (vg.visible[i].trackID == trackID):
+                            foundRobotFlag = True
+                            foundRobotindeces.append(i)
+
+                            # Exit inner loop
+                            break
+                    
+                    # Verify loop
+                    # create new robot object and store as necessary
+                    if not foundRobotFlag:
+                        self.visibleQ.put(vRobot(trackID))
+
+                    if (self.__debug):
+                        print("Current Tracking ID for ip {} is: {}".format(detection, trackID))
+
+                robotListCopy = vg.visible[:]
+
+            # Remove all the found elements from the list
+            for i in sorted(foundRobotindeces, reverse=True):
+                robotListCopy.pop(i)
+            
+            # Queue up lost robots
+            for robot in robotListCopy:
+                #Queue it to the lostQ
+                self.lostQ.put(robot)
 
 
     def detect(self, vg):
@@ -144,7 +188,7 @@ class vDetector(BaseDetector):
                         # Update the state lists for detection and commsAvaiable
                         self.__updateDetectionList(blocking, robot, vg)
                         if distance <= vg.commsThreshold:
-                            self.__updateCommsAvailableList(blocking, robot, vg)
+                            self.__updateCommsAvailableList(blocking, robot)
                         else:
                             # robot outside comms threshold but inside detection threshold
                             self.commsAvailable.remove(robot.ip) if robot.ip in self.commsAvailable else None
@@ -159,48 +203,6 @@ class vDetector(BaseDetector):
                     print("List of Communicable Robots for {}: {}".format(self.__robotModel.ip, self.commsAvailable))
                     print("\n")
 
-            # list to store found robot indeces
-            foundRobotindeces = list()
-
-            # Acquire Visible Robot List Mutex
-            with vg.visible_mutex:
-
-                # Loop through all detections, create robots
-                for detection in self.detections:
-
-                    trackID = vg.trackingIDSet[detection]
-
-                    # Flag for when the loop identified the robot
-                    foundRobotFlag = False
-
-                    # Find tracking ID in robot list
-                    for i in range(0, len(vg.visible)):
-                        # If we are on the correct robot, update the tracking information
-                        if (vg.visible[i].trackID == trackID):
-                            foundRobotFlag = True
-                            foundRobotindeces.append(i)
-
-                            # Exit inner loop
-                            break
-                    
-                    # Verify loop
-                    # create new robot object and store as necessary
-                    if not foundRobotFlag:
-                        self.visibleQ.put(vRobot(trackID))
-
-                    if (self.__debug):
-                        print("Current Tracking ID for ip {} is: {}".format(detection, trackID))
-
-                robotListCopy = vg.visible[:]
-
-            # Remove all the found elements from the list
-            for i in sorted(foundRobotindeces, reverse=True):
-                robotListCopy.pop(i)
-            
-            # Queue up lost robots
-            for robot in robotListCopy:
-                #Queue it to the lostQ
-                self.lostQ.put(robot)
-
+            self.__updateRobotList(vg)
             
             time.sleep(1)
