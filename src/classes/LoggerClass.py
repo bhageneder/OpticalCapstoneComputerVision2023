@@ -369,7 +369,7 @@ class Logger:
         
 
     def __del__(self):
-        self.exportCsv(self.tableNames, self.rows)
+        self.exportCsv(self.tableName, self.rows)
         self.conn.commit()
         print("Commiting changes to Database and Deconstructing Logger")
         try: 
