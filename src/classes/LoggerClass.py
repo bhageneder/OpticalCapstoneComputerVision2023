@@ -37,7 +37,7 @@ class Logger:
                 Module  VARCHAR(10),
                 LevelNum INTEGER,
                 Message VARCHAR(255)
-            );"""
+            )"""
         )
 
         self.cursor.execute(
@@ -51,7 +51,7 @@ class Logger:
                 Nice FLOAT,
                 System FLOAT,
                 Idle FLOAT
-            );""" )
+            )""" )
         
         
 
@@ -64,12 +64,12 @@ class Logger:
             self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
                 LevelType  VARCHAR(10),
                             LevelNum INTEGER
-                );""")
+                )""")
             
             self.cursor.execute('''INSRT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0');
                             ''')
             self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('INFO', '1'), ('WARNING', '2'), 
-                            ('ERROR', '3'), ('CRITICAL', '4');''') 
+                            ('ERROR', '3'), ('CRITICAL', '4')''') 
 
     
         self.cursor.execute(
@@ -84,7 +84,7 @@ class Logger:
                 currFreq INTEGER,            
                 Uptime VARCHAR(10)
         
-            );""" )   
+            )""" )   
     
        
         self.cursor.execute(
@@ -96,7 +96,7 @@ class Logger:
                     Buffers INTEGER,
                     Cached INTEGER,
                     Shared INTEGER
-                );''') 
+                )''') 
 
        
         self.cursor.execute(
@@ -106,7 +106,7 @@ class Logger:
                     Used INTEGER,
                     Cached INTEGER,
                     Available INTEGER
-                );''')
+                )''')
 
         
         self.cursor.execute(
@@ -118,7 +118,7 @@ class Logger:
                     maxFreq INTEGER,
                     currFreq INTEGER
                     
-                );''') 
+                )''') 
         
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS memIRAMTable (
@@ -126,7 +126,7 @@ class Logger:
                     Total INTEGER,
                     Used INTEGER,
                     freeBlock INTEGER
-                );''')
+                )''')
        
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS engineTable (
@@ -135,7 +135,7 @@ class Logger:
                     minFreq INTEGER,
                     maxFreq INTEGER,
                     currentFreq INTEGER
-                );''')
+                )''')
 
  
        
@@ -145,7 +145,7 @@ class Logger:
                     Total INTEGER,
                     Available INTEGER,
                     Used INTEGER
-                );''')
+                )''')
 
      
         self.cursor.execute(
@@ -157,7 +157,7 @@ class Logger:
                     remoteAddress VARCHAR(50),
                     tcpStatus VARCHAR(20)
                     
-                );''')
+                )''')
 
 
        
@@ -174,7 +174,7 @@ class Logger:
                     Status VARCHAR(10),
                     Threads INTEGER
                     
-                );''')
+                )''')
         self.conn.commit()
         self.logger = logging.getLogger(__name__)
 
@@ -184,7 +184,7 @@ class Logger:
         # instantiantion method detection = logging.getLogger(Detect)
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         event = (timestamp, tag, module, levelNum, message)
-        self.cursor.execute('''INSERT INTO eventTable (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?);''', (event))
+        self.cursor.execute('''INSERT INTO eventTable (Timestamp, Tag, Module, LevelNum, Message) VALUES (?, ?, ?, ?, ?)''', (event))
         self.conn.commit()
 
     def cpuData(self):
@@ -204,7 +204,7 @@ class Logger:
         idle = cpuTimes.idle
         cpu = (timestamp, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
 
-        self.cursor.execute('''INSERT INTO cpuTable (Timestamp, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);''', (cpu))
+        self.cursor.execute('''INSERT INTO cpuTable (Timestamp, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', (cpu))
     
         self.conn.commit() 
 
@@ -221,7 +221,7 @@ class Logger:
         uptime = gpuInfo['Uptime']
         gpu = (timestamp, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime)
 
-        self.cursor.execute('''INSERT INTO gpuTable (Timestamp, Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''', (gpu))
+        self.cursor.execute('''INSERT INTO gpuTable (Timestamp, Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (gpu))
         
         self.conn.commit()
 
@@ -236,7 +236,7 @@ class Logger:
         shared = memInfo.shared
         #freeBlock = memInfo.inactive_file
         ram = (timestamp, total, used, free, buffers, cached, shared)
-        self.cursor.execute('''INSERT INTO memRAMTable (Timestamp, Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?, ?);''', (ram))
+        self.cursor.execute('''INSERT INTO memRAMTable (Timestamp, Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?, ?)''', (ram))
         
         self.conn.commit()
             
@@ -249,7 +249,7 @@ class Logger:
         cached = swapInfo.sin
         available = swapInfo.free
         swap = (timestamp, total, used, cached, available)
-        self.cursor.execute('''INSERT INTO memSWAPTable (Timestamp, Total, Used, Cached, Available) VALUES (?, ?, ?, ?, ?);''',
+        self.cursor.execute('''INSERT INTO memSWAPTable (Timestamp, Total, Used, Cached, Available) VALUES (?, ?, ?, ?, ?)''',
             (swap))
         
         self.conn.commit()
@@ -265,7 +265,7 @@ class Logger:
         currFreq = emcInfo['frequency']
         emcInfo = self.__jetson.stats.mem.gpu.get() 
 
-        self.cursor.execute('''INSERT INTO memEMCTable (Timestamp, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?, ?);''', (emc))
+        self.cursor.execute('''INSERT INTO memEMCTable (Timestamp, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?, ?)''', (emc))
         
         self.conn.commit()
 
@@ -277,7 +277,7 @@ class Logger:
         used = iramInfo['used']
         freeBlock = iramInfo['free']
         iramInfo = self.__jetson.stats.mem.iram.get()       
-        self.cursor.execute('''INSERT INTO memIRAMTable (Timestamp, TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?, ?);''', (iram))
+        self.cursor.execute('''INSERT INTO memIRAMTable (Timestamp, TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?, ?)''', (iram))
     
         self.conn.commit()
 
@@ -290,7 +290,7 @@ class Logger:
         currFreq = engInfo['frequency']
         eng = (timestamp, onStatus, minFreq, maxFreq, currFreq)
 
-        self.cursor.execute(''' INSERT INTO engineData (Timestamp, OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?, ?);''', (eng))
+        self.cursor.execute(''' INSERT INTO engineData (Timestamp, OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?, ?)''', (eng))
         
         self.conn.commit()
 
@@ -304,7 +304,7 @@ class Logger:
         used  = diskInfo.used
         disk = (timestamp, total, available, used)
 
-        self.cursor.execute('''INSERT INTO diskTable (Timestamp, Total, Available, Used) VALUES (?, ?, ?, ?);''', (disk))
+        self.cursor.execute('''INSERT INTO diskTable (Timestamp, Total, Available, Used) VALUES (?, ?, ?, ?)''', (disk))
         
         self.conn.commit()
         
@@ -322,7 +322,7 @@ class Logger:
             
             tcpStatus = conn.status
             network = (timestamp, addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus)
-            self.cursor.execute('''INSERT INTO interfacesTable (Timestamp, addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?, ?);''',
+            self.cursor.execute('''INSERT INTO interfacesTable (Timestamp, addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?, ?)''',
                         (network))
 
             
@@ -348,7 +348,7 @@ class Logger:
                 timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 processes = (timestamp, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
 
-                self.cursor.execute('''INSERT INTO processesTable (Timestamp, pid, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
+                self.cursor.execute('''INSERT INTO processesTable (Timestamp, pid, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (processes))
         
                 self.conn.commit()
