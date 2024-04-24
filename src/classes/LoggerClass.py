@@ -55,18 +55,21 @@ class Logger:
         
         
 
+         # Try to access table
         try:
             # Table already exists
             self.cursor.execute ('''SELECT LevelType FROM levelTable ''')
-        except:    
+        except:
+            # Table doesn't exist, create and insert data
             self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
                 LevelType  VARCHAR(10),
-                LevelNum INTEGER
-                );""" )
-        
-
-        self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0'), ('INFO', '1'), ('WARNING', '2'), 
-                        ('ERROR', '3'), ('CRITICAL', '4');''') 
+                            LevelNum INTEGER
+                )"""; )
+            
+            self.cursor.execute('''INSRT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0');
+                            ''';)
+            self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('INFO', '1'), ('WARNING', '2'), 
+                            ('ERROR', '3'), ('CRITICAL', '4');''') 
 
     
         self.cursor.execute(
