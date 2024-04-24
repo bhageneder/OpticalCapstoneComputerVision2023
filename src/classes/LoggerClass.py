@@ -348,7 +348,7 @@ class Logger:
                 timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 processes = (timestamp, pid, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
 
-                self.cursor.execute('''INSERT INTO processesTable (Timestamp, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
+                self.cursor.execute('''INSERT INTO processesTable (Timestamp, pid, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
                         (processes))
         
                 self.conn.commit()
