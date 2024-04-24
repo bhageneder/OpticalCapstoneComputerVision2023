@@ -351,7 +351,7 @@ class Logger:
         
 
     def exportCsv(self, tableNames, rows):
-        with open('{tableName}.csv', 'w', newline='') as csvFile:
+        with open('{tableNames}.csv', 'w', newline='') as csvFile:
             csvWriter = csv.writer(csvFile)
             csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
             csvWriter.writerows(rows)  
@@ -360,17 +360,17 @@ class Logger:
             'memEMCTable', 'memIRAMTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
 
         for tableNames in tableNames:
-            self.cursor.execute("SELECT * FROM {tableName}")
+            self.cursor.execute("SELECT * FROM {tableNames}")
             rows = self.cursor.fetchall()
             if rows:
-                self.exportCsv(self.tableName, self.rows)
+                self.exportCsv(self.tableNames, self.rows)
 
         self.conn.commit()
 
         
 
     def __del__(self):
-        self.exportCsv(self.tableName, self.rows)
+        self.exportCsv(self.tableNames, self.rows)
         self.conn.commit()
         print("Commiting changes to Database and Deconstructing Logger")
         try: 
