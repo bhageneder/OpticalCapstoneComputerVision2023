@@ -42,6 +42,7 @@ class Logger:
 
         self.cursor.execute(
             """ CREATE TABLE IF NOT EXISTS cpuTable (
+                Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                 minFreq INTEGER,
                 maxFreq   INTEGER,
                 currFreq   INTEGER,
@@ -71,6 +72,7 @@ class Logger:
     
         self.cursor.execute(
             """ CREATE TABLE IF NOT EXISTS gpuTable (
+                Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                 Load FLOAT,
                 Temp FLOAT,           
                 gpuType VARCHAR(10),                        
@@ -85,6 +87,7 @@ class Logger:
        
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS memRAMTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     Total INTEGER,
                     Used INTEGER,
                     Free INTEGER,
@@ -96,6 +99,7 @@ class Logger:
        
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS memSWAPTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     Total INTEGER,
                     Used INTEGER,
                     Cached INTEGER,
@@ -105,6 +109,7 @@ class Logger:
         
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS memEMCTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     onStatus BOOLEAN,
                     bandwidthUsed INTEGER,
                     minFreq INTEGER,
@@ -115,6 +120,7 @@ class Logger:
         
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS memIRAMTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     Total INTEGER,
                     Used INTEGER,
                     freeBlock INTEGER
@@ -122,6 +128,7 @@ class Logger:
        
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS engineTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     onStatus BOOLEAN,
                     minFreq INTEGER,
                     maxFreq INTEGER,
@@ -132,6 +139,7 @@ class Logger:
        
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS diskTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     Total INTEGER,
                     Available INTEGER,
                     Used INTEGER
@@ -140,6 +148,7 @@ class Logger:
      
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS interfacesTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     addressFamily VARCHAR(10),
                     addressType INTEGER,
                     localAddress VARCHAR(50), 
@@ -152,6 +161,7 @@ class Logger:
        
         self.cursor.execute(
             '''CREATE TABLE IF NOT EXISTS processesTable (
+                    Timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                     processName VARCHAR(10),
                     cpuPercent FLOAT,
                     memRss INTEGER,
@@ -179,6 +189,7 @@ class Logger:
         cpuInfo = psutil.cpu_freq()
         #onStatus = psutil.cpu_stats().
         #governor = psutil.cpu_freq().
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         minFreq = cpuInfo.min
         maxFreq = cpuInfo.max
         currFreq = cpuInfo.current
@@ -188,15 +199,15 @@ class Logger:
         nice = cpuTimes.nice
         system = cpuTimes.system
         idle = cpuTimes.idle
-        cpu = (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
+        cpu = (timestamp, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle)
 
-        self.cursor.execute('''INSERT INTO cpuTable (minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''', (cpu))
+        self.cursor.execute('''INSERT INTO cpuTable (Timestamp, minFreq, maxFreq, currFreq, infoFreq, user, nice, system, idle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);''', (cpu))
     
         self.conn.commit() 
 
     def gpuData(self):
         gpuInfo = self.__jetson.gpu_stats()
-        
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         load = gpuInfo['GPU utilization [%]']
         temp = gpuInfo['GPU temperature [°C]']
         gpuType = gpuInfo['GPU type']
@@ -205,14 +216,15 @@ class Logger:
         maxFreq = gpuInfo['GPU frequency range [MHz]']['max']
         currFreq = gpuInfo['GPU frequency [MHz]']
         uptime = gpuInfo['Uptime']
-        gpu = (load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime)
+        gpu = (timestamp, load, temp, type, memUsed, minFreq, maxFreq, currFreq, uptime)
 
-        self.cursor.execute('''INSERT INTO gpuTable (Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''', (gpu))
+        self.cursor.execute('''INSERT INTO gpuTable (Timestamp, Load, Temp, gpuType, memUsed, minFreq, maxFreq, currFreq, Uptime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''', (gpu))
         
         self.conn.commit()
 
     def memRAMData(self):
         memInfo = psutil.virtual_memory()
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         total = memInfo.total
         used = memInfo.used
         free = memInfo.free
@@ -221,27 +233,28 @@ class Logger:
         shared = memInfo.shared
         #freeBlock = memInfo.inactive_file
         ram = (total, used, free, buffers, cached, shared)
-        self.cursor.execute('''INSERT INTO memRAMTable (Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?);''', (ram))
+        self.cursor.execute('''INSERT INTO memRAMTable (Timestamp, Total, Used, Free, Buffers, Cached, Shared) VALUES (?, ?, ?, ?, ?, ?, ?);''', (ram))
         
         self.conn.commit()
             
 
     def memSWAPData(self):
         swapInfo = psutil.swap_memory()
-        
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         total = swapInfo.total
         used = swapInfo.used
         cached = swapInfo.sin
         available = swapInfo.free
-        swap = (total, used, cached, available)
-        self.cursor.execute('''INSERT INTO memSWAPTable (Total, Used, Cached, Available) VALUES (?, ?, ?, ?);''',
+        swap = (timestamp, total, used, cached, available)
+        self.cursor.execute('''INSERT INTO memSWAPTable (Timestamp, Total, Used, Cached, Available) VALUES (?, ?, ?, ?, ?);''',
             (swap))
         
         self.conn.commit()
 
     def memEMCData(self):
         
-        emc = (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) 
+        emc = (timestamp, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) 
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         onStatus = emcInfo['online']
         bandwidthUsed = emcInfo['bandwidth_used']
         minFreq = emcInfo['min_frequency']
@@ -249,30 +262,32 @@ class Logger:
         currFreq = emcInfo['frequency']
         emcInfo = self.__jetson.stats.mem.gpu.get() 
 
-        self.cursor.execute('''INSERT INTO memEMCTable (onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?);''', (emc))
+        self.cursor.execute('''INSERT INTO memEMCTable (Timestamp, onStatus, bandwidthUsed, minFreq, maxFreq, currFreq) VALUES (?, ?, ?, ?, ?, ?);''', (emc))
         
         self.conn.commit()
 
     def memIRAMData(self):
         
-        iram = (total, used, freeBlock)
+        iram = (timestamp, total, used, freeBlock)
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         total = iramInfo['total']
         used = iramInfo['used']
         freeBlock = iramInfo['free']
         iramInfo = self.__jetson.stats.mem.iram.get()       
-        self.cursor.execute('''INSERT INTO memIRAMTable (TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?);''', (iram))
+        self.cursor.execute('''INSERT INTO memIRAMTable (Timestamp, TotalBlock, UsedBlock, FreeBlock) VALUES (?, ?, ?, ?);''', (iram))
     
         self.conn.commit()
 
     def engData(self):
         engInfo = self.__jetson.stats.gpu.get()
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         onStatus = engInfo['online']
         minFreq = engInfo['min_frequency']
         maxFreq = engInfo['max_frequency']
         currFreq = engInfo['frequency']
-        eng = (onStatus, minFreq, maxFreq, currFreq)
+        eng = (timestamp, onStatus, minFreq, maxFreq, currFreq)
 
-        self.cursor.execute(''' INSERT INTO engineData (OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?);''', (eng))
+        self.cursor.execute(''' INSERT INTO engineData (Timestamp, OnlineStatus, MinFrequency, MaxFrequency, CurrentFrequency) VALUES (?, ?, ?, ?, ?);''', (eng))
         
         self.conn.commit()
 
@@ -280,12 +295,13 @@ class Logger:
 
     def diskData(self):
         diskInfo = psutil.disk_usage('/')
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         total = diskInfo.total
         available = diskInfo.free
         used  = diskInfo.used
         disk = (total, available, used)
 
-        self.cursor.execute('''INSERT INTO diskTable (Total, Available, Used) VALUES (?, ?, ?);''', (disk))
+        self.cursor.execute('''INSERT INTO diskTable (Timestamp, Total, Available, Used) VALUES (?, ?, ?, ?);''', (disk))
         
         self.conn.commit()
         
@@ -293,6 +309,7 @@ class Logger:
         netCons = psutil.net_connections(kind='inet')
         
         for conn in netCons:
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
             addrFamily = conn.family
             localAddr = conn.laddr
             remAddr = conn.raddr
@@ -301,8 +318,8 @@ class Logger:
             remAddrStr = ':'.join(str(x) for x in remAddr)
             
             tcpStatus = conn.status
-            network = (addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus)
-            self.cursor.execute('''INSERT INTO interfacesTable (addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?);''',
+            network = (timestamp, addrFamily, addrType, localAddrStr, remAddrStr, tcpStatus)
+            self.cursor.execute('''INSERT INTO interfacesTable (Timestamp, addressFamily, addressType, localAddress, remoteAddress, tcpStatus) VALUES (?, ?, ?, ?, ?, ?);''',
                         (network))
 
             
@@ -314,6 +331,7 @@ class Logger:
 
         for proc in process:
             #pid = proc.pid()
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
             procName = proc.name()
             #gpuUsed = stats.processes[pid]['GPU']['usage']
             cpuPercent = proc.cpu_percent()
@@ -324,15 +342,15 @@ class Logger:
             status = proc.status()
             threads = proc.num_threads()
         #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
-        processes = (procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
+        processes = (timestamp, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
 
-        self.cursor.execute('''INSERT INTO processesTable (processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
+        self.cursor.execute('''INSERT INTO processesTable (Timestamp, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
                 (processes))
         
         self.conn.commit()
         
 
-    def exportCsv(self, tableName, rows):
+    def exportCsv(self, tableNames, rows):
         with open('{tableName}.csv', 'w', newline='') as csvFile:
             csvWriter = csv.writer(csvFile)
             csvWriter.writerow([description[0] for description in self.cursor.description])  # Write headers automatically
@@ -341,7 +359,7 @@ class Logger:
         tableNames = ['addEvent', 'cpuTable', 'gpuTable', 'memRAMTable', 'memSWAPTable', 
             'memEMCTable', 'memIRAMTable', 'engTable', 'sensorsTable', 'diskTable', 'interfaceTable', 'processesTable']
 
-        for tableName in tableNames:
+        for tableNames in tableNames:
             self.cursor.execute("SELECT * FROM {tableName}")
             rows = self.cursor.fetchall()
             if rows:
