@@ -1,5 +1,5 @@
 import threading
-from sim.controller.config.v_global_vars import VirtualGlobals
+from sim.controller.config.v_global_vars import vGlobals
 from sim.controller.classes.vDetectorClass import vDetector
 from sim.controller.threads.v_new_visible import v_new_visible
 from sim.controller.threads.v_new_lost import v_new_lost
@@ -11,7 +11,7 @@ def v_main(params):
     systemModel = params[1]
 
     # initialize virtual globals
-    vg = VirtualGlobals()
+    vg = vGlobals()
     vg.init(robotModel.ip)
 
     # Initialize Detector

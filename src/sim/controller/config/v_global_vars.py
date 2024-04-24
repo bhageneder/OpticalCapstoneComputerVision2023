@@ -6,7 +6,7 @@ import sim.sim_global_vars as sg
 Contains virtual global variables that will be used across sim files
 Each robot maintains their own virtual globals state
 '''
-class VirtualGlobals():
+class vGlobals():
     def init(self, robotIP):
         self.detectionThreshold = sg.detectionThreshold
         self.commsThreshold     = sg.commsThreshold
