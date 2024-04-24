@@ -64,10 +64,10 @@ class Logger:
             self.cursor.execute(""" CREATE TABLE IF NOT EXISTS levelTable (
                 LevelType  VARCHAR(10),
                             LevelNum INTEGER
-                )"""; )
+                );""")
             
             self.cursor.execute('''INSRT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('DEBUG', '0');
-                            ''';)
+                            ''')
             self.cursor.execute('''INSERT OR IGNORE INTO levelTable (LevelType, LevelNum) VALUES ('INFO', '1'), ('WARNING', '2'), 
                             ('ERROR', '3'), ('CRITICAL', '4');''') 
 
