@@ -343,7 +343,7 @@ class Logger:
         #gpuMemUsed = stats.processes[pid]['GPU']['memoryUsed'] / (1024 * 1024)  # Convert to MB
         processes = (timestamp, procName, cpuPercent, memRss, memVms, memShared, priority, status, threads)
 
-        self.cursor.execute('''INSERT INTO processesTable (Timestamp, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
+        self.cursor.execute('''INSERT INTO processesTable (Timestamp, processName, cpuPercent, memRss, memVms, memShared, Priority, Status, Threads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);''',
                 (processes))
         
         self.conn.commit()
