@@ -1,6 +1,4 @@
-from sim.controller.KillableThreadClass import KillableThread
-
-class Model:
+class SystemModel:
     def __init__(self):
         self.robots = list()
         self.blockers = list()
@@ -22,10 +20,10 @@ class RobotModel:
     def __init__(self, ip, thread=None):
         self.ip = ip
         self.robotItem = None
-        self.detections = list()
         self.thread = thread
         
 
 class BlockerModel:
     def __init__(self, item):
         self.blockerItem = item
+        

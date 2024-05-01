@@ -2,8 +2,10 @@ import math
 import cv2
 import jetson_inference
 import jetson_utils
+import threading
 from classes.StreamClass import Stream
 from classes.RobotClass import Robot
+from threads.logger_manager import logger_manager
 import config.global_vars as g
 import os
 import queue
@@ -13,10 +15,8 @@ class Detector(BaseDetector):
         # Constructor
         # Parameters: Width of Output Frame, Height of Output Frame, Object Detection Model Name, List of Camera Names [e.g., [0, 1, ...]), render (default false), debug (default false)
         def __init__(self, width, height, modelName, modelPath, cameras, render = False, debug = False):
-                super.__init__
+                BaseDetector.__init__(self)
                 self.initializing = True
-                self.visibleQ = queue.Queue()
-                self.lostQ = queue.Queue()
                 self.__width = width
                 self.__height = height
                 self.__render = render
@@ -33,6 +33,10 @@ class Detector(BaseDetector):
                 
                 # Set up detect net for the custom model
                 self.__net = jetson_inference.detectNet(model=(modelPath + modelName + "/ssd-mobilenet.onnx"), labels=(modelPath + modelName + "/labels.txt"), input_blob="input_0", output_cvg="scores", output_bbox="boxes", threshold=0.5)
+                jetson_utils.Log.SetLevel('silent')
+
+                # Turn off annoying tracking messages (seriously, you don't want these turned on)
+                jetson_utils.Log.SetLevel('silent')
 
                 self.__net.SetTrackingEnabled(True)
                 self.__net.SetTrackingParams(self.__trackingMinFrames, self.__DropFramesFrames, self.__trackingOverlapThreshold)
@@ -59,6 +63,10 @@ class Detector(BaseDetector):
         # Detect Method: Call this method in its own thread
         def detect(self):
                 # while not stopFlag
+                
+                # detector_logger_thread = threading.Thread(target=logger_manager, daemon=True, name=f"Detector Logger")
+                # detector_logger_thread.start()
+
                 while True:
                         # List of current frames
                         frames = list(map(lambda x: x.getFrame(), self.__captures))
@@ -81,12 +89,12 @@ class Detector(BaseDetector):
                             starting_section = 3 # Section modified after first line is drawn
                             incrementer = 2 # Increment to control the increase at which sections are chosen (i.e. 1/10 -> 3/10 -> 5/10)
                             
-                            # Create the initial line segment ot use in the iterative loop
-                            previous_line = cv2.line(img_2, (int(self.__width/self.__division), 0), (int(self.__width/self.__division), self.__height), (0,0,0), 5)
+                            # Create the initial line segment to use in the iterative loop
+                            previous_line = cv2.line(img_2, (int(self.__width/self.__division) + 150, 0), (int(self.__width/self.__division) + 150, self.__height), (0,0,0), 5)
 
                             # Loop to append previous frame with new segment line until entire frame is covered
                             while(starting_section < self.__division):
-                                    cv2.line(previous_line, ((starting_section*int(self.__width/self.__division)), 0), ((starting_section*int(self.__width/self.__division)), self.__height), (0,0,0), 5)
+                                    cv2.line(previous_line, ((starting_section*int(self.__width/self.__division) + 150), 0), ((starting_section*int(self.__width/self.__division) + 150), self.__height), (0,0,0), 5)
                                     starting_section = starting_section + incrementer
 
                             # Convert the image to correct color format
@@ -113,10 +121,9 @@ class Detector(BaseDetector):
         # Helper method to update the robot list
         def __updateRobotList(self):
                 def obtain_transceiver_number(Center_Of_Object, width_of_frame):
-                        # Use integer division to obtain a section the object is detected in
-                        #normalized_x = (Center_Of_Object // (width_of_frame // self.__division))            
-                        normalized_x = (Center_Of_Object // (width_of_frame / self.__division))
-                        
+                        # Use integer division to obtain a section the object is detected in         
+                        normalized_x = ((Center_Of_Object - 150) // (width_of_frame / self.__division))
+
                         # Edge Cases
                         if (normalized_x == 0):
                                 normalized_x = self.__sections
@@ -128,7 +135,7 @@ class Detector(BaseDetector):
                         
                         # Offset the value to line up with numbers on physical transceivers
                         section = (section + 4) if section < 4 else (section - 4)
-
+                        
                         return section
 
                 # Create a list to store found robot indeces

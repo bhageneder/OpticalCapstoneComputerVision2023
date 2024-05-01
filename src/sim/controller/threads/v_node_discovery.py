@@ -1,11 +1,13 @@
-import time
 import threading
-import config.global_vars as g
-from functions.ping import associate
-from threads.mini_node_discovery import mini_node_discovery
+import time
+from sim.controller.functions.v_ping import v_associate
+from sim.controller.threads.v_mini_node_discovery import v_mini_node_discovery
 
 # Attempt to Discover a TCP Connection (Robot Link) to a Newly Visible Robot
-def node_discovery(robot):
+def v_node_discovery(robot, vg):
+    thread_name = threading.current_thread().name
+    if vg.debug_node_discovery: print(f'{thread_name} Created')
+    
     # 1 Second Timeout
     timeout = 1
 
@@ -20,17 +22,18 @@ def node_discovery(robot):
         robotIP = None
 
         # Identify Which IP the Robot Has
-        for i in range(len(g.POSSIBLE_ROBOT_IP_ADDRESSES)):
+        for i in range(len(vg.POSSIBLE_ROBOT_IP_ADDRESSES)):
+            searchAddr = f"10.0.0.{vg.POSSIBLE_ROBOT_IP_ADDRESSES[i]}"
             # Skip over our own IP (we should really not have any used IPs in this list tbh, should change this)
-            if g.POSSIBLE_ROBOT_IP_ADDRESSES[i] == g.ROBOT_IP_ADDRESS:
+            if searchAddr == vg.ip:
                 continue
-
+            
             # Associative Ping:
-            response = associate(robot.transceiver, g.POSSIBLE_ROBOT_IP_ADDRESSES[i], robot.trackID)
+            response = v_associate(searchAddr, vg)
             
             # If we get a response
             if response:
-                robotIP = g.POSSIBLE_ROBOT_IP_ADDRESSES[i]
+                robotIP = searchAddr
                 break
 
         # Only try to discover if we know the IP
@@ -38,19 +41,18 @@ def node_discovery(robot):
             # Set the IP - Checked by the Send Manager
             robot.IP = robotIP
 
-            numThreads = g.EXPECTED_NUMBER_OF_ROBOTS
+            numThreads = vg.EXPECTED_NUMBER_OF_ROBOTS
 
             # Try to discovery on possible ports
             # Creating Mini Node Discovery Threads For Each Port
             mini_node_discovery_threads = []
             for i in range(numThreads):
                 mini_node_discovery_threads.append(threading.Thread(
-                    target=mini_node_discovery,
+                    target=v_mini_node_discovery,
                     args=(
                         robotIP,
-                        g.POSSIBLE_RECEIVING_ROBOT_PORTS[i],
-                        g.POSSIBLE_SENDING_ROBOT_PORTS[i],
-                        robot
+                        robot,
+                        vg
                     ),
                     daemon=True,
                     name=f"Mini_Node_Discovery__{i}"
@@ -63,7 +65,7 @@ def node_discovery(robot):
                 mini_node_discovery_threads[i].join()
 
         # Sleep
-        time.sleep(g.DISCOVERY_INTERVAL_SLEEP)
+        time.sleep(vg.DISCOVERY_INTERVAL_SLEEP)
 
         # Update Time
         t = time.time()
@@ -71,13 +73,13 @@ def node_discovery(robot):
     if (robot.robotLink is None):
         # Failed to Discover Robot
         # Acquire Global Visible Robot List Mutex
-            with g.visible_mutex:
+            with vg.visible_mutex:
                 # Remove Robot from Global Visible List
                 try:
-                    g.visible.remove(robot)
+                    vg.visible.remove(robot)
                 except ValueError:
                     # Robot is Already Considered Lost and Has Been Removed from List
                     pass
     else:
         # Queue to New Robot Queue
-        g.newRobotQ.put(robot)
+        vg.newRobotQ.put(robot)

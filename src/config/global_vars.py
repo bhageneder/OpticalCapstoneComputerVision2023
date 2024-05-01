@@ -17,16 +17,19 @@ def init():
     debug_discovery = True
 
     global debug_link_send
-    debug_link_send = False
+    debug_link_send = True
 
     global debug_link_receive
     debug_link_receive = True
+
+    global debug_connection_manager
+    debug_connection_manager = True
 
     global debug_listen_for_connection
     debug_listen_for_connection = True
 
     global debug_maintenance
-    debug_maintenance = True
+    debug_maintenance = False
 
     global debug_mini_discovery
     debug_mini_discovery = False
@@ -51,6 +54,9 @@ def init():
 
     global debug_log_packets
     debug_log_packets = False
+
+    global debug_logger
+    debug_logger = False
 
     # From testing, duplicate maintenance packets are very useful
     # in determining the best transceiver. The more duplicate packets
@@ -217,6 +223,9 @@ def init():
     
     global SOCKET_CONNECTION_TIMEOUT
     SOCKET_CONNECTION_TIMEOUT = 0.25
+
+    global SOCKET_TRANSMISSION_TIMEOUT
+    SOCKET_TRANSMISSION_TIMEOUT = 5
     
     # At the start of every packet, these bytes will appear - in Wireshark
     global START_OF_PACKET
@@ -235,7 +244,7 @@ def init():
     # Set the expected number of robots 
     # (determines how many threads will be run, modifies discovery behavior greatly)
     global EXPECTED_NUMBER_OF_ROBOTS
-    EXPECTED_NUMBER_OF_ROBOTS = 3
+    EXPECTED_NUMBER_OF_ROBOTS = 4
     
     global POSSIBLE_ROBOT_IP_ADDRESSES
     POSSIBLE_ROBOT_IP_ADDRESSES = []
@@ -253,6 +262,8 @@ def init():
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[1]
     elif (robot == "nano"):
         ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[2]
+    elif (robot == "orin2"):
+        ROBOT_IP_ADDRESS = POSSIBLE_ROBOT_IP_ADDRESSES[3]
 
     global POSSIBLE_RECEIVING_ROBOT_PORTS
     POSSIBLE_RECEIVING_ROBOT_PORTS = []
@@ -283,7 +294,7 @@ def init():
             brightness = 0.05,              # Scale from 0.00 to 1.00 (Higher = Brighter), CAUTION: 1.00 hurts your eyes
             pixel_order = neopixel.GRB      # G and R are reversed, so the colors are actually in order of RGB
         )
-    elif robot == "orin":
+    elif robot == "orin" or robot == "orin2":
         import neopixel_spi as neopixel
         spi = board.SPI()   # MOSI pin 19
         

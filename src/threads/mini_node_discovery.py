@@ -2,6 +2,7 @@ import threading
 import socket
 import config.global_vars as g
 from classes.RobotLink import RobotLink
+import time
 
 def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot):
     thread_name = threading.current_thread().name
@@ -17,8 +18,8 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
         # Socket already in use, a previous thread already successfully connected
         return
     try:
-        for robot in (g.visible + g.lost):
-            if ((robot.robotLink is not None) and (robot.robotLink.ip_address == robot_receiving_ip_address)):
+        for r in (g.visible + g.lost):
+            if ((r.robotLink is not None) and (r.robotLink.ip_address == robot_receiving_ip_address)):
                 break
         else:
             if g.debug_mini_discovery: print(f'{thread_name} Attempting To Connect To: ', (robot_receiving_ip_address, int(dst_port)))
@@ -32,8 +33,8 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
     
     if g.debug_mini_discovery: print(f'{thread_name} Connected')
 
-    for robot in (g.visible + g.lost):
-            if ((robot.robotLink is not None) and (robot.robotLink.ip_address == robot_receiving_ip_address)):
+    for r in (g.visible + g.lost):
+            if ((r.robotLink is not None) and (r.robotLink.ip_address == robot_receiving_ip_address)):
                 break
     else:
         # To make the socket never timed out now when sending or receiving data
@@ -41,5 +42,7 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
 
         # Default the serial port to transceiver 0, Maintenance will set the best one.
         link = RobotLink(None, g.serial_ports[0], client_socket, robot_receiving_ip_address, dst_port)
+        link.lastPacketTime = time.time()
+
         if g.debug_mini_discovery: print(f'{thread_name} New Robot Link Found On: ', (robot_receiving_ip_address, int(dst_port)))
         robot.robotLink = link

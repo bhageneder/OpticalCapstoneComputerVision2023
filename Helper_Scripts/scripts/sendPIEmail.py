@@ -2,27 +2,25 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 import subprocess
-import board
-import neopixel
-import sys
-#sys.path.append("../")
-#import python_implementation.led_manager as lc
+import configparser
 
 SMTP_SERVER = "smtp.mail.yahoo.com"
 SMTP_PORT = 587
 SMTP_USERNAME = "opticalcomms23@yahoo.com"
 SMTP_PASSWORD = "uqtjdtfqxtenmgtw"
 EMAIL_FROM = "opticalcomms23@yahoo.com"
-robotFile = open("/home/sa/robotName.txt", "r")
-ROBOT = robotFile.read()
-robotFile.close()
+
+# Get robot name from config file
+config = configparser.ConfigParser()
+config.read("../../src/config/config.cfg")
+ROBOT = config['Name']['robotName']
 
 def send_email(EMAIL_TO):
     output = subprocess.getoutput("ifconfig")
     co_msg = f"""
     {output}
     """
-    EMAIL_SUBJECT = "IP ADDRESS RASPBERY PI " + ROBOT 
+    EMAIL_SUBJECT = "IP ADDRESS ROBOT: " + ROBOT 
     msg = MIMEText(co_msg)
     msg['Subject'] = EMAIL_SUBJECT
     msg['From'] = EMAIL_FROM 

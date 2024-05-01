@@ -4,6 +4,7 @@ import psutil
 import config.global_vars as g
 from classes.RobotLink import RobotLink
 from classes.RobotClass import Robot
+import time
 
 # Listen for connection on all 8 possible ports (1 port per thread)
 def listen_for_connection(port):
@@ -35,25 +36,44 @@ def listen_for_connection(port):
 
         if g.debug_listen_for_connection: print(f'{thread_name} Connection Received')
 
-        for robot_link in g.robot_links:
-            if robot_link.ip_address == robot_sending_ip_address:
-                client_socket.close()
-                break
-        else:
-            # To make the socket never timed out now when sending or receiving data
-            client_socket.settimeout(None) 
+        if g.LEGACY_MODE:
+            # Check if the robot link already exists
+            for robot_link in g.robot_links:
+                if robot_link.ip_address == robot_sending_ip_address:
+                    client_socket.close()
+                    break
+            else:
+                # To make the socket never timed out now when sending or receiving data
+                client_socket.settimeout(None) 
 
-            if g.LEGACY_MODE:
                 # Default the serial port to transceiver 0, Maintenance will set the best one.
                 link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                link.lastPacketTime = time.time()
                 with g.robot_links_mutex:
                     g.robot_links.append(link)
                 if g.debug_listen_for_connection: print(f'{thread_name} New Robot Link Connected On: ', (robot_sending_ip_address, robot_sending_port))
                 # Enqueue new robot link to be maintained
                 g.robot_links_new.put(link)
+        else:
+            # Temporary variable to store combined lists (visible and lost)
+            robotLists = list()
+
+            # Get the lists
+            with g.visible_mutex and g.lost_mutex:
+                robotLists = g.visible + g.lost
+            
+            # Check if the robot link already exists
+            for robot in robotLists:
+                if (robot.robotLink is not None) and robot.robotLink.ip_address == robot_sending_ip_address:
+                    client_socket.close()
+                    break
             else:
+                # To make the socket never timed out now when sending or receiving data
+                client_socket.settimeout(None) 
+
                 # Default the serial port to 0. Detector will set the best one when it finds it. Transceiver on robot object is used instead of port
                 link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                link.lastPacketTime = time.time()
 
                 # Create Robot
                 robot = Robot(-1, -1, link) # check if there is a way to get the transceiver here...

@@ -75,7 +75,7 @@ def startup():
     for color in colors:
         for i in range(8):
             illuminate(i, color)
-            time.sleep(0.05)
+            time.sleep(0.025)
     turn_all_LEDs_off()
         
 # these are functions so that i do not have to redefine the colors in the startup program

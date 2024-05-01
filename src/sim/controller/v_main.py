@@ -1,18 +1,52 @@
-import time
 import threading
+from sim.controller.config.v_global_vars import vGlobals
 from sim.controller.classes.vDetectorClass import vDetector
+from sim.controller.threads.v_new_visible import v_new_visible
+from sim.controller.threads.v_new_lost import v_new_lost
+from sim.controller.threads.v_link_receive import v_link_receive
+from sim.controller.threads.v_link_send import v_link_send
 
 def v_main(params):
-
     robotModel = params[0]
-    vg = params[1]
-    model = params[2]
+    systemModel = params[1]
+
+    # initialize virtual globals
+    vg = vGlobals()
+    vg.init(robotModel.ip)
 
     # Initialize Detector
-    detector = vDetector(robotModel, model)
+    vg.detector = vDetector(robotModel, systemModel, vg.debug_detector)
 
     # Initialize Detector Thread
-    detector_thread = threading.Thread(target = detector.detect, daemon=True, name="Detect")
+    vg.detector_thread = threading.Thread(target = vg.detector.detect, args=[vg] ,daemon=True, name="Virtual_Detect")
 
-    # Start Detector Thread
-    detector_thread.start()
+    vg.new_visible_thread = threading.Thread(target=v_new_visible, args=[vg], daemon=True, name="Virtual_New_Visible")
+
+    vg.new_lost_thread = threading.Thread(target=v_new_lost, args=[vg], daemon=True, name="Virtual_New_Lost")
+
+    # Start Threads
+    vg.detector_thread.start()
+    vg.new_visible_thread.start()
+    vg.new_lost_thread.start()
+
+    # Store Thread Number
+    thread_number = 0
+
+    while robotModel.robotItem.isActive():
+        # Blocking Call to Get New Robot
+        try:
+            robot = vg.newRobotQ.get(timeout=0.5)
+
+            # Create and Start Link Send Thread
+            link_send_thread = threading.Thread(target=v_link_send, args=[robot, vg], daemon=True, name=f"Link_Send_{thread_number}")
+            link_send_thread.start()
+
+            # Create and Start Link Receive Thread
+            link_receive_thread = threading.Thread(target=v_link_receive, args=[robot, vg], daemon=True, name=f"Link_Receive_{thread_number}")
+            link_receive_thread.start()
+
+            # Increase Thread Number
+            thread_number += 1
+        except Exception as e:
+            # No robot available
+            pass

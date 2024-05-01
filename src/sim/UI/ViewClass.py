@@ -1,8 +1,10 @@
 import sys
+import time
 from PyQt5.QtWidgets import * 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import * 
 from screeninfo import get_monitors
+import sim.sim_global_vars as sg
 
 class View():
     def __init__(self, controller):
@@ -147,6 +149,7 @@ class View():
 
         # Create Graphics Widget
         self.graphicsScene = QGraphicsScene()
+        self.graphicsScene.selectionChanged.connect(self.__selectHandler)
 
         graphicsView = QGraphicsView(self.graphicsScene)
         graphicsView.show()
@@ -194,6 +197,33 @@ class View():
 
     def __deleteItemsButtonClicked(self):
         worker = Worker(self.__controller.deleteItems, (self.graphicsScene.selectedItems()))
+        self.__threadPool.start(worker)
+
+
+    def __selectHandler(self):
+        try:
+            self.__handleSelectionChanged()
+        except RuntimeError:
+            # View has been closed via select, skip this
+            pass
+
+
+    def __handleSelectionChanged(self):
+        selectedItemsList = self.graphicsScene.selectedItems()
+        itemsList = self.graphicsScene.items()
+        remainingItemList = [x for x in itemsList if x not in set(selectedItemsList)]
+        
+        # For all selected robots, draw radii
+        for item in selectedItemsList:
+            # selected robot radii already exists
+            if len(item.childItems()) > 1:
+                pass
+            else:
+                # draw radii for robots
+                self.__drawRadius(item) if type(item) is QGraphicsEllipseItem else None
+        
+        # For all remaining robots (that have radii), clear radii
+        worker = Worker(self.__clearRadius, (remainingItemList))
         self.__threadPool.start(worker)
 
 
@@ -249,6 +279,27 @@ class View():
 
     def __radioHandler(self):
         print("Radio1 Changed")
+
+
+    ### Private Methods ###
+    def __clearRadius(self, nonSelectedItemList):
+        for remainingItem in nonSelectedItemList:
+            # Clear any child ellipse items that may be attached
+            for childItem in remainingItem.childItems():
+                # Avoid grabbing text box
+                self.graphicsScene.removeItem(childItem) if type(childItem) is QGraphicsEllipseItem else None
+
+
+    def __drawRadius(self, selectedItem):
+        # Create Comms Ring
+        commsEllipse = QGraphicsEllipseItem((selectedItem.boundingRect().center().x()-(sg.commsThreshold)), (selectedItem.boundingRect().center().y()-(sg.commsThreshold)), sg.commsThreshold*2, sg.commsThreshold*2, parent=selectedItem)
+        commsEllipse.setZValue(-10) # set this to be behind robot item
+        commsEllipse.setBrush(QBrush(QColor(128, 128, 128, 77))) # gray at 30% opacity (r, g, b, opacity % (#/255))
+
+        # Create Detection Rings
+        detectionEllipse = QGraphicsEllipseItem((selectedItem.boundingRect().center().x()-(sg.detectionThreshold)), (selectedItem.boundingRect().center().y()-(sg.detectionThreshold)), sg.detectionThreshold*2, sg.detectionThreshold*2, parent=selectedItem)
+        detectionEllipse.setZValue(-20) # set this to be behind first two ellipse items
+        detectionEllipse.setBrush(QBrush(QColor(144, 238, 144, 77))) # Light green at 30% opacity (r, g, b, opacity % (#/255))
 
 
     ### Public Methods ###
