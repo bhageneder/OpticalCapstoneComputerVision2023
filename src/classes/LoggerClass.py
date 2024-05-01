@@ -1,3 +1,4 @@
+import signal
 import sqlite3
 import datetime
 import csv
@@ -177,6 +178,7 @@ class Logger:
                 )''')
         self.conn.commit()
         self.logger = logging.getLogger(__name__)
+        signal.signal(signal.SIGTERM, self.handle_signal)
 
  
 
@@ -372,12 +374,14 @@ class Logger:
                 
         self.conn.commit()
 
-        
+    def handle_signal(self, signum):
+            if signum == signal.SIGTERM:
+                print("Received thread kill signal, exporting to CSV")
+                self.exportCsv() 
 
     def __del__(self):
         print("Commiting changes to Database and Deconstructing Logger")
         try: 
-            self.exportCsv()
             self.__jetson.close()
             # Close sql connection 
             self.conn.close()
