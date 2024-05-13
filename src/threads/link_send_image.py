@@ -3,6 +3,7 @@ import threading
 from classes.RobotLink import RobotLink
 from classes.RobotClass import Robot
 import config.global_vars as g
+import functions.utilities as utilities
 
 # Calls the correct link send version depending upon mode. Checks the type of the parameter to ensure type safety.
 def link_send(generic):
@@ -22,7 +23,7 @@ def robot_send(robot):
     thread_name = threading.current_thread().name
 
     # Send the Payload
-    payload = utilities.deconstruct_file('/home/pi/repos/OpticalCommunications-2023/python_implementation/doge.png')
+    payload = utilities.deconstruct_file(g.working_dir + '/doge.png')
 
     # Ensure RobotLink is Established
     while robot.robotLink is None:
