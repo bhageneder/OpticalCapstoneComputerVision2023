@@ -176,12 +176,20 @@ def start_threads():
             # Blocking Call to Get New Robot
             robot = g.newRobotQ.get()
 
+            # # Create and Start Link Send Thread
+            # link_send_thread = threading.Thread(target=link_send, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
+            # link_send_thread.start()
+
+            # # Create and Start Link Receive Thread
+            # link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
+            # link_receive_thread.start()
+
             # Create and Start Link Send Thread
-            link_send_thread = threading.Thread(target=link_send, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
+            link_send_thread = threading.Thread(target=link_send_image, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
             link_send_thread.start()
 
             # Create and Start Link Receive Thread
-            link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
+            link_receive_thread = threading.Thread(target=link_receive_image, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
             link_receive_thread.start()
 
             # Create and Start Connection Manager Thread
