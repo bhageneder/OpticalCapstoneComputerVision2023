@@ -22,9 +22,14 @@ def link_receive(generic):
 def robot_receive(robot):
     thread_name = threading.current_thread().name
 
+    # Init variables
     data = bytearray()
     received_data_length = 0
     expected_length = 215618
+
+    # Ensure RobotLink is Established
+    while robot.robotLink is None:
+        continue
 
     while received_data_length < expected_length:
         if robot.robotLink is not None:
@@ -87,22 +92,29 @@ def robot_receive(robot):
     utilities.construct_file(data, g.working_dir + f'received{str(time.time())}', ".png")
                 
 def link_receive_legacy(robot_link):
-    '''
     thread_name = threading.current_thread().name
 
-    while True:
-        # Receive Data From Socket
-        # socket.recv(65536) will receive at most 65536 bytes from the socket at once,
-        # but it will block until it receives any data, or the connection is closed
-        try:
-            data = robot_link.socket.recv(65536)
-        except Exception as e:
+    # Initialize Variables
+    data = bytearray()
+    received_data_length = 0
+    expected_length = 215618
+
+    while received_data_length < expected_length:
+        if robot_link is not None:
+            # Receive Data From Socket
+            # socket.recv(65536) will receive at most 65536 bytes from the socket at once,
+            # but it will block until it receives any data, or the connection is closed
+            try:
+                buffer = robot_link.socket.recv(65536)
+                data += buffer
+                received_data_length += len(buffer)
+                #if globals.debug_link_receive: print(f"Progress: {round((received_data_length/expected_length) * 100, 1)} %     {round(time.perf_counter()-start_time,2)} s")
+            except Exception as e:
                 if g.debug_link_receive: print(f"{thread_name} Caught Error: {e}")
                 return
-        if g.debug_link_receive: print(f'{thread_name} Received: {data}')
 
-        # Update last packet time
-        robot_link.lastPacketTime = time.time()
+            # Update last packet time
+            robot_link.lastPacketTime = time.time()
 
         # Socket was destroyed
         if(data == b''):
@@ -128,5 +140,5 @@ def link_receive_legacy(robot_link):
         # Terminate if robot_link no longer exists
         if robot_link not in g.robot_links:
             return
-    '''
-    pass
+
+    utilities.construct_file(data, g.working_dir + f'received{str(time.time())}', ".png")
