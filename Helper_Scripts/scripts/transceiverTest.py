@@ -1,6 +1,9 @@
 import serial
+import subprocess
 
 usbNumber = 7
+
+subprocess.run(['./transceiverTest.sh', str(usbNumber)])
 
 serial_port = serial.Serial(
         port= f'/dev/ttyUSB{usbNumber}',
