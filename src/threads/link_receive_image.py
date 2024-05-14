@@ -6,7 +6,7 @@ import config.global_vars as g
 import functions.utilities as utilities
 import socket
 
-def link_receive(generic):
+def link_receive_image(generic):
     if g.LEGACY_MODE:
         if isinstance(generic, RobotLink):
             link_receive_legacy(generic)

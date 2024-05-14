@@ -7,6 +7,8 @@ from threads.maintenance import maintenance
 from threads.discovery import discovery
 from threads.link_send import link_send
 from threads.link_receive import link_receive
+from threads.link_send_image import link_send_image
+from threads.link_receive_image import link_receive_image
 from threads.listen_for_connection import listen_for_connection
 from threads.receive_manager import receive_manager
 from threads.send_manager import send_manager
@@ -147,10 +149,17 @@ def start_threads():
             robot_link = g.robot_links_new.get()
 
             thread_number = len(g.robot_links)
-            link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
+
+            # link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
+            # link_send_thread.start()
+
+            # link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
+            # link_receive_thread.start()
+
+            link_send_thread = threading.Thread(target=link_send_image, args=(robot_link,), daemon=True, name=f"Link_Send_Image_{thread_number}")
             link_send_thread.start()
 
-            link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
+            link_receive_thread = threading.Thread(target=link_receive_image, args=(robot_link,), daemon=True, name=f"Link_Receive_Image_{thread_number}")
             link_receive_thread.start()
 
             maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")

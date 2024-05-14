@@ -6,7 +6,7 @@ import config.global_vars as g
 import functions.utilities as utilities
 
 # Calls the correct link send version depending upon mode. Checks the type of the parameter to ensure type safety.
-def link_send(generic):
+def link_send_image(generic):
     if g.LEGACY_MODE:
         if isinstance(generic, RobotLink):
             link_send_legacy(generic)
