@@ -43,7 +43,7 @@ def robot_receive(robot):
                 buffer = robot.robotLink.socket.recv(65536)
                 data += buffer
                 received_data_length += len(buffer)
-                if globals.debug_link_receive: print(f"Progress: {round((received_data_length/expected_length) * 100, 1)} %     {round(time.perf_counter()-start_time,2)} s")
+                if g.debug_link_receive: print(f"Progress: {round((received_data_length/expected_length) * 100, 1)} %     {round(time.perf_counter()-start_time,2)} s")
             except Exception as e:
                 if g.debug_link_receive: print(f"{thread_name} Caught Error: {e}")
                 return
@@ -114,7 +114,7 @@ def link_receive_legacy(robot_link):
                 buffer = robot_link.socket.recv(65536)
                 data += buffer
                 received_data_length += len(buffer)
-                if globals.debug_link_receive: print(f"Progress: {round((received_data_length/expected_length) * 100, 1)} %     {round(time.perf_counter()-start_time,2)} s")
+                if g.debug_link_receive: print(f"Progress: {round((received_data_length/expected_length) * 100, 1)} %     {round(time.perf_counter()-start_time,2)} s")
             except Exception as e:
                 if g.debug_link_receive: print(f"{thread_name} Caught Error: {e}")
                 return
