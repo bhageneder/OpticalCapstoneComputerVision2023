@@ -91,7 +91,8 @@ def robot_receive(robot):
             if ((robot not in g.visible) and (robot not in g.lost)):
                 if g.debug_link_receive: print(f'{thread_name} Exiting. Robot is Not in Visible or Lost List')
                 return
-
+            
+    if g.debug_link_receive: print(f"Done receiving file! Total transmission time: {round(time.perf_counter()-start_time,2)} s")
     utilities.construct_file(data, g.working_dir + f'received{str(time.time())}', ".png")
                 
 def link_receive_legacy(robot_link):
@@ -147,4 +148,5 @@ def link_receive_legacy(robot_link):
         if robot_link not in g.robot_links:
             return
 
+    if g.debug_link_receive: print(f"Done receiving file! Total transmission time: {round(time.perf_counter()-start_time,2)} s")
     utilities.construct_file(data, g.working_dir + f'received{str(time.time())}', ".png")
