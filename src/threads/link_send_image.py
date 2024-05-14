@@ -48,7 +48,7 @@ def link_send_legacy(robot_link):
     thread_name = threading.current_thread().name
 
     # Send the Payload
-    payload = utilities.deconstruct_file('/home/pi/repos/OpticalCommunications-2023/python_implementation/doge.png')
+    payload = utilities.deconstruct_file(g.working_dir + '/doge.png')
     
     # Send Payload through Socket 
     if g.debug_link_send: print(f'{thread_name} Sending Deconstrcuted File Payload Through TCP Socket')
