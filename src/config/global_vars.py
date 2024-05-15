@@ -2,11 +2,21 @@ import queue
 import threading
 import configparser
 import board
+import time
 
 '''
 Contains global variables that will be used across all files
 '''
 def init():
+    global discovery_start_time
+    discovery_start_time = time.time
+
+    global discovery_end_time
+    discovery_end_time = 0
+
+    global discovery_times
+    discovery_times = list()
+
     global working_dir
     working_dir = None
 

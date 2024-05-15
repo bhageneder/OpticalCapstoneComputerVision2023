@@ -79,5 +79,11 @@ def node_discovery(robot):
                     # Robot is Already Considered Lost and Has Been Removed from List
                     pass
     else:
+        # Set the Discovery End Time (used for the discovery time calculations)
+        g.discovery_end_time = time.time()
+
+        # Mark Robot Object as the Discover-er (used for the discovery time calculations)
+        robot.robotLink.discoverer = True
+
         # Queue to New Robot Queue
         g.newRobotQ.put(robot)

@@ -1,4 +1,5 @@
 import config.global_vars as g
+import csv
 
 def add_data_to_log_file(data, robot_link_name):
     if data == "":
@@ -25,3 +26,8 @@ def nested_getattr(obj, attr, default=None):
         if obj is None:
             return default
     return obj
+
+def export_list_to_csv(data, filename):
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(data)

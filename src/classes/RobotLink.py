@@ -8,3 +8,4 @@ class RobotLink(BaseRobotLink):
         self.port = port
         self.lastPacketTime = -1
         self.active = True
+        self.discoverer = False

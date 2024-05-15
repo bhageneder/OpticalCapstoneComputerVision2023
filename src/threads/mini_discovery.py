@@ -48,5 +48,12 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
         if g.debug_mini_discovery: print(f'{thread_name} New Robot Link Found On: ', (robot_receiving_ip_address, int(dst_port)))
         with g.robot_links_mutex:
             g.robot_links.append(link)
-        # Enqueue new robot link to be maintained
+        
+        # Set the Discovery End Time (used for the discovery time calculations)
+        g.discovery_end_time = time.time()
+
+        # Mark Robot Object as the Discover-er (used for the discovery time calculations)
+        link.discoverer = True
+
+        # Enqueue new robot link to be 
         g.robot_links_new.put(link)

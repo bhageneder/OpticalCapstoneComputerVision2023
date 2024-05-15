@@ -19,6 +19,8 @@ from threads.led_manager import led_manager
 import config.global_vars as g
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
+from functions import utilities
+import sys
 
 def main():
     # Clear robot_link_data directory
@@ -146,19 +148,51 @@ def start_threads():
         while True:
             robot_link = g.robot_links_new.get()
 
-            thread_number = len(g.robot_links)
-            link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
-            link_send_thread.start()
+            ### Calculate Discovery Time ###
 
-            link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
-            link_receive_thread.start()
+            # Only calculate/store data if this robot was the discover-er (initiator)
+            if robot_link.discoverer:
+                # Elapsed time
+                delta = g.discovery_end_time - g.discovery_start_time
 
-            maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
-            maintenance_thread.start()
+                # Store - Only store after we get going
+                if thread_number > 5:
+                    g.discovery_times.append(delta)
+
+            # Aquire the Robot Links Mutex
+            with g.robot_links_mutex:
+                # Close the Socket
+                # robot_link.socket.shutdown(socket.SHUT_RDWR) # The other team curiously didn't do this...
+                robot_link.socket.close()
+
+                # Clear the Robot Links List
+                g.robot_links = list()
+
+                # Reset Timers
+                g.discovery_start_time = time.time()
+
+            # Check if Data Collection is Done
+            if len(globals.elasped_discovery_times) == 100:
+                average = sum(globals.elasped_discovery_times) / len(globals.elasped_discovery_times)
+                print(f'Average Discovery Time: {average}')
+                utilities.export_list_to_csv(globals.elasped_discovery_times, f'{g.working_dir}/../output{time.time()}.csv')
+                sys.exit()
+
+            ### No need to run any of the threads... ###
+
+            # thread_number = len(g.robot_links)
+            # link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
+            # link_send_thread.start()
+
+            # link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
+            # link_receive_thread.start()
+
+            # maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
+            # maintenance_thread.start()
 
             # Create and Start Connection Manager Thread
-            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
-            connection_manager_thread.start()
+            # connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
+            # connection_manager_thread.start()
 
             # Increase Thread Number
             thread_number += 1
@@ -167,17 +201,50 @@ def start_threads():
             # Blocking Call to Get New Robot
             robot = g.newRobotQ.get()
 
+            ### Calculate Discovery Time ###
+
+            # Only calculate/store data if this robot was the discover-er (initiator)
+            if robot.robotLink.discoverer:
+                # Elapsed time
+                delta = g.discovery_end_time - g.discovery_start_time
+
+                # Store - Only store after we get going
+                if thread_number > 5:
+                    g.discovery_times.append(delta)
+
+            # Aquire the Visible and Lost Mutexes
+            with g.visible_mutex and g.lost_mutex:
+                # Close the Socket
+                # robot.robotLink.socket.shutdown(socket.SHUT_RDWR) # The other team curiously didn't do this...
+                robot.robotLink.socket.close()
+
+                # Clear the Visible and Lost Lists
+                g.visible = list()
+                g.lost = list()
+
+                # Reset Timers
+                g.discovery_start_time = time.time()
+
+            # Check if Data Collection is Done
+            if len(globals.elasped_discovery_times) == 100:
+                average = sum(globals.elasped_discovery_times) / len(globals.elasped_discovery_times)
+                print(f'Average Discovery Time: {average}')
+                utilities.export_list_to_csv(globals.elasped_discovery_times, f'{g.working_dir}/../output{time.time()}.csv')
+                sys.exit()
+
+            ### No need to run any of the threads... ###
+
             # Create and Start Link Send Thread
-            link_send_thread = threading.Thread(target=link_send, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
-            link_send_thread.start()
+            # link_send_thread = threading.Thread(target=link_send, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
+            # link_send_thread.start()
 
             # Create and Start Link Receive Thread
-            link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
-            link_receive_thread.start()
+            # link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
+            # link_receive_thread.start()
 
             # Create and Start Connection Manager Thread
-            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
-            connection_manager_thread.start()
+            # connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
+            # connection_manager_thread.start()
       
             # Increase Thread Number
             thread_number += 1
