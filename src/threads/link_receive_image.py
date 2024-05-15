@@ -93,7 +93,7 @@ def robot_receive(robot):
                 return
             
     if g.debug_link_receive: print(f"Done receiving file! Total transmission time: {round(time.perf_counter()-start_time,2)} s")
-    utilities.construct_file(data, g.working_dir + f'received{str(time.time())}', ".png")
+    utilities.construct_file(data, g.working_dir + f'/../received{str(time.time())}', ".png")
                 
 def link_receive_legacy(robot_link):
     thread_name = threading.current_thread().name
@@ -149,4 +149,4 @@ def link_receive_legacy(robot_link):
             return
 
     if g.debug_link_receive: print(f"Done receiving file! Total transmission time: {round(time.perf_counter()-start_time,2)} s")
-    utilities.construct_file(data, g.working_dir + f'received{str(time.time())}', ".png")
+    utilities.construct_file(data, g.working_dir + f'/../received{str(time.time())}', ".png")
