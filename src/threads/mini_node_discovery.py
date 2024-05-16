@@ -8,6 +8,7 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
     thread_name = threading.current_thread().name
     # Open a TCP socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     client_socket.settimeout(g.SOCKET_CONNECTION_TIMEOUT)
     try:
         # Need to bind to the IP adress we want the server to see us as
@@ -25,7 +26,11 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
             if g.debug_mini_discovery: print(f'{thread_name} Attempting To Connect To: ', (robot_receiving_ip_address, int(dst_port)))
             # If there is no Robot Link that the robot_receiving_ip_address: 
             # Send SYN packets using send manager
-            client_socket.connect((robot_receiving_ip_address, int(dst_port)))
+            try:
+                client_socket.connect((robot_receiving_ip_address, int(dst_port)))
+            except socket.error as e:
+                if g.debug_mini_discovery: print(e)
+                return
 
     except socket.timeout:
         client_socket.close() # Close the socket to unbind it

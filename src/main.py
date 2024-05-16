@@ -146,7 +146,6 @@ def start_threads():
         while True:
             robot_link = g.robot_links_new.get()
 
-            thread_number = len(g.robot_links)
             link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
             link_send_thread.start()
 
