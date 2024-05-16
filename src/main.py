@@ -172,10 +172,10 @@ def start_threads():
                 g.discovery_start_time = time.time()
 
             # Check if Data Collection is Done
-            if len(globals.elasped_discovery_times) == 100:
-                average = sum(globals.elasped_discovery_times) / len(globals.elasped_discovery_times)
+            if len(g.discovery_times) == 100:
+                average = sum(g.discovery_times) / len(g.discovery_times)
                 print(f'Average Discovery Time: {average}')
-                utilities.export_list_to_csv(globals.elasped_discovery_times, f'{g.working_dir}/../output{time.time()}.csv')
+                utilities.export_list_to_csv(g.discovery_times, f'{g.working_dir}/../output{time.time()}.csv')
                 sys.exit()
 
             ### No need to run any of the threads... ###
@@ -226,10 +226,10 @@ def start_threads():
                 g.discovery_start_time = time.time()
 
             # Check if Data Collection is Done
-            if len(globals.elasped_discovery_times) == 100:
-                average = sum(globals.elasped_discovery_times) / len(globals.elasped_discovery_times)
+            if len(g.discovery_times) == 100:
+                average = sum(g.discovery_times) / len(g.discovery_times)
                 print(f'Average Discovery Time: {average}')
-                utilities.export_list_to_csv(globals.elasped_discovery_times, f'{g.working_dir}/../output{time.time()}.csv')
+                utilities.export_list_to_csv(g.discovery_times, f'{g.working_dir}/../output{time.time()}.csv')
                 sys.exit()
 
             ### No need to run any of the threads... ###
