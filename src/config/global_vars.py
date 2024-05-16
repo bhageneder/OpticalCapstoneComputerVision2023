@@ -9,7 +9,7 @@ Contains global variables that will be used across all files
 '''
 def init():
     global discovery_start_time
-    discovery_start_time = time.time
+    discovery_start_time = time.time()
 
     global discovery_end_time
     discovery_end_time = 0
