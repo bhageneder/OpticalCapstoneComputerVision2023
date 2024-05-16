@@ -30,6 +30,7 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
                 client_socket.connect((robot_receiving_ip_address, int(dst_port)))
             except socket.error as e:
                 if g.debug_mini_discovery: print(e)
+                return
 
     except socket.timeout:
         client_socket.close() # Close the socket to unbind it

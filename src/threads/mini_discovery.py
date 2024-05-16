@@ -32,6 +32,7 @@ def mini_discovery(robot_receiving_ip_address, dst_port, client_port):
                 client_socket.connect((robot_receiving_ip_address, int(dst_port)))
             except socket.error as e:
                 if g.debug_mini_discovery: print(e)
+                return 
     except socket.timeout:
         #if g.debug_mini_discovery: print(f'{thread_name} Socket Timeout')
         client_socket.close() # Close the socket to unbind it
