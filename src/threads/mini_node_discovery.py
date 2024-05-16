@@ -26,7 +26,10 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
             if g.debug_mini_discovery: print(f'{thread_name} Attempting To Connect To: ', (robot_receiving_ip_address, int(dst_port)))
             # If there is no Robot Link that the robot_receiving_ip_address: 
             # Send SYN packets using send manager
-            client_socket.connect((robot_receiving_ip_address, int(dst_port)))
+            try:
+                client_socket.connect((robot_receiving_ip_address, int(dst_port)))
+            except socket.error as e:
+                if g.debug_mini_discovery: print(e)
 
     except socket.timeout:
         client_socket.close() # Close the socket to unbind it
