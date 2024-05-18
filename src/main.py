@@ -113,10 +113,6 @@ def start_threads():
     for listen_for_connection_thread in g.listen_for_connection_threads:
         listen_for_connection_thread.start()
 
-
-    # TODO: Fix Current Bug: For Sending a Payload, If both Robots Run the Discovery Thread, then
-    # the socket is closed / destroyed SOMETIMES by one of the robots, causing payload tranmsissions to fail.
-    # A temporary fix is to have 1 robot run this discovery thread, until the bug is fixed.
     # Running Discovery Thread
     if g.LEGACY_MODE:
         g.discovery_thread.start()

@@ -46,8 +46,8 @@ def listen_for_connection(port):
                 # To make the socket never timed out now when sending or receiving data
                 client_socket.settimeout(None) 
 
-                # Default the serial port to transceiver 0, Maintenance will set the best one.
-                link = RobotLink(None, g.serial_ports[0], client_socket, robot_sending_ip_address, robot_sending_port)
+                # Default the serial port to None (no transceiver selected), Maintenance will set the best one.
+                link = RobotLink(None, None, client_socket, robot_sending_ip_address, robot_sending_port)
                 link.lastPacketTime = time.time()
                 with g.robot_links_mutex:
                     g.robot_links.append(link)
