@@ -88,7 +88,7 @@ def send_manager():
         # If the Packet is not an ICMP Ping Packet, send payload through specific transceiver 
         # if the packet's destination IP Address matches the Robot Link's IP Address 
         # (and the Robot Link has a serial port)
-        if g.LEGACY_MODE:       
+        if g.LEGACY_MODE:
             for robot_link in g.robot_links:
                 if (robot_link.serial_port != None and robot_link.ip_address == packet_summary.dest_IP):
                     if g.debug_send_manager: print(f"{thread_name}: Sending Payload Through Specific Transceiver {g.serial_ports.index(robot_link.serial_port)}: {packet_summary.payload}")
