@@ -8,6 +8,7 @@ def mini_node_discovery(robot_receiving_ip_address, dst_port, client_port, robot
     thread_name = threading.current_thread().name
     # Open a TCP socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     client_socket.settimeout(g.SOCKET_CONNECTION_TIMEOUT)
     try:
         # Need to bind to the IP adress we want the server to see us as
