@@ -202,6 +202,9 @@ def init():
     else:
         detector = None
 
+    global isSender
+    isSender = (config['Sender']['isSender'] == "True") or (config['Sender']['isSender'] == "true")
+
     global PING_COUNT
     PING_COUNT = 2
 

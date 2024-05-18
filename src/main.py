@@ -43,7 +43,7 @@ def main():
         led_manager_thread.start()
     
     # Making One Robot Move in a 1 meter circle at speed 200 mm/s
-    if g.robot_serial_port is not None and g.ROBOT_IP_ADDRESS == g.POSSIBLE_ROBOT_IP_ADDRESSES[0]:
+    if g.robot_serial_port is not None:
         moving_thread = threading.Thread(target=move_circle, args=(g.robot_serial_port, 0xC8,), daemon=True, name=f"Moving")
         moving_thread.start()
 
@@ -121,7 +121,7 @@ def start_threads():
     # A temporary fix is to have 1 robot run this discovery thread, until the bug is fixed.
     # Running Discovery Thread
     if g.LEGACY_MODE:
-        g.discovery_thread.start()
+        if g.isSender: g.discovery_thread.start()
 
     # Running Receive Manager Thread
     g.receive_manager_thread.start()
@@ -132,13 +132,13 @@ def start_threads():
     # On Computer Vision Enabled Bots Only...
     if not g.LEGACY_MODE:
         # Start the Detector Thread
-        g.detector_thread.start()
+        if g.isSender: g.detector_thread.start()
 
         # Start the New Visible Thread
-        g.new_visible_thread.start()
+        if g.isSender: g.new_visible_thread.start()
 
         # Start the New Lost Thread
-        g.new_lost_thread.start()
+        if g.isSender: g.new_lost_thread.start()
 
     # Store Thread Number
     thread_number = 0
@@ -150,24 +150,18 @@ def start_threads():
 
             thread_number = len(g.robot_links)
 
-            # link_send_thread = threading.Thread(target=link_send, args=(robot_link,), daemon=True, name=f"Link_Send_{thread_number}")
-            # link_send_thread.start()
-
-            # link_receive_thread = threading.Thread(target=link_receive, args=(robot_link,), daemon=True, name=f"Link_Receive_{thread_number}")
-            # link_receive_thread.start()
-
             link_send_thread = threading.Thread(target=link_send_image, args=(robot_link,), daemon=True, name=f"Link_Send_Image_{thread_number}")
-            link_send_thread.start()
+            if g.isSender: link_send_thread.start()
 
             link_receive_thread = threading.Thread(target=link_receive_image, args=(robot_link,), daemon=True, name=f"Link_Receive_Image_{thread_number}")
-            link_receive_thread.start()
+            if not g.isSender: link_receive_thread.start()
 
             maintenance_thread = threading.Thread(target=maintenance, args=(robot_link,), daemon=True, name=f"Maintenance_{thread_number}")
-            maintenance_thread.start()
+            if g.isSender: maintenance_thread.start()
 
             # Create and Start Connection Manager Thread
-            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
-            connection_manager_thread.start()
+            #connection_manager_thread = threading.Thread(target=connection_manager, args=[robot_link], daemon=True, name=f"Connection_Manager_{thread_number}")
+            #connection_manager_thread.start()
 
             # Increase Thread Number
             thread_number += 1
@@ -176,25 +170,21 @@ def start_threads():
             # Blocking Call to Get New Robot
             robot = g.newRobotQ.get()
 
-            # # Create and Start Link Send Thread
-            # link_send_thread = threading.Thread(target=link_send, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
-            # link_send_thread.start()
-
-            # # Create and Start Link Receive Thread
-            # link_receive_thread = threading.Thread(target=link_receive, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
-            # link_receive_thread.start()
+            # Don't want to find more than one robot for now.
+            if thread_number > 0:
+                continue
 
             # Create and Start Link Send Thread
             link_send_thread = threading.Thread(target=link_send_image, args=[robot], daemon=True, name=f"Link_Send_{thread_number}")
-            link_send_thread.start()
+            if g.isSender: link_send_thread.start()
 
             # Create and Start Link Receive Thread
             link_receive_thread = threading.Thread(target=link_receive_image, args=[robot], daemon=True, name=f"Link_Receive_{thread_number}")
-            link_receive_thread.start()
+            if not g.isSender: link_receive_thread.start()
 
             # Create and Start Connection Manager Thread
-            connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
-            connection_manager_thread.start()
+            #connection_manager_thread = threading.Thread(target=connection_manager, args=[robot], daemon=True, name=f"Connection_Manager_{thread_number}")
+            #connection_manager_thread.start()
       
             # Increase Thread Number
             thread_number += 1
