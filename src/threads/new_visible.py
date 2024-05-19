@@ -17,16 +17,23 @@ def new_visible():
         # Check if Robot is in Lost List
         foundRobot = findRobot(robot)
         if (foundRobot is not None):
-            # Update Robot Link
-            robot.robotLink = foundRobot.robotLink
-
             # Acquire Global Lost List Mutex
-            with g.lost_mutex:
-                # Remove from Global Lost List
+            with g.visible and g.lost_mutex: 
+                # Copy Tracking ID and Transceiver Number
+                foundRobot.trackID = robot.trackID
+                foundRobot.transceiver = robot.transceiver
+
+                # Remove from Lost List
                 g.lost.remove(foundRobot)
 
+                # Add to the visible list
+                g.visible.append(foundRobot)
+
+                # Remove the extra robot from the Visible List
+                g.visible.remove(robot)
+
             # Queue to New Robot Queue
-            g.newRobotQ.put(robot)
+            # g.newRobotQ.put(robot) # delete this line
 
         # Robot is Not in Lost List
         else:
