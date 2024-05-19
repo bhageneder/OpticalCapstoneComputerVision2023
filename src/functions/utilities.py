@@ -4,7 +4,7 @@ def add_data_to_log_file(data, robot_link_name):
     if data == "":
         return
     file_path = g.working_dir + f"robot_link_packets/{robot_link_name}.txt"
-    with open(file_path, "a") as f:
+    with open(file_path, "a+") as f:
         f.write(data)
         f.write('\n')
 
