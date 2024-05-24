@@ -23,7 +23,11 @@ def new_visible():
             # Acquire Global Lost List Mutex
             with g.lost_mutex:
                 # Remove from Global Lost List
-                g.lost.remove(foundRobot)
+                # commit the other one with the comment 
+                try:
+                    g.lost.remove(foundRobot)
+                except:
+                    pass
 
             # Queue to New Robot Queue
             g.newRobotQ.put(robot)
