@@ -19,6 +19,8 @@ from threads.led_manager import led_manager
 import config.global_vars as g
 from control_robot.move_circle import move_circle
 from functions.initialize_serial_ports import initialize_serial_ports
+import signal
+import sys
 
 def main():
     # Clear robot_link_data directory
@@ -100,6 +102,9 @@ def main():
     # Start the threads
     start_threads()
 
+    # Attach system terminate handler
+    #signal.signal(signal.SIGTERM, handle_sigterm)
+
 def start_threads():
     # Running Transceiver Receive Threads
     for transceiver_receive_thread in g.transceiver_receive_threads:
@@ -176,6 +181,14 @@ def start_threads():
       
             # Increase Thread Number
             thread_number += 1
+'''
+def handle_sigterm():
+    print('Got signal')
+    #  Do some cleanup
+
+    # Then exit
+    sys.exit(signum)
+'''
 
 if __name__ == "__main__":
     main()

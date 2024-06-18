@@ -52,6 +52,11 @@ class Detector(BaseDetector):
                         print("Released")
                 cv2.destroyAllWindows()
 
+        # Define exit method that gets called on SIGTERM
+        # Guarantees the deconstructor to be called
+        def __exit__(self):
+                self.__del__()
+
         #### Public Methods ####
 
         """        
