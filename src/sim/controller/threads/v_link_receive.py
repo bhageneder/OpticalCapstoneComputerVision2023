@@ -19,9 +19,16 @@ def v_link_receive(robot, vg):
                         data, tag = dataQ.get(timeout=0.1).split(" ")
                         if vg.debug_link_receive: print(f'{thread_name} + {vg.ip} Received: "{data}" from {tag}')
 
-                        # store data locally in virtual global variables
-                        vg.dataReceived[tag].append(data + " ")
-                        print(vg.dataReceived[tag])
+                        # If the data is intended for a different recipient
+                        if (data[:4] == "\XX\\"):
+                            forwardAddress, data = data.split("\XX\\")
+                            vg.forwarders[int(forwardAddress.split(".")[-1])-10].put(data)
+                        
+                        else:
+                            # store data locally in virtual global variables
+                            vg.dataReceived[tag].append(data + " ")
+                            print(vg.dataReceived[tag])
+
                     except Exception as e:
                         pass
                         #if vg.debug_link_receive: print(f'No Data in Data Queue')

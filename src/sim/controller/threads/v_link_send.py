@@ -1,35 +1,49 @@
 import time
 import threading
+import random
 import sim.sim_global_vars as sg
 
 def v_link_send(robot, vg):
     thread_name = threading.current_thread().name
-    payload_string = "hello this is a message"
-    payload = []
+    payload = "hello"
+    # payload = []
     
-    for byte in payload_string.split(" "):
-        payload.append(byte)
+    # for byte in payload_string.split(" "):
+    #     payload.append(byte)
     
     send_num = 0
     tag = vg.ip 
 
-    while (len(payload) != 0):
+    while (True):
         if robot.robotLink is not None:
             # Send Payload
             with vg.visible_mutex:
                 sendingTo = robot.robotLink.ip_address
                 if ((sendingTo in vg.detector.commsAvailable) and (robot in vg.visible)):
-                    if vg.debug_link_send: ("Sending Payload To: {}".format(tag))
-                    # Access receiving robots dataQ
-                    with sg.data_mutex:
-                        dataQ = sg.listOfDataQ[int(sendingTo.split(".")[-1])-10]
-                        # Send data with tag
-                        if vg.debug_link_send: print(f'{thread_name} Sending payload through dataQ {payload}, iteration {send_num}')
-                        dataQ.put(payload[0] + " " + tag, timeout=3)    
-                        payload.remove(payload[0])
+
+                    # Check if a payload needs to be forwarded
+                    if (vg.forwarders[int(sendingTo.split(".")[-1])-10].qsize() > 0 and bool(random.getrandbits(1))):
+                        payload = vg.forwarders[int(sendingTo.split(".")[-1])-10].get()
                         
-                        # increment send number
-                        send_num += 1
+                        if vg.debug_link_send: ("Sending Payload To: {}".format(tag))
+                        # Access receiving robots dataQ
+                        with sg.data_mutex:
+                            dataQ = sg.listOfDataQ[int(sendingTo.split(".")[-1])-10]
+                            # Send data with tag
+                            if vg.debug_link_send: print(f'{thread_name} Forwarding payload through dataQ {payload}')
+                            dataQ.put(payload + " " + tag, timeout=3)
+
+                    else:
+                        if vg.debug_link_send: ("Sending Payload To: {}".format(tag))
+                        # Access receiving robots dataQ
+                        with sg.data_mutex:
+                            dataQ = sg.listOfDataQ[int(sendingTo.split(".")[-1])-10]
+                            # Send data with tag
+                            if vg.debug_link_send: print(f'{thread_name} Sending payload through dataQ {payload}, iteration {send_num}')
+                            dataQ.put(payload + "_" + str(send_num) + " " + tag, timeout=3)
+                            
+                            # increment send number
+                            send_num += 1
 
         # Terminate if Robot no longer exists
         with vg.visible_mutex and vg.lost_mutex:
