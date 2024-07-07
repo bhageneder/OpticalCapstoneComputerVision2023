@@ -3,12 +3,13 @@
 class vSocket:
     def __init__(self, ip, vg):
         self.__vg = vg
+        self.__ip = ip
 
-    def sendall(self):
-        self.__vg.socketQueues[int(self.__ip.split(".")[-1])-10]
+    def sendall(self, packet):
+        self.__vg.virtual_serial_port.writeFromSocket(packet)
     
     def recv(self):
-        pass
+        return self.__vg.socketQueues[int(self.__ip(".")[-1])-10].get()
 
     def close(self):
         pass
