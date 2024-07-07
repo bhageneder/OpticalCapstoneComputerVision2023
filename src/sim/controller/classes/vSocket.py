@@ -1,8 +1,8 @@
 # Virtual TCP Socket
 
 class vSocket:
-    def __init__(self):
-        pass
+    def __init__(self, vg):
+        self.__vg = vg
 
     def sendall(self):
         pass

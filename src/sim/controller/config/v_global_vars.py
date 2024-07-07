@@ -51,6 +51,8 @@ class vGlobals():
         
         self.dataReceived = {}
 
-        self.forwarders = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
+        # self.forwarders = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
+
+        self.socketQueues = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
 
         self.virtual_serial_port = vSerial()
