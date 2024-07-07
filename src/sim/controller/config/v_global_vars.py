@@ -21,6 +21,7 @@ class vGlobals():
         self.debug_link_send        = False
         self.debug_link_receive     = True
         self.debug_node_discovery   = False
+        self.debug_send_manager     = False
 
 
         self.ip = robotIP

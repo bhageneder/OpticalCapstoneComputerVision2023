@@ -45,7 +45,7 @@ def v_link_receive(robot, vg):
                         with vg.visible_mutex and vg.lost_mutex:
                             if (robot in vg.visible):
                                 vg.visible.remove(robot)
-                            elif (robot in g.lost):
+                            elif (robot in vg.lost):
                                 vg.lost.remove(robot)
 
                 if vg.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
