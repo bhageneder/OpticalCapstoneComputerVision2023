@@ -1,14 +1,14 @@
-# Virtual [Virtual] Serial Port
 from queue import Queue
 
+# Virtual [Virtual] Serial Port
 class vSerial:
-    def __init__(self, ip, vg):
+    def __init__(self, vg):
         self.__vg = vg
-        self.__ip = ip
         self.__sendQueue = Queue()
 
     def write(self, packet):
-        self.__vg.socketQueues[int(self.__ip.split(".")[-1])-10].put(packet)
+        ip = None # Need to pull the IP from the packet
+        self.__vg.socketQueues[int(ip(".")[-1])-10].put(packet)
         
     def writeFromSocket(self, packet):
         self.__sendQueue.put(packet)
