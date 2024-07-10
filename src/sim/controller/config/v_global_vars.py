@@ -37,9 +37,11 @@ class vGlobals():
 
         self.detector = None
 
-        self.detector_thread    = None
-        self.new_visible_thread = None
-        self.new_lost_thread    = None
+        self.detector_thread        = None
+        self.new_visible_thread     = None
+        self.new_lost_thread        = None
+        self.send_manager_thread    = None
+        self.receive_manager_thread = None
 
         self.visible    = []
         self.lost       = []
@@ -49,7 +51,8 @@ class vGlobals():
 
         self.newRobotQ = queue.Queue()
         
-        self.dataReceived = {}
+        # self.dataReceived = {}
+        self.dataReceived = queue.Queue()
 
         # self.forwarders = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
 
