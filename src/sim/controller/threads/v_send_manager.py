@@ -29,4 +29,4 @@ def v_send_manager(vg):
         # Access receiving robots dataQ
         # Send data with tag
         sendingTo = packet.split("\x00")
-        sg.listOfDataQ[int(sendingTo[1].split(".")[-1])-10].put(packet + " " + vg.ip, timeout=3)
+        sg.listOfDataQ[int(sendingTo[1].split(".")[-1])-10].put(packet + " ", timeout=3)

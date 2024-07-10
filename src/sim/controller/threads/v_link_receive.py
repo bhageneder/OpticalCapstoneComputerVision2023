@@ -48,8 +48,8 @@ def v_link_receive(robot, vg):
                             elif (robot in vg.lost):
                                 vg.lost.remove(robot)
 
-                if vg.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
-                return
+                        if vg.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
+                        return
 
                 # # Grab from queue
                 # with sg.data_mutex:
