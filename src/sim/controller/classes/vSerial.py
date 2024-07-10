@@ -7,8 +7,9 @@ class vSerial:
         self.__sendQueue = Queue()
 
     def write(self, packet):
-        ip = None # Need to pull the IP from the packet
-        self.__vg.socketQueues[int(ip(".")[-1])-10].put(packet)
+        ip = packet.split("\x00")
+        # self.__vg.socketQueues[int(ip.split(".")[-1])-10].put(packet)
+        self.__vg.socketQueues[int(ip[1].split(".")[-1])-10].put(packet)
         
     def writeFromSocket(self, packet):
         self.__sendQueue.put(packet)
