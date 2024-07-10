@@ -23,7 +23,7 @@ def v_link_send(robot, vg):
 
             # Send Payload through Socket 
             if vg.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-            robot.robotLink.socket.sendall("\x00" + vg.ip + "\x00" + payload + send_num.to_bytes(4, byteorder="little"))
+            robot.robotLink.socket.sendall("\x00" + vg.ip + "\x00" + str(payload) + str(send_num.to_bytes(4, byteorder="little")))
 
             send_num += 1
 
