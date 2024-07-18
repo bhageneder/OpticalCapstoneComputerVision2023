@@ -58,5 +58,4 @@ def v_main(params):
             thread_number += 1
         except queue.Empty:
             # No robot available
-            print("exception")
             pass
