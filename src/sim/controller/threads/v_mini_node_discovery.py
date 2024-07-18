@@ -14,7 +14,7 @@ def v_mini_node_discovery(robot_receiving_ip_address, robot, vg):
             break
     else:
         # "Socket" can be established
-        socket = vSocket(vg, robot_receiving_ip_address)
+        socket = vSocket(vg, robot_receiving_ip_address, robot)
 
         # Default the serial port to transceiver 0, Maintenance will set the best one.
         link = vRobotLink(None, socket, robot_receiving_ip_address)
