@@ -30,7 +30,7 @@ class vGlobals():
 
         self.DISCOVERY_INTERVAL_SLEEP = 0.05
         self.RECIEVE_INTERVAL_SLEEP   = 0.0
-        self.PAYLOAD_INTERVAL_SLEEP   = 0.25
+        self.PAYLOAD_INTERVAL_SLEEP   = 1
 
         self.trackIDs       = [x for x in range(1, 65535)] 
         self.trackingIDSet  = {}

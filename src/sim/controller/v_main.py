@@ -1,4 +1,5 @@
 import threading
+import queue
 from sim.controller.config.v_global_vars import vGlobals
 from sim.controller.classes.vDetectorClass import vDetector
 from sim.controller.threads.v_new_visible import v_new_visible
@@ -55,6 +56,7 @@ def v_main(params):
 
             # Increase Thread Number
             thread_number += 1
-        except Exception as e:
+        except queue.Empty:
             # No robot available
+            print("exception")
             pass

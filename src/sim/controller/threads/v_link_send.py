@@ -23,12 +23,14 @@ def v_link_send(robot, vg):
 
             # Send Payload through Socket 
             if vg.debug_link_send: print(f'{thread_name} Sending Payload through TCP Socket {payload}{send_num}')
-            robot.robotLink.socket.sendall("\x00" + vg.ip + "\x00" + str(payload) + str(send_num.to_bytes(4, byteorder="little")))
+            # packet = \x00 + IP_to + \x00 + IP_from + \x00 + Payload + Payload_Number
+            robot.robotLink.socket.sendall("\x00" + robot.IP + "\x00 " + vg.ip + "\x00 " + str(payload + send_num.to_bytes(4, byteorder="little")))
 
             send_num += 1
 
         # Terminate if Robot no longer exists
         with vg.visible_mutex and vg.lost_mutex:
+            if robot not in vg.visible: print("not in visible")
             if ((robot not in vg.visible) and (robot not in vg.lost)):
                 if vg.debug_link_send: print(f'{thread_name} Exiting. Robot is Not in Visible or Lost List')
                 return
