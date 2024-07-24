@@ -1,6 +1,7 @@
 import threading
 import queue
 import sim.sim_global_vars as sg
+from sim.controller.classes.vSerial import vSerial
 
 '''
 Contains virtual global variables that will be used across sim files
@@ -20,6 +21,7 @@ class vGlobals():
         self.debug_link_send        = False
         self.debug_link_receive     = True
         self.debug_node_discovery   = False
+        self.debug_send_manager     = False
 
 
         self.ip = robotIP
@@ -28,16 +30,18 @@ class vGlobals():
 
         self.DISCOVERY_INTERVAL_SLEEP = 0.05
         self.RECIEVE_INTERVAL_SLEEP   = 0.0
-        self.PAYLOAD_INTERVAL_SLEEP   = 0.25
+        self.PAYLOAD_INTERVAL_SLEEP   = 1
 
         self.trackIDs       = [x for x in range(1, 65535)] 
         self.trackingIDSet  = {}
 
         self.detector = None
 
-        self.detector_thread    = None
-        self.new_visible_thread = None
-        self.new_lost_thread    = None
+        self.detector_thread        = None
+        self.new_visible_thread     = None
+        self.new_lost_thread        = None
+        self.send_manager_thread    = None
+        self.receive_manager_thread = None
 
         self.visible    = []
         self.lost       = []
@@ -47,5 +51,10 @@ class vGlobals():
 
         self.newRobotQ = queue.Queue()
         
-        self.dataReceived = {}
-    
+        self.dataReceived = queue.Queue()
+
+        # self.forwarders = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
+
+        self.socketQueues = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
+
+        self.virtual_serial_port = vSerial(self)
