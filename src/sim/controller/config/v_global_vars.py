@@ -51,7 +51,6 @@ class vGlobals():
 
         self.newRobotQ = queue.Queue()
         
-        # self.dataReceived = {}
         self.dataReceived = queue.Queue()
 
         # self.forwarders = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]

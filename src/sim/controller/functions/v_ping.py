@@ -3,6 +3,8 @@
 def v_associate(robotIP, vg):
     associate = True if (robotIP in vg.detector.commsAvailable) else False
 
+    # Prevent association with already associated robot
+    # Though this can happen in the real system, it is removed for simplicity's sake
     for robot in vg.visible:
         if robot.IP == robotIP:
             associate = False

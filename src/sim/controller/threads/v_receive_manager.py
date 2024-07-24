@@ -11,6 +11,7 @@ def v_receive_manager(vg):
         # packet = vg.dataReceived.get()
         packet = sg.listOfDataQ[int(vg.ip.split(".")[-1])-10].get()
         
+        # The following is not implemented in simulated packets:
         # Remove any starting bytes before 0xc0 (this should not happen) (bandaid-fix)
         # packet = packet[(packet.find(b'\xc0')):]
 

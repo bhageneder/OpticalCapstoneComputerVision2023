@@ -61,28 +61,6 @@ def v_link_receive(robot, vg):
 
                         if vg.debug_link_receive: print(f'{thread_name} Exiting. Socket was destroyed')
                         return
-
-                # # Grab from queue
-                # with sg.data_mutex:
-                #     dataQ = sg.listOfDataQ[int(vg.ip.split(".")[-1])-10]
-                #     # parse data with tag
-                #     try:
-                #         data, tag = dataQ.get(timeout=0.1).split(" ")
-                #         if vg.debug_link_receive: print(f'{thread_name} + {vg.ip} Received: "{data}" from {tag}')
-
-                #         # If the data is intended for a different recipient
-                #         if (data[:4] == "\XX\\"):
-                #             forwardAddress, data = data.split("\XX\\")
-                #             vg.forwarders[int(forwardAddress.split(".")[-1])-10].put(data)
-                        
-                #         else:
-                #             # store data locally in virtual global variables
-                #             vg.dataReceived[tag].append(data + " ")
-                #             print(vg.dataReceived[tag])
-
-                #     except Exception as e:
-                #         pass
-                #         #if vg.debug_link_receive: print(f'No Data in Data Queue')
                 
         # Terminate if robot no longer exists
         with vg.visible_mutex and vg.lost_mutex:
