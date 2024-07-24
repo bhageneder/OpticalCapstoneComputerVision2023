@@ -30,6 +30,9 @@ def v_new_visible(vg):
         if (foundRobot is not None):
             # Update Robot Link
             robot.robotLink = foundRobot.robotLink
+            # Need to also update these for simulator
+            robot.IP = robot.robotLink.ip_address
+            robot.robotLink.socket.robot = robot
 
             # Acquire Global Lost List Mutex
             with vg.lost_mutex:

@@ -6,14 +6,16 @@ class vSocket:
     def __init__(self, vg, ip, robot):
         self.__vg = vg
         self.__conn_ip = ip
-        self.__robot = robot
+        self.robot = robot
 
     def sendall(self, packet):
         # Grap the first IP (sending to IP)
         ip = packet.split("\x00")[1]
 
         # Busy wait until sending can actually take place
-        while not ((ip in self.__vg.detector.commsAvailable) and (self.__robot in self.__vg.visible)):
+        while not ((ip in self.__vg.detector.commsAvailable) and (self.robot in self.__vg.visible)):
+            if ((self.robot not in self.__vg.visible) and (self.robot not in self.__vg.lost)):
+                return
             time.sleep(0.5)
             continue
 
