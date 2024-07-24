@@ -2,6 +2,7 @@ import sim.controller.config.v_global_vars as vg
 from sim.controller.functions.v_ping import v_associate
 from sim.controller.threads.v_node_discovery import v_node_discovery
 import threading
+import queue
 
 # Virtually Handles Newly Visible Robots
 def v_new_visible(vg):
@@ -10,7 +11,11 @@ def v_new_visible(vg):
 
     while True:
         # Blocking Call to the Visible Queue
-        robot = vg.detector.visibleQ.get()
+        try:
+            robot = vg.detector.visibleQ.get(timeout = 0.1)
+        except queue.Empty:
+            continue
+        
         if vg.debug_new_visible: print(f'Pulled From Queue')
 
         # Aquire Visible Mutex

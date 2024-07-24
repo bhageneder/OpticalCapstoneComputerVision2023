@@ -20,7 +20,7 @@ class vSocket:
         self.__vg.virtual_serial_port.writeFromSocket(packet)
     
     def recv(self):
-        return self.__vg.socketQueues[int(self.__conn_ip.split(".")[-1])-10].get()
+        return self.__vg.socketQueues[int(self.__conn_ip.split(".")[-1])-10].get(timeout=0.1)
 
     def close(self):
         pass

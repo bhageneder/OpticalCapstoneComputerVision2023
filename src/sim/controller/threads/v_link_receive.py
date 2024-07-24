@@ -6,14 +6,25 @@ import sim.sim_global_vars as sg
 def v_link_receive(robot, vg):
     thread_name = threading.current_thread().name
 
+    # Flag for sleep when error reading from queue handling
+    sleep = False
+
     while True:
         data = None
-
+        
+        if sleep:
+            time.sleep(0.5)
+            sleep = False
+        
         with vg.visible_mutex:
             if (robot in vg.visible):
                 # Receive Data From Socket
                 # socket.recv() will block until it receives any data, or the connection is closed
-                data = robot.robotLink.socket.recv()
+                try:
+                    data = robot.robotLink.socket.recv()
+                except queue.Empty:
+                    sleep = True
+                    continue
 
                 # Print the received data
                 if vg.debug_link_receive: print(f'{thread_name} Received: {data}')
