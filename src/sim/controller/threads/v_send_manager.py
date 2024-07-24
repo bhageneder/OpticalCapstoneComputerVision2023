@@ -22,7 +22,7 @@ def v_send_manager(vg):
 
             complete_packet_read = True
         
-        if vg.debug_transceiver_send: print(f"{thread_name}:  {packet}")
+        if vg.debug_send_manager: print(f"{thread_name}:  {packet}")
 
         # Simulated packets are not formatted like the real ones
         # The following is not implemented in simulated packets:
