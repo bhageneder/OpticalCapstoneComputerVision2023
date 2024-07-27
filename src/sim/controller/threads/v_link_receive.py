@@ -32,6 +32,24 @@ def v_link_receive(robot, vg):
                 # Update last packet time
                 robot.robotLink.lastPacketTime = time.time()
 
+
+                # Prototyping multi-hop communications code
+                # Receiving the routing info from other robot
+                checkForRouting = data.split('\x11')
+
+                if (len(checkForRouting) == 2):
+                    # Parse routing info from packet
+                    routingInfo = checkForRouting[1][2:-2].translate(str.maketrans('', '', '(),')).replace("'","").split(" ")
+                    # print(routingInfo)
+                    formatRoutingInfo = list()
+                    
+                    for i in range(0, len(routingInfo) - 1, 2):
+                        formatRoutingInfo.append((routingInfo[i], routingInfo[i + 1]))
+                        
+                    print(formatRoutingInfo)
+                    vg.router.updateRoute(robot.IP, formatRoutingInfo)
+
+
                 if(data == b''):
                     # Determine if the socket is in use by another robot
                     # This happens if the robot was deleted and a new one placed in its stead with same socket
