@@ -42,13 +42,17 @@ def v_link_receive(robot, vg):
                     routingInfo = checkForRouting[1][2:-2].translate(str.maketrans('', '', '(),')).replace("'","").split(" ")
                     # print(routingInfo)
                     formatRoutingInfo = list()
-                    
+
                     for i in range(0, len(routingInfo) - 1, 2):
                         formatRoutingInfo.append((routingInfo[i], routingInfo[i + 1]))
                         
-                    print(formatRoutingInfo)
+                    # print(formatRoutingInfo)
                     vg.router.updateRoute(robot.IP, formatRoutingInfo)
 
+                # Checking if the received packet is supposed to be forwarded
+                elif (vg.ip != data.split("\x00")[1].replace(" ","")):
+                    # Forward the data
+                    print(f"{vg.ip} forwarding {data}")
 
                 if(data == b''):
                     # Determine if the socket is in use by another robot

@@ -22,8 +22,8 @@ def v_link_send(robot, vg):
                 for r in vg.visible:
                     robots.append((r.IP, 1))
 
-                robot.robotLink.socket.sendall("\x00" + str(robot.IP) + "\x00 " + vg.ip + "\x00 " + "\x11 " + str(robots))              
-
+                robot.robotLink.socket.sendall("\x00" + str(robot.IP) + "\x00 " + vg.ip + "\x00 " + "\x11 " + str(robots))
+                
             send_num += 1
 
         # Terminate if Robot no longer exists
