@@ -32,6 +32,46 @@ def v_link_receive(robot, vg):
                 # Update last packet time
                 robot.robotLink.lastPacketTime = time.time()
 
+
+                # Prototyping multi-hop communications code
+                # Receiving the routing info from other robot
+                checkForRouting = data.split('\x11')
+
+                if (len(checkForRouting) == 2):
+                    # Parse routing info from packet
+                    routingInfo = checkForRouting[1][2:-2].translate(str.maketrans('', '', '(),')).replace("'","").split(" ")
+                    # print(routingInfo)
+                    formatRoutingInfo = list()
+
+                    for i in range(0, len(routingInfo) - 1, 2):
+                        formatRoutingInfo.append((routingInfo[i], routingInfo[i + 1]))
+                        
+                    # print(formatRoutingInfo)
+                    vg.router.updateRoute(robot.IP, formatRoutingInfo)
+
+                # Checking if the received packet is supposed to be forwarded
+                elif (data.split("\x00")[3].replace(" ", "") == "\x02"):
+                    # Store the data portion of the packet
+                    newData = data.split("\x00")[5].replace(" ", "") 
+
+                    # Store the IP the data came from
+                    fromIP = data.split("\x00")[2].replace(" ", "")
+
+                    # Store the IP to forward to 
+                    forwardToIP = data.split("\x00")[4].replace(" ", "")
+
+                    # Find the matching socket
+                    forwardToRobot = None
+                    for r in vg.visible:
+                        if r.IP == forwardToIP:
+                            forwardToRobot = r
+                            break
+
+                    # Forward the data
+                    if forwardToRobot is not None:
+                        # Reformat packet and push to socket
+                        forwardToRobot.robotLink.socket.sendall("\x00" + str(forwardToRobot.IP) + "\x00 " + vg.ip + "\x00 " + f"->{fromIP}: {newData}")
+
                 if(data == b''):
                     # Determine if the socket is in use by another robot
                     # This happens if the robot was deleted and a new one placed in its stead with same socket

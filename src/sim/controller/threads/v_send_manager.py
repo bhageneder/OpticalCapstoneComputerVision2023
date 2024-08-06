@@ -28,13 +28,28 @@ def v_send_manager(vg):
         # The following is not implemented in simulated packets:
         # packet_summary = analyze_packet(packet)
 
-        if vg.debug_send_manager: print(f'{thread_name} Forwarding packet through dataQ {packet}')
+        if vg.debug_send_manager: print(f'{thread_name} Sending packet through dataQ {packet}')
         
         # Sending data is simplified in the simulator because transceivers are not implemented
         # Additionally, all packets are of the same type
+        sendingTo = packet.split("\x00")[1]
 
+        # Protyping the Mulihop Communications
+        for robot in vg.visible:
+            if (robot.IP == sendingTo):
+                break
+        else:
+            old = sendingTo
+
+            # Update sendingTo to the IP of the shortest hop
+            sendingTo = vg.router.findRoute(sendingTo)
+
+            # Check to make sure a route is avaialble before trying to send
+            if (sendingTo is None):
+                print(f"{vg.ip} failed to send multi-hop packet to {old}. No route available.")
+                continue
+        
         # Simulate the sending of data (queue it for the receiving robot)
         # Access receiving robots dataQ
         # Send data with tag
-        sendingTo = packet.split("\x00")
-        sg.listOfDataQ[int(sendingTo[1].split(".")[-1])-10].put(packet + " ", timeout=3)
+        sg.listOfDataQ[int(sendingTo.split(".")[-1])-10].put(packet + " ", timeout=3)

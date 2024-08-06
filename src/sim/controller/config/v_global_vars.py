@@ -2,6 +2,7 @@ import threading
 import queue
 import sim.sim_global_vars as sg
 from sim.controller.classes.vSerial import vSerial
+from sim.controller.classes.vRouter import vRouter
 
 '''
 Contains virtual global variables that will be used across sim files
@@ -58,3 +59,5 @@ class vGlobals():
         self.socketQueues = [queue.Queue() for _ in range(len(self.POSSIBLE_ROBOT_IP_ADDRESSES))]
 
         self.virtual_serial_port = vSerial(self)
+
+        self.router = vRouter()
