@@ -50,7 +50,7 @@ class vDetector(BaseDetector):
                 vg.trackingIDSet[robot.ip] = vg.trackIDs[0]
                 vg.trackIDs.remove(vg.trackIDs[0])
 
-        
+
     def __updateCommsAvailableList(self, blocking, robot):
         if blocking:
             # Remove robot from commsAvailable list when blocked
