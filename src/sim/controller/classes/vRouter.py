@@ -23,8 +23,8 @@ class vRouter():
             possibleRoutes = self.__table.get(key)
             
             for tuple in possibleRoutes:
-                if (tuple[0] == destIP and tuple[1] < bestRoute[1]):
-                    bestRoute = tuple
+                if (tuple[0] == destIP and int(tuple[1]) < int(bestRoute[1])):
+                    bestRoute = (key, tuple[1])
 
                     # Stop if route length is 1
                     if (bestRoute[1] == 1):
